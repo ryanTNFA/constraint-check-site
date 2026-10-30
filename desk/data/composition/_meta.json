@@ -1,0 +1,97 @@
+{
+ "groups": [
+  {
+   "id": "agri",
+   "name": "Agriculture and food",
+   "hs_chapters": [
+    1,
+    24
+   ]
+  },
+  {
+   "id": "minerals",
+   "name": "Minerals and fuels",
+   "hs_chapters": [
+    25,
+    27
+   ]
+  },
+  {
+   "id": "chemicals",
+   "name": "Chemicals, plastics and rubber",
+   "hs_chapters": [
+    28,
+    40
+   ]
+  },
+  {
+   "id": "wood",
+   "name": "Leather, wood and paper",
+   "hs_chapters": [
+    41,
+    49
+   ]
+  },
+  {
+   "id": "textiles",
+   "name": "Textiles, apparel and footwear",
+   "hs_chapters": [
+    50,
+    67
+   ]
+  },
+  {
+   "id": "stone",
+   "name": "Stone, glass and gems",
+   "hs_chapters": [
+    68,
+    71
+   ]
+  },
+  {
+   "id": "metals",
+   "name": "Metals",
+   "hs_chapters": [
+    72,
+    83
+   ]
+  },
+  {
+   "id": "machinery",
+   "name": "Machinery",
+   "hs_chapters": [
+    84,
+    84
+   ]
+  },
+  {
+   "id": "electronics",
+   "name": "Electronics",
+   "hs_chapters": [
+    85,
+    85
+   ]
+  },
+  {
+   "id": "vehicles",
+   "name": "Vehicles and transport",
+   "hs_chapters": [
+    86,
+    89
+   ]
+  },
+  {
+   "id": "other",
+   "name": "Instruments and other",
+   "hs_chapters": [
+    90,
+    99
+   ]
+  }
+ ],
+ "sources": {
+  "exports": "Growth Lab, Harvard University. International Trade Data (HS92), doi:10.7910/DVN/T4CHWJ, hs92_country_product_year_4.csv",
+  "names": "https://raw.githubusercontent.com/datasets/harmonized-system/master/data/harmonized-system.csv",
+  "sectors": "World Bank WDI: NV.AGR.TOTL.ZS, NV.IND.TOTL.ZS, NV.IND.MANF.ZS, NV.SRV.TOTL.ZS, SL.AGR.EMPL.ZS, SL.IND.EMPL.ZS, SL.SRV.EMPL.ZS"
+ }
+}

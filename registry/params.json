@@ -1,0 +1,198 @@
+{
+  "_comment": "Rubric parameters v0.1.4 (Workbook Appendix B as corrected by docs/CHANGELOG-rubric.md). Every number here is a starting point to be calibrated in Phase 0. The engine must read all thresholds from this file; nothing numeric is hard-coded.",
+  "rubric_version": "0.1.6",
+  "snapshot_reference_window_years": 12,
+  "icr": {
+    "controls": [
+      "log_gdppc_ppp",
+      "log_population",
+      "resource_rents",
+      "landlocked"
+    ],
+    "method": "huber",
+    "huber_k": 1.345,
+    "max_iterations": 50,
+    "min_countries": 40,
+    "winsorize_percentiles": [
+      1,
+      99
+    ],
+    "signal_thresholds": {
+      "strong": 1.5,
+      "weak": 0.75
+    },
+    "within_region_variant": true
+  },
+  "peer_gap": {
+    "_comment": "v0.1.2: ties with peers take half a rank (rank_worst = 1 + strictly more binding + ties/2), so a target tied with every peer sits in the middle and scores 0.",
+    "rank_thresholds": {
+      "strong_worst": 2,
+      "weak_worst": 4,
+      "weak_best": 4,
+      "strong_best": 2
+    },
+    "min_peers_with_data": 5,
+    "tie_rule": "half_rank"
+  },
+  "comovement": {
+    "_comment": "v0.1.2: the sign test is scored from an exact one-sided binomial p-value on the agree count (H0: agreement by chance, p = 0.5), not from a fixed consistency cut. Predicted direction: +1 when p <= weak_p (capped at predicted_sign_cap, the Workbook 4.7 asymmetry); wrong direction: -1 when p <= weak_p, -2 when p <= strong_p; else 0. Replaces comovement.graded of v0.1.1.",
+    "test": "binomial_one_sided",
+    "binomial": {
+      "weak_p": 0.1,
+      "strong_p": 0.025
+    },
+    "predicted_sign_cap": 1,
+    "min_years": 10
+  },
+  "class_weights": {
+    "A": 1.0,
+    "B": 0.9,
+    "C": 0.6,
+    "D": 0.3
+  },
+  "recency": {
+    "bands": [
+      {
+        "max_age": 4,
+        "mult": 1.0
+      },
+      {
+        "max_age": 8,
+        "mult": 0.75
+      },
+      {
+        "max_age": 12,
+        "mult": 0.4
+      }
+    ],
+    "older_mult": 0.0,
+    "slow_moving_floor": 0.75,
+    "staleness_limit_years": 8
+  },
+  "tiers": {
+    "_comment": "v0.1.2: price_test_quantity_rule = ab_only (class C/D price families never vote; with no class A/B price family T_price is null, 'price not observed'); evidence_count_rule = voting_families (E, E_below, E_min, AB_count and load_bearing count voting families only; informing families are listed separately); test_weight_floor shrinks a test with thin weight mass toward zero (T_k = sum(w s) / max(sum(w), floor)); extreme_tier_informing_dissent_min_abs blocks ruled_out and likely_binding when an informing family dissents by at least that much. The tier rules themselves are unchanged from v0.1. v0.1.4: cannot_tell_data_gap.E_below lowered from 3 to 2 (option B, decided by Ryan on 26 October 2026 after a five-variant comparison): a node may leave cannot_tell with two independent class A/B voting families. The extreme tiers are unchanged (E_min 5, C_min 3). v0.1.4b: probably_not.N_alt_max = -1.0 mirrors candidate.N_alt_min = 1.0, so a node can be cleared on one strong test as it can be flagged on one; ruled_out unchanged.",
+    "price_test_quantity_rule": "ab_only",
+    "camels_test_quantity_rule": "ab_only",
+    "evidence_count_rule": "voting_families",
+    "test_weight_floor": 1.0,
+    "extreme_tier_informing_dissent_min_abs": 1.0,
+    "test_weights": {
+      "price": 2,
+      "changes": 1,
+      "circumvention": 1,
+      "camels": 1
+    },
+    "likely_binding": {
+      "N_min": 1.0,
+      "C_min": 3,
+      "E_min": 5,
+      "T1_min": 0.5,
+      "no_test_below": -1.0,
+      "AB_positive_families_min": 2,
+      "F_max": 0
+    },
+    "candidate": {
+      "N_min": 0.5,
+      "C_min": 2,
+      "N_alt_min": 1.0
+    },
+    "cannot_tell_data_gap": {
+      "E_below": 2,
+      "staleness_limit_years": 8
+    },
+    "conflicting": {
+      "T_pos_min": 1.0,
+      "T_neg_max": -1.0
+    },
+    "probably_not": {
+      "N_max": -0.5,
+      "C_min": 2,
+      "N_alt_max": -1.0
+    },
+    "ruled_out": {
+      "N_max": -1.0,
+      "C_min": 3,
+      "T1_max": -0.5,
+      "T3_max": -0.5,
+      "E_min": 5,
+      "no_AB_family_signal_above": 0,
+      "R_max_age": 8,
+      "F_max": 0,
+      "lone_circumvention_family_needs_peer_gap": true
+    },
+    "concordance_abs_T_min": 0.5
+  },
+  "ranking": {
+    "_comment": "v0.1.2: the bootstrap never resamples a node below E_below voting families (nodes with at most E_below voting families are not resampled and are listed in ranking.not_resampled).",
+    "breadth_factor_range": [
+      0.5,
+      1.5
+    ],
+    "bootstrap_draws": 300,
+    "bootstrap_subset_share": 0.8,
+    "threshold_perturbation": 0.2,
+    "top_k": 3,
+    "max_likely_binding_before_flag": 4
+  },
+  "comparators": {
+    "_comment": "v0.1.2: the landlocked feature enters the structural distance as a fixed penalty (landlocked_mismatch_penalty squared-distance units, i.e. z = 1) instead of being standardized by its 0.41 sd; candidates whose income observation is more than max_income_age_years older than the universe's latest are excluded; economies on the fragile and conflict-affected list (registry/static_fcs.json) are excluded unless the target is on it.",
+    "structural": {
+      "size": 10,
+      "features": [
+        "log_gdppc_ppp",
+        "log_population",
+        "resource_rents",
+        "landlocked"
+      ],
+      "landlocked_mismatch_penalty": 1,
+      "exclude_population_below": 300000,
+      "exclude_high_income_if_target_not": true,
+      "exclude_fcs_if_target_not": true,
+      "max_income_age_years": 2
+    },
+    "regional": {
+      "min_size": 6,
+      "max_size": 15,
+      "income_band_steps": 1
+    },
+    "aspirational": {
+      "lookback_years": 25,
+      "income_tolerance": 0.3,
+      "min_growth_pct": 3.0,
+      "size": 10
+    }
+  },
+  "top_split": {
+    "_comment": "v0.1.2: credit growth reads as 'high' only when private credit to GDP is not thin (ICR t of FS.AST.PRVT.GD.ZS > credit_depth_thin_t, the ICR strong threshold); net cash flow from banks is recorded alongside. The cap-at-candidate for finance nodes applies to every row in which the real rate is classified 'low', not only low_demand.",
+    "rate_high_t": 0.75,
+    "rate_low_t": 0.0,
+    "investment_low_t": -0.5,
+    "credit_growth_high_pct": 5.0,
+    "credit_depth_thin_t": -1.5,
+    "override_when_rate_low": true
+  },
+  "growth_problem": {
+    "_comment": "v0.1.2: the G1 and G5 windows end at the latest year with any growth observation in the universe (window_anchor = latest_observed_year), so '10 years' means 2016-2025 on the 2026-10-24 snapshot; the convergence regression's initial year is the window's first year minus one. v0.1.1: collapse_max_peak_age_years, collapse_min_shortfall_pct and the growing rule (growing_*) are new; slowdown_min_gap_pp, collapse_min_peak_age_years and volatile_min_universe_percentile carry the v0.1 spec values unchanged and are only moved here from the engine code.",
+    "window_anchor": "latest_observed_year",
+    "growth_windows_years": [
+      10,
+      20
+    ],
+    "volatility_window_years": 20,
+    "break_min_segment_years": 8,
+    "break_min_change_pp": 2.0,
+    "slowdown_min_gap_pp": 1.5,
+    "collapse_min_peak_age_years": 8,
+    "collapse_max_peak_age_years": 30,
+    "collapse_min_shortfall_pct": 10,
+    "volatile_min_universe_percentile": 75,
+    "growing_min_growth_pct": 3,
+    "growing_alt_min_convergence_t": 1.0,
+    "growing_alt_min_growth_pct": 2
+  },
+  "candour": {
+    "_comment": "v0.1.5: economies whose WGI voice and accountability estimate (latest in window) is at or below va_est_max are 'low voice'; indicators flagged regime_sensitive 'low_voice' (firm self-reports of bribery) are class C there. -1.0 is roughly the bottom fifth of economies. A judgment threshold for Phase 0 review.",
+    "indicator": "VA.EST",
+    "va_est_max": -1.0
+  }
+}

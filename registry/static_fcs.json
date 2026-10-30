@@ -1,0 +1,6 @@
+{
+  "_comment": "Fragile and conflict-affected situations (rubric v0.1.2, review finding 6). Economies on this list are excluded from structural comparator pools unless the target is itself on the list (the same symmetry as the micro-state rule), because nothing but income, population, rents and the landlocked flag enters the structural distance and Syria, Somalia, Afghanistan, Libya and West Bank and Gaza were otherwise chosen as peers for 6 to 15 economies each. They stay in the universe and in every ICR fit. Source: the World Bank FY25 List of Fragile and Conflict-affected Situations (effective 1 July 2024), as recalled by the engine agent in October 2026 and NOT re-downloaded; verify against the published FY26 list before Phase 0 and update here.",
+  "source": "World Bank FY25 FCS list (recalled; verify)",
+  "conflict": ["AFG", "BFA", "CMR", "CAF", "COD", "ETH", "HTI", "IRQ", "LBN", "MLI", "MOZ", "MMR", "NER", "NGA", "SOM", "SSD", "SDN", "SYR", "UKR", "PSE", "YEM"],
+  "institutional_and_social_fragility": ["BDI", "TCD", "COM", "COG", "ERI", "GNB", "KIR", "XKX", "LBY", "MHL", "FSM", "PNG", "STP", "SLB", "TLS", "TUV", "VEN", "ZWE"]
+}

@@ -1,0 +1,42 @@
+/* Diagnostic summary page (C10): the MCC-style heat map. Builds on desk.css tokens. */
+.sm-head { margin: 28px 0 12px; }
+.sm-head h1 { margin: 4px 0 6px; }
+.sm-q { margin: 0 0 6px; font-family: var(--serif); font-size: 1.1875rem; color: var(--muted); }
+.sm-sub { margin: 0; max-width: 72ch; }
+.sm-controls { display: flex; flex-wrap: wrap; gap: 12px 16px; margin: 12px 0 18px; }
+.sm-controls .field span { font-size: 0.8125rem; color: var(--muted); }
+
+.sm-key { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin: 0 0 10px; font-size: 0.75rem; }
+.sm-swatch { display: inline-block; min-width: 40px; padding: 3px 4px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sm-key-l { margin-right: 8px; color: var(--muted); }
+.sm-key-r { margin-left: 8px; color: var(--tier-binding); font-weight: 600; }
+:root[data-theme="dark"] .sm-key-r { color: var(--chart-binding); }
+
+.sm-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-top: 1px solid var(--rule-strong); }
+.sm-table { border-collapse: separate; border-spacing: 2px; width: 100%; min-width: 980px; font-size: 0.875rem; }
+.sm-table thead th { font-family: var(--mono, "IBM Plex Mono", ui-monospace, monospace); font-size: 0.75rem; font-weight: 600; text-align: center; vertical-align: bottom; padding: 8px 4px; color: var(--text); }
+.sm-table thead th.sm-node { text-align: left; }
+.sm-unit { font-weight: 400; color: var(--muted); }
+.sm-group th { text-align: left; padding: 14px 4px 4px; font-family: var(--mono, "IBM Plex Mono", ui-monospace, monospace); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.sm-table tbody th.sm-node { text-align: left; font-weight: 400; padding: 4px 8px 4px 4px; white-space: nowrap; }
+.sm-table tbody th.sm-node a { color: var(--text); text-decoration: none; }
+.sm-table tbody th.sm-node a:hover { text-decoration: underline; }
+.sm-id { display: inline-block; min-width: 3.4em; font-family: var(--mono, "IBM Plex Mono", ui-monospace, monospace); font-size: 0.75rem; color: var(--muted); }
+.sm-sub th.sm-node { padding-left: 22px !important; }
+.sm-cell { width: 88px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; padding: 6px 4px; }
+/* empty cells match the data-gap badge (dashed, unfilled) rather than the weak-evidence hatch */
+.sm-empty { font-weight: 400; font-style: italic; font-size: 0.75rem; color: var(--muted); outline: 1px dashed var(--rule-strong); outline-offset: -4px; }
+/* Context rows recede by muted ink and desaturated fills, not opacity (0.7 opacity put muted text at 3.2:1 in light). */
+.sm-context th.sm-node, .sm-context th.sm-node a { color: var(--muted); }
+.sm-context .sm-cell { filter: saturate(0.45); }
+.sm-scroll:focus-visible { outline-offset: -2px; }
+.sm-scroll :focus-visible { outline-offset: -2px; }
+.sm-tier { padding: 4px 6px; white-space: nowrap; }
+.sm-you select { max-width: 13rem; font-size: 0.8125rem; }
+.sm-note input { width: 100%; min-width: 10rem; font-size: 0.8125rem; }
+.sm-overridden th.sm-node a { font-weight: 600; }
+.sm-overridden .sm-you select { border: 2px dashed var(--accent); }
+
+.sm-readout { margin: 14px 0 6px; font-family: var(--serif); font-size: 1.0625rem; max-width: 80ch; }
+.sm-foot { max-width: 100ch; }
+.sm-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 40px; }

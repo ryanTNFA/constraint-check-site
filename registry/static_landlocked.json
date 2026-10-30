@@ -1,0 +1,4 @@
+{
+  "_comment": "World Bank ISO3 codes of landlocked economies (XKX is Kosovo in World Bank coding).",
+  "landlocked": ["AFG", "AND", "ARM", "AUT", "AZE", "BLR", "BTN", "BOL", "BWA", "BFA", "BDI", "CAF", "TCD", "CZE", "SWZ", "ETH", "HUN", "KAZ", "XKX", "KGZ", "LAO", "LSO", "LIE", "LUX", "MWI", "MLI", "MDA", "MNG", "NPL", "NER", "MKD", "PRY", "RWA", "SMR", "SRB", "SVK", "SSD", "CHE", "TJK", "TKM", "UGA", "UZB", "ZMB", "ZWE"]
+}

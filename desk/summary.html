@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnostic summary · Constraint Check</title>
+<meta name="description" content="MCC-style diagnostic heat map: every node of the tree against benchmarking and the four tests, with the verdict layer's tier and the analyst's own conclusions.">
+<script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<link rel="preload" href="/constraint-check-site/desk/fonts/newsreader-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/constraint-check-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/constraint-check-site/desk/css/desk.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/summary.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>Summary · prototype</span></a>
+    <nav class="topnav" aria-label="Site">
+      <a href="/constraint-check-site/desk/" id="nav-all">All economies</a>
+      <a href="#" id="nav-snapshot">Snapshot</a>
+      <a href="#" id="nav-evidence">Charts (analysts)</a>
+      <a href="#" aria-current="page">Heat map (analysts)</a>
+      <button id="theme-toggle" class="btn quiet small" type="button">Theme: Auto</button>
+    </nav>
+  </div>
+</header>
+<div class="banner" role="note" aria-label="Prototype under validation">
+  <div class="wrap">
+    <span class="alert-mark" aria-hidden="true">!</span>
+    <strong>Prototype under validation</strong>
+    <span class="alert-text">Constraint Check has not yet been tested against expert growth diagnoses. Its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.</span>
+    <a href="/constraint-check-site/desk/#how-we-test" class="banner-link">How we test it →</a>
+  </div>
+</div>
+
+<main id="main" class="wrap sm" tabindex="-1">
+  <header class="sm-head">
+    <span class="kicker">Diagnostic summary</span>
+    <h1 id="page-title">Loading…</h1>
+    <p class="sm-q">Across the tree, which constraints have consistent evidence?</p>
+    <p class="sm-sub" id="page-sub"></p>
+  </header>
+
+  <p id="page-error" class="note alert" hidden></p>
+
+  <form class="sm-controls" onsubmit="return false" aria-label="Summary settings">
+    <label class="field"><span>Economy</span><select id="c-country"></select></label>
+    <label class="field"><span>Comparators</span>
+      <select id="c-set"><option value="structural">Structural</option><option value="regional">Regional</option><option value="aspirational">Aspirational</option></select></label>
+  </form>
+
+  <section class="sm-section" aria-labelledby="h-heat">
+    <h2 class="visually-hidden" id="h-heat">Heat map</h2>
+    <div class="sm-key" id="key" aria-hidden="true"></div>
+    <div class="sm-scroll" id="heat-wrap" role="region" aria-labelledby="h-heat" aria-describedby="readout foot" tabindex="0"></div>
+    <p class="sm-readout" id="readout"></p>
+    <p class="small muted sm-foot" id="foot"></p>
+    <div class="sm-actions" role="group" aria-label="Export the heat map">
+      <button class="btn small" id="x-png" type="button">PNG</button>
+      <button class="btn small" id="x-svg" type="button">SVG</button>
+      <button class="btn small" id="x-csv" type="button">CSV</button>
+      <button class="btn small" id="x-md" type="button">Markdown table</button>
+      <button class="btn quiet small" id="copy-link" type="button">Copy link with your conclusions</button>
+      <a class="btn quiet small" id="to-snapshot" href="#">Open the Snapshot with your conclusions</a>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="/constraint-check-site/desk/js/summary.mjs"></script>
+</body>
+</html>

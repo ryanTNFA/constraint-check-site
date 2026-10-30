@@ -1,0 +1,11 @@
+{
+  "_comment": "Economies without an independent monetary policy in the reference window (rubric v0.1.2, review finding 3: Panama). Under formal dollarization or a currency board the CPI inflation level and its volatility carry no information about national macro risk, so the engine downgrades registry indicators flagged regime_sensitive = \"monetary\" (FP.CPI.TOTL.ZG, DERIV.INFLATION_VOL) to class C for these economies: they inform the card but do not vote on N10's price test. Classification follows the IMF AREAER hard-peg categories as known to the engine agent in October 2026; euro-area members and the CFA franc zones (monetary unions with a common central bank) are deliberately NOT listed and are a Phase 0 question. Verify against the current AREAER before calibration.",
+  "no_separate_legal_tender": {
+    "_comment": "The economy uses another sovereign's currency (or is a dependent territory using its metropole's currency).",
+    "members": ["ECU", "SLV", "PAN", "TLS", "MNE", "XKX", "AND", "SMR", "MCO", "LIE", "PLW", "MHL", "FSM", "KIR", "TUV", "NRU", "PRI", "VIR", "GUM", "ASM", "MNP", "TCA", "VGB", "GRL", "MAF"]
+  },
+  "currency_board": {
+    "_comment": "Currency boards and fixed parities backed by law (Bulgaria kept its board through 2025 and adopted the euro on 1 January 2026; the reference window 2023-2025 falls under the board).",
+    "members": ["HKG", "MAC", "BIH", "BGR", "DJI", "BRN", "ATG", "DMA", "GRD", "KNA", "LCA", "VCT", "BMU", "CYM", "GIB", "IMN", "CHI", "FRO"]
+  }
+}

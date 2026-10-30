@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence · Constraint Check</title>
+<meta name="description" content="Income-trend scatter for any indicator: every economy against log GDP per capita, the fitted line, the country and its comparators.">
+<script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<link rel="preload" href="/constraint-check-site/desk/fonts/newsreader-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/constraint-check-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/constraint-check-site/desk/css/desk.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/evidence.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>Evidence · prototype</span></a>
+    <nav class="topnav" aria-label="Site">
+      <a href="/constraint-check-site/desk/" id="nav-all">All economies</a>
+      <a href="#" id="nav-snapshot">Snapshot</a>
+      <a href="#" aria-current="page">Charts (analysts)</a>
+      <a href="#" id="nav-summary">Heat map (analysts)</a>
+      <button id="theme-toggle" class="btn quiet small" type="button">Theme: Auto</button>
+    </nav>
+  </div>
+</header>
+<div class="banner" role="note" aria-label="Prototype under validation">
+  <div class="wrap">
+    <span class="alert-mark" aria-hidden="true">!</span>
+    <strong>Prototype under validation</strong>
+    <span class="alert-text">Constraint Check has not yet been tested against expert growth diagnoses. Its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.</span>
+    <a href="/constraint-check-site/desk/#how-we-test" class="banner-link">How we test it →</a>
+  </div>
+</div>
+
+<main id="main" class="wrap ev" tabindex="-1">
+  <header class="ev-head">
+    <span class="kicker">Evidence</span>
+    <h1 id="page-title">Loading…</h1>
+    <p class="ev-sub" id="page-sub">Pick a node on the left. Each node shows every piece of evidence the verdict layer weighed; pick any indicator to chart it against the income trend, its comparators and its own history.</p>
+    <p class="ev-sub small">This is the analyst view: the evidence behind each verdict, chart by chart. For the plain answer, see the <a href="country.html" data-keep-iso>Snapshot</a>.</p>
+    <p class="ev-pack"><button class="btn small" id="pack" type="button" title="One HTML file with every chart on this page, its readout and footnote; open it and print to PDF">Download chart pack</button>
+      <button class="btn small" id="pins" type="button" hidden title="One HTML file with every chart you added with “+ Pack”, from any node or indicator, each with its own settings">Download my pack (<span id="pins-n">0</span>)</button>
+      <button class="btn small" id="pins-clear" type="button" hidden>Clear my pack</button>
+      <span class="small muted" id="pins-status" role="status"></span></p>
+  </header>
+
+  <p id="page-error" class="note alert" hidden></p>
+
+  <div class="ev-toolbar" id="toolbar">
+    <div class="ev-tb-row">
+      <button class="ev-tb-toggle" id="tb-toggle" type="button" aria-expanded="false" aria-controls="controls"><span class="ev-tb-summary" id="tb-summary"></span><span class="ev-tb-action">Change</span></button>
+      <button class="btn small ev-back" data-back type="button" hidden></button>
+    </div>
+    <form class="ev-controls" id="controls" aria-label="Chart settings" onsubmit="return false">
+      <label class="field"><span>Economy</span><select id="c-country"></select></label>
+      <label class="field ev-wide"><span>Indicator</span><select id="c-ind"></select></label>
+      <label class="field"><span>Find an indicator</span><input id="c-ind-find" type="search" list="c-ind-list" placeholder="Type a name, source or node" autocomplete="off"><datalist id="c-ind-list"></datalist></label>
+      <label class="field"><span>Comparators</span>
+        <select id="c-set"><option value="structural">Structural</option><option value="regional">Regional</option><option value="aspirational">Aspirational</option><option value="custom">Custom (only those added)</option></select></label>
+      <label class="field"><span>Fit line (chart 1)</span>
+        <select id="c-fit"><option value="linear">Income only: linear</option><option value="lowess">Income only: LOWESS</option><option value="structure">Income and structure (as the rating)</option></select></label>
+      <div class="field ev-asof"><label for="c-asof"><span>Data as of</span></label>
+        <div class="ev-asof-row"><select id="c-asof"></select><button class="btn small ev-back" data-back type="button" hidden></button></div></div>
+      <label class="field"><span>Add to comparators</span><input id="c-label" type="search" list="dl-countries" placeholder="Type a name"><datalist id="dl-countries"></datalist></label>
+    </form>
+    <div class="ev-labels" id="extra-labels" role="group" aria-label="Comparators you added"></div>
+  </div>
+
+  <details class="ev-key" id="how-to-read">
+    <summary>How to read this page</summary>
+    <p class="small"><strong>What it is for.</strong> Each node of the growth diagnostics tree asks whether one thing (finance, skills, electricity and so on) is holding back private investment. This page shows the evidence for one node at a time. The verdict itself is on the <a href="country.html" data-keep-iso>Snapshot page</a>; this page shows what that verdict weighed, so you can check it or build your own charts.</p>
+    <p class="small"><strong>"Toward binding" is a direction, not a conclusion.</strong> A dot on the binding side means that one indicator looks the way it would if the constraint held back growth, compared with economies at the same income level. One indicator never settles it. The tool is built to say when a constraint can be set aside, not to say a program should target one.</p>
+    <p class="small"><strong>"sd" means standard deviations</strong> from what income (and, where stated, population, resource rents and being landlocked) predicts. Within ±0.75 sd reads as normal for an economy of its kind; beyond ±2 sd is unusual.</p>
+    <p class="small"><strong>The four tests</strong> (the Hausmann-Rodrik-Velasco questions):</p>
+    <ul class="small">
+      <li><strong>1 · Price:</strong> is the thing expensive, or are firms rationed?</li>
+      <li><strong>2 · Changes:</strong> when it got cheaper or dearer, did investment follow?</li>
+      <li><strong>3 · Circumvention:</strong> are firms paying to work around it (generators, self-financing)?</li>
+      <li><strong>4 · Camels and hippos:</strong> do the activities that thrive here need little of it? Camels do well in a desert; if an economy exports few products that need, say, external finance, finance may be the desert.</li>
+    </ul>
+    <p class="small muted">Every chart can be saved as PNG, SVG or CSV, and "Download chart pack" saves every chart on the page in one file. Hollow or dashed marks are older than the staleness limit.</p>
+  </details>
+
+  <details class="ev-key" id="class-key">
+    <summary>What the indicator classes A to D mean</summary>
+    <p class="small">Each indicator carries a letter for how directly it reveals a binding constraint (Workbook 4.6). The letter sets its weight in the verdict. Prices and rationing say the most; quantities and perceptions say less, because a low quantity can mean low demand rather than scarcity.</p>
+    <table>
+      <thead><tr><th>Class</th><th>What it is</th><th>Examples</th><th class="num">Weight</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A</strong></td><td>Prices, shadow prices and hard measures of rationing</td><td>Real lending rate, returns to schooling, lost sales from outages, bribe payments as a share of sales</td><td class="num">1.0</td></tr>
+        <tr><td><strong>B</strong></td><td>Behaviour that only makes sense if the constraint binds (working around it)</td><td>Generator ownership, self-financing of investment, dollarization, skilled emigration, informality</td><td class="num">0.9</td></tr>
+        <tr><td><strong>C</strong></td><td>Quantities, access measures, and firm or household perceptions</td><td>Credit to GDP, enrollment, road density, Enterprise Survey obstacle rankings</td><td class="num">0.6</td></tr>
+        <tr><td><strong>D</strong></td><td>Composite indices and rankings</td><td>Governance aggregates, competitiveness indices</td><td class="num">0.3, never decisive</td></tr>
+        <tr><td><strong>X</strong></td><td>Context, no vote</td><td>GDP per capita, nominal lending rate</td><td class="num">0</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">A verdict at either extreme must rest on at least two class A or B families.</p>
+  </details>
+
+  <div class="ev-layout">
+  <nav class="ev-rail" id="rail" aria-label="Evidence by node"></nav>
+  <div class="ev-main">
+  <div id="view-node">
+  <section class="ev-section ev-nodeview" id="sec-node" aria-labelledby="h-node">
+    <h2 class="ev-h2 ev-node-title" id="h-node"></h2>
+    <p class="ev-node-q" id="node-q"></p>
+    <p class="ev-node-verdict" id="node-verdict"></p>
+    <form class="ev-subcontrols" id="node-controls" onsubmit="return false" aria-label="Settings for this view"></form>
+    <figure class="ev-figure">
+      <div class="ev-chart ev-chart-node" id="chartN" role="img" aria-labelledby="h-node" aria-describedby="readoutN"></div>
+      <figcaption>
+        <p class="ev-readout" id="readoutN"></p>
+        <p class="ev-foot small muted" id="footN"></p>
+      </figcaption>
+    </figure>
+    <div class="ev-actions" data-chart="node" role="group" aria-label="Download this node chart">
+      <button class="btn small" data-kind="png" type="button">PNG</button>
+      <button class="btn small" data-kind="svg" type="button">SVG</button>
+      <button class="btn small" data-kind="csv" type="button">CSV</button>
+    </div>
+  </section>
+
+  <div class="ev-tabs" id="test-tabs" role="tablist" aria-label="The four tests for this node" hidden></div>
+
+  <section class="ev-section ev-test" id="sec-c5" role="tabpanel" aria-labelledby="tab-c5" hidden>
+    <span class="kicker">Test 1 · Price</span>
+    <h2 class="ev-h2" id="h-c5">Price against quantity</h2>
+    <p class="ev-node-q">Is it scarce, or is demand for it low?</p>
+    <form class="ev-subcontrols" id="c5-controls" onsubmit="return false" aria-label="Price against quantity settings">
+      <label class="field"><span>Price</span><select id="c5-price"></select></label>
+      <label class="field"><span>Quantity</span><select id="c5-qty"></select></label>
+      <label class="field"><span>Axes (left)</span><select id="c5-axes"><option value="resid">Distance from the income trend</option><option value="raw">Values</option></select></label>
+    </form>
+    <figure class="ev-figure">
+      <div class="ev-chart" id="chart5" role="img" aria-labelledby="h-c5" aria-describedby="readout5"></div>
+      <figcaption>
+        <p class="ev-readout" id="readout5"></p>
+        <p class="ev-foot small muted" id="foot5"></p>
+      </figcaption>
+    </figure>
+    <div class="ev-actions" data-chart="c5" role="group" aria-label="Download the price against quantity chart">
+      <button class="btn small" data-kind="png" type="button">PNG</button>
+      <button class="btn small" data-kind="svg" type="button">SVG</button>
+      <button class="btn small" data-kind="csv" type="button">CSV</button>
+    </div>
+  </section>
+
+  <section class="ev-section ev-test" id="sec-c6" role="tabpanel" aria-labelledby="tab-c6" hidden>
+    <span class="kicker">Test 2 · Changes</span>
+    <h2 class="ev-h2" id="h-c6">Co-movement</h2>
+    <p class="ev-node-q">When the constraint eased or tightened, did investment respond?</p>
+    <figure class="ev-figure">
+      <div class="ev-chart" id="chart6" role="img" aria-labelledby="h-c6" aria-describedby="readout6"></div>
+      <figcaption>
+        <p class="ev-readout" id="readout6"></p>
+        <p class="ev-foot small muted" id="foot6"></p>
+      </figcaption>
+    </figure>
+    <div class="ev-actions" data-chart="c6" role="group" aria-label="Download the co-movement chart">
+      <button class="btn small" data-kind="png" type="button">PNG</button>
+      <button class="btn small" data-kind="svg" type="button">SVG</button>
+      <button class="btn small" data-kind="csv" type="button">CSV</button>
+    </div>
+  </section>
+
+  <section class="ev-section ev-test" id="sec-c8" role="tabpanel" aria-labelledby="tab-c8" hidden>
+    <span class="kicker">Test 3 · Circumvention</span>
+    <h2 class="ev-h2" id="h-c8">Bypass behaviour</h2>
+    <p class="ev-node-q">Are firms paying to work around the constraint?</p>
+    <figure class="ev-figure">
+      <div class="ev-chart" id="chart8" role="group" aria-labelledby="h-c8" aria-describedby="readout8"></div>
+      <figcaption>
+        <p class="ev-readout" id="readout8"></p>
+        <p class="ev-foot small muted" id="foot8"></p>
+      </figcaption>
+    </figure>
+    <div class="ev-actions" data-chart="c8" role="group" aria-label="Download the bypass chart">
+      <button class="btn small" data-kind="png" type="button">PNG</button>
+      <button class="btn small" data-kind="svg" type="button">SVG</button>
+      <button class="btn small" data-kind="csv" type="button">CSV</button>
+    </div>
+  </section>
+
+  <section class="ev-section ev-test" id="sec-c12" role="tabpanel" aria-labelledby="tab-c12" hidden>
+    <span class="kicker">Test 4 · Camels and hippos</span>
+    <h2 class="ev-h2" id="h-c12">What thrives, and what it needs</h2>
+    <p class="ev-node-q">Do the activities that thrive here need little of it?</p>
+    <figure class="ev-figure">
+      <div class="ev-chart" id="chart12" role="img" aria-labelledby="h-c12" aria-describedby="readout12"></div>
+      <figcaption>
+        <p class="ev-readout" id="readout12"></p>
+        <p class="ev-foot small muted" id="foot12"></p>
+      </figcaption>
+    </figure>
+    <div class="ev-actions" data-chart="c12" role="group" aria-label="Download the camels and hippos chart">
+      <button class="btn small" data-kind="png" type="button">PNG</button>
+      <button class="btn small" data-kind="svg" type="button">SVG</button>
+      <button class="btn small" data-kind="csv" type="button">CSV</button>
+    </div>
+  </section>
+
+  </div>
+
+  <div id="view-ind" hidden>
+  <p class="ev-back"><button class="btn quiet small" id="back-node" type="button">← Back to the node</button></p>
+  <header class="ev-detail-head" id="detail-head">
+    <span class="kicker">Indicator detail</span>
+    <h2 id="ev-title">Loading…</h2>
+    <p class="ev-sub" id="ev-sub"></p>
+  </header>
+
+  <section class="ev-section" id="sec-c1" aria-labelledby="h-c1">
+    <h2 class="ev-h2" id="h-c1"><span class="ev-num">1</span> Against the income trend</h2>
+    <div class="ev-player" id="player" role="group" aria-label="Year player for charts 1 and 2">
+      <button class="btn small" data-pl="play" type="button" aria-pressed="false">▶ Play the years</button>
+      <input type="range" data-pl="year" aria-label="Data as of (year)">
+      <output data-pl="out" aria-live="off"></output>
+      <label class="pl-speed"><span>Speed</span>
+        <select data-pl="speed"><option value="1600">Slow</option><option value="900" selected>Normal</option><option value="450">Fast</option></select></label>
+      <button class="btn quiet small" data-pl="close" type="button" hidden>Back to the static chart</button>
+      <button class="btn quiet small" id="pl-record" type="button" title="Records charts 1 and 2 playing from the first year to the latest, as a WebM video">Save playback as video</button>
+      <p class="pl-note small muted" id="pl-note"></p>
+    </div>
+    <figure class="ev-figure">
+      <div class="ev-chart" id="chart" role="img" aria-describedby="readout"></div>
+      <figcaption>
+        <p class="ev-readout" id="readout"></p>
+        <p class="ev-direction small muted" id="direction"></p>
+        <p class="ev-foot small muted" id="foot"></p>
+      </figcaption>
+    </figure>
+    <div class="ev-actions" data-chart="c1" role="group" aria-label="Download chart 1, against the income trend">
+      <button class="btn small" data-kind="png" type="button">PNG</button>
+      <button class="btn small" data-kind="svg" type="button">SVG</button>
+      <button class="btn small" data-kind="csv" type="button">CSV</button>
+      <button class="btn quiet small" id="copy-link" type="button">Copy link to this view</button>
+    </div>
+  </section>
+
+  <section class="ev-section" id="sec-c2" aria-labelledby="h-c2">
+    <h2 class="ev-h2" id="h-c2"><span class="ev-num">2</span> Against its comparators</h2>
+    <div class="ev-player ev-player-mini" id="player2" role="group" aria-label="Year player for chart 2">
+      <button class="btn small" id="pl2-play" type="button" aria-pressed="false">▶ Play the years</button>
+      <output id="pl2-year" aria-live="off"></output>
+      <span class="small muted">Plays as a bar race; chart 1 moves with it, and the page keeps one year.</span>
+    </div>
+    <figure class="ev-figure">
+      <div class="ev-chart ev-chart-bars" id="chart2" role="img" aria-describedby="readout2"></div>
+      <figcaption>
+        <p class="ev-readout" id="readout2"></p>
+        <p class="ev-foot small muted" id="foot2"></p>
+      </figcaption>
+    </figure>
+    <div class="ev-actions" data-chart="c2" role="group" aria-label="Download chart 2, against its comparators">
+      <button class="btn small" data-kind="png" type="button">PNG</button>
+      <button class="btn small" data-kind="svg" type="button">SVG</button>
+      <button class="btn small" data-kind="csv" type="button">CSV</button>
+    </div>
+  </section>
+
+  <section class="ev-section" id="sec-c3" aria-labelledby="h-c3">
+    <h2 class="ev-h2" id="h-c3"><span class="ev-num">3</span> Over time against its comparators</h2>
+    <form class="ev-subcontrols" onsubmit="return false" aria-label="Time chart settings">
+      <label class="field"><span>Years shown</span>
+        <select id="c3-years"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option></select></label>
+      <label class="field"><span>Show</span>
+        <select id="c3-view"><option value="levels">Levels</option><option value="change">Change since the first year shown</option></select></label>
+      <label class="field"><span>Comparator lines</span>
+        <select id="c3-peers"><option value="lines">Each comparator</option><option value="band">Median and middle half only</option></select></label>
+    </form>
+    <figure class="ev-figure">
+      <div class="ev-chart" id="chart3" role="img" aria-describedby="readout3"></div>
+      <figcaption>
+        <p class="ev-readout" id="readout3"></p>
+        <p class="ev-foot small muted" id="foot3"></p>
+      </figcaption>
+    </figure>
+    <div class="ev-actions" data-chart="c3" role="group" aria-label="Download chart 3, over time">
+      <button class="btn small" data-kind="png" type="button">PNG</button>
+      <button class="btn small" data-kind="svg" type="button">SVG</button>
+      <button class="btn small" data-kind="csv" type="button">CSV</button>
+    </div>
+  </section>
+
+  <section class="ev-verdict" id="verdict" aria-label="What the verdict layer concluded"></section>
+
+  <details class="ev-table">
+    <summary>Data table: the economy and its comparators</summary>
+    <div id="table"></div>
+  </details>
+  </div>
+  </div>
+  </div>
+</main>
+
+<script type="module" src="/constraint-check-site/desk/js/evidence.mjs"></script>
+</body>
+</html>

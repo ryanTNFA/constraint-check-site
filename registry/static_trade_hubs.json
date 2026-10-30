@@ -1,0 +1,4 @@
+{
+  "_comment": "Economies where gross trade flows are dominated by re-exports, entrepot activity or multinational accounting, so trade measures that infer domestic trade as output minus exports are unreliable (rubric v0.1.5). Indicators flagged regime_sensitive 'trade_hub' (the ESCAP comprehensive trade costs) are class C for these economies: they inform the card but do not vote. Membership is a documented judgment: Singapore, Hong Kong SAR and the UAE are re-export hubs; Ireland's goods trade and output are distorted by multinational contract manufacturing and profit booking; Macao SAR's exports are dominated by gaming services with little goods production; Luxembourg and Malta have exports well above GDP. Hong Kong and Luxembourg read normally in the October 2026 run but are included on the same grounds. Review in Phase 0.",
+  "trade_hubs": ["SGP", "HKG", "ARE", "IRL", "MAC", "LUX", "MLT"]
+}

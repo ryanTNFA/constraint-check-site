@@ -1,0 +1,3511 @@
+{
+  "_comment": "Constraint Check indicator registry v0.1.2 (prototype; changes from v0.1 and v0.1.1 in docs/CHANGELOG-rubric.md). Fields: id (source code), name, source (worldbank_wdi | worldbank_zip | weo | eci | derived | static), nodes (list of node ids or [] for context), test (price | changes | circumvention | camels | context), class (A|B|C|D|X where X = context, no signal), direction (+1 = higher value means MORE binding, -1 = higher value means LESS binding, 0 = context), transform (none | log1p | log | logit), family (evidence family id; signals within a family are deduplicated to one), slow (true if slow-moving stock: recency decay relaxed), years (first year to ingest), notes. Optional: source_code (World Bank API indicator code when it differs from the id) and source_id (World Bank source/database id) for the bulk-zip fetch; hidden_until_fixed (true = the engine treats the indicator as unavailable: not displayed, not counted); regime_sensitive (\"monetary\": downgraded to class C for economies in registry/static_monetary_regimes.json, v0.1.2); fallback_for (indicator id: this indicator carries no signal for an economy where that indicator is available in the window, v0.1.2); caveat (one sentence the Desk prints under the indicator).",
+  "rubric_version": "0.1.6",
+  "indicators": [
+    {
+      "id": "NY.GDP.PCAP.PP.KD",
+      "name": "GDP per capita, PPP (constant 2021 intl $)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "log",
+      "family": "gdppc_ppp",
+      "years": 1990,
+      "notes": "Income conditioning variable for every ICR; comparator feature."
+    },
+    {
+      "id": "NY.GDP.PCAP.KD",
+      "name": "GDP per capita (constant 2015 US$)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "log",
+      "family": "gdppc_const",
+      "years": 1960,
+      "notes": "Long series for G1 growth record, G3 peak-to-date, G4 breaks."
+    },
+    {
+      "id": "NY.GDP.PCAP.KD.ZG",
+      "name": "GDP per capita growth (annual %)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "growth",
+      "years": 1961,
+      "notes": "G1, G5 volatility."
+    },
+    {
+      "id": "SP.POP.TOTL",
+      "name": "Population, total",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "log",
+      "family": "population",
+      "years": 1990,
+      "notes": "ICR control; comparator feature."
+    },
+    {
+      "id": "NY.GDP.TOTL.RT.ZS",
+      "name": "Total natural resources rents (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "rents",
+      "years": 1990,
+      "notes": "ICR control; comparator feature; N9 context."
+    },
+    {
+      "id": "SP.URB.TOTL.IN.ZS",
+      "name": "Urban population (% of total)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "urban",
+      "years": 1990,
+      "notes": "G12 context."
+    },
+    {
+      "id": "NE.EXP.GNFS.ZS",
+      "name": "Exports of goods and services (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "exports_gdp",
+      "years": 1990,
+      "notes": "G10 export residual (context)."
+    },
+    {
+      "id": "NE.GDI.FTOT.ZS",
+      "name": "Gross fixed capital formation (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "investment",
+      "years": 1990,
+      "notes": "G6 investment residual; y-variable for co-movement; top split."
+    },
+    {
+      "id": "NY.GNS.ICTR.ZS",
+      "name": "Gross savings (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N2"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "savings",
+      "years": 1990,
+      "notes": "Quantity, Class C despite the test column: low savings consistent with a savings story. G7."
+    },
+    {
+      "id": "BN.CAB.XOKA.GD.ZS",
+      "name": "Current account balance (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "current_account",
+      "years": 1990,
+      "notes": "G7 context; top-split reading."
+    },
+    {
+      "id": "BX.KLT.DINV.WD.GD.ZS",
+      "name": "FDI net inflows (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N1",
+        "N11.property"
+      ],
+      "test": "circumvention",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "fdi",
+      "years": 1990,
+      "notes": "FDI flowing in argues against international finance and appropriability constraints. Class C."
+    },
+    {
+      "id": "BX.TRF.PWKR.DT.GD.ZS",
+      "name": "Personal remittances received (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N1"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "remittances",
+      "years": 1990,
+      "notes": "Bypass of formal international finance; weak signal, Class B per Workbook N1."
+    },
+    {
+      "id": "SL.UEM.TOTL.ZS",
+      "name": "Unemployment, total (% of labor force, ILO)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "unemployment",
+      "years": 1991,
+      "notes": "G11; denominator for educated-unemployment ratio."
+    },
+    {
+      "id": "FR.INR.RINR",
+      "name": "Real interest rate (%)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "real_lending_rate",
+      "years": 1990,
+      "notes": "The price of finance (WDI: lending rate deflated by the GDP deflator). Top-split statistic and co-movement x-variable for N0/N3 when present; DERIV.REAL_LENDING_CPI is the fallback for both (v0.1.1, made a strict fallback in v0.1.2)."
+    },
+    {
+      "id": "FR.INR.LEND",
+      "name": "Lending interest rate (%)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "lending_rate_nominal",
+      "years": 1990,
+      "notes": "Nominal lending rate; input to the derived CPI-deflated real lending rate (v0.1.1). WDI covers more economies here than for FR.INR.RINR, whose GDP-deflator denominator is missing in the window for 80 economies."
+    },
+    {
+      "id": "FR.INR.DPST",
+      "name": "Deposit interest rate (%)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "deposit_rate_nominal",
+      "years": 1990,
+      "notes": "Input to derived real deposit rate."
+    },
+    {
+      "id": "FR.INR.LNDP",
+      "name": "Interest rate spread (lending minus deposit, %)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "spread",
+      "years": 1990,
+      "notes": "Intermediation cost. Decomposition into reserve requirement and operating cost not available in prototype."
+    },
+    {
+      "id": "FR.INR.RISK",
+      "name": "Risk premium on lending (lending minus T-bill, %)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "risk_premium",
+      "years": 1990,
+      "notes": "Sparse coverage. A bank intermediation spread over the T-bill rate: N3 evidence only. v0.1.2 removed it from N10, where it double-counted N3 (Brazil: the Selic-to-lending spread read as macro risk); the Workbook's N10 macro-risk price is the sovereign spread, pending the sovereign_spreads connector."
+    },
+    {
+      "id": "FS.AST.PRVT.GD.ZS",
+      "name": "Domestic credit to private sector (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "private_credit",
+      "years": 1990,
+      "notes": "A quantity: low credit can be low demand (Mindbook, Brazil vs Mexico). Class C on purpose. Also feeds derived credit growth."
+    },
+    {
+      "id": "FS.AST.CGOV.GD.ZS",
+      "name": "Claims on central government (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "claims_govt",
+      "years": 1990,
+      "notes": "Input to derived crowding-out share."
+    },
+    {
+      "id": "FS.AST.DOMS.GD.ZS",
+      "name": "Domestic credit provided by financial sector (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "domestic_credit_total",
+      "years": 1990,
+      "notes": "Denominator for crowding-out share."
+    },
+    {
+      "id": "FB.AST.NPER.ZS",
+      "name": "Bank nonperforming loans (% of gross loans)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "npl",
+      "years": 1998,
+      "notes": "Bank health; Class C."
+    },
+    {
+      "id": "FB.CBK.BRCH.P5",
+      "name": "Commercial bank branches (per 100,000 adults)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "bank_access",
+      "years": 2004,
+      "notes": "Access quantity."
+    },
+    {
+      "id": "FB.CBK.BRWR.P3",
+      "name": "Borrowers from commercial banks (per 1,000 adults)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "bank_access",
+      "years": 2004,
+      "notes": "Same family as branches."
+    },
+    {
+      "id": "FM.LBL.BMNY.GD.ZS",
+      "name": "Broad money (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N2"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "broad_money",
+      "years": 1990,
+      "notes": "Financial depth and savings mobilization; Class C."
+    },
+    {
+      "id": "IC.FRM.BNKL.ZS",
+      "name": "Firms with a bank loan or line of credit (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "es_firm_credit_use",
+      "years": 2006,
+      "notes": "Enterprise Survey. Quantity of access."
+    },
+    {
+      "id": "IC.FRM.BNKS.ZS",
+      "name": "Firms using banks to finance investment (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "circumvention",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "es_self_financing",
+      "years": 2006,
+      "notes": "Inverse of self-financing: low bank use for investment = firms bypass banks (Mindbook, JMW test). v0.1.2: class C, not B. This is an access share, not the Workbook's behaviour measure (share of investment financed internally; share of non-applicants citing no need); where directed or subsidized bank credit is large a high bank-use share reads as no circumvention and vetoed the price evidence (Brazil, Kenya). Class B returns when the Enterprise Surveys internal-finance share (fin2) is ingested.",
+      "caveat": "Bank-use share, not the internal-finance share: where directed or subsidized credit is large (Brazil's BNDES, Kenya's rate-cap era) high bank use does not mean firms are not circumventing expensive market credit."
+    },
+    {
+      "id": "IC.FRM.BKWC.ZS",
+      "name": "Firms using banks to finance working capital (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "circumvention",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "es_self_financing",
+      "years": 2006,
+      "notes": "Same family as investment financing; class C in v0.1.2 for the same reason.",
+      "caveat": "Bank-use share, not the internal-finance share (see IC.FRM.BNKS.ZS)."
+    },
+    {
+      "id": "IC.FRM.CRDC.FL.ZS",
+      "name": "Firms fully credit constrained (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_credit_constrained",
+      "years": 2010,
+      "notes": "Rationing measure: wanted credit, could not get it. Class A."
+    },
+    {
+      "id": "IC.FRM.CRDC.PT.ZS",
+      "name": "Firms partially credit constrained (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_credit_constrained",
+      "years": 2010,
+      "notes": "Weaker rationing measure; same family."
+    },
+    {
+      "id": "DT.DOD.DECT.GN.ZS",
+      "name": "External debt stocks (% of GNI)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N1",
+        "N10"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "external_debt",
+      "years": 1990,
+      "notes": "Legacy of past borrowing; proxy for ceiling on foreign savings."
+    },
+    {
+      "id": "FI.RES.TOTL.MO",
+      "name": "Total reserves (months of imports)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N1",
+        "N10"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "reserves",
+      "years": 1990,
+      "notes": ""
+    },
+    {
+      "id": "SE.SEC.ENRR",
+      "name": "School enrollment, secondary (% gross)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "enrollment",
+      "slow": true,
+      "years": 1990,
+      "notes": "Quantity of schooling."
+    },
+    {
+      "id": "SE.TER.ENRR",
+      "name": "School enrollment, tertiary (% gross)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "enrollment",
+      "slow": true,
+      "years": 1990,
+      "notes": "Same family as secondary."
+    },
+    {
+      "id": "HD.HCI.OVRL",
+      "name": "Human Capital Index (0-1)",
+      "source": "worldbank_zip",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "hci",
+      "slow": true,
+      "years": 2010,
+      "notes": "World Bank HCI database (DS63 via bulk zip). Composite; Class C."
+    },
+    {
+      "id": "HD.HCI.HLOS",
+      "name": "Harmonized test scores",
+      "source": "worldbank_zip",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "learning",
+      "slow": true,
+      "years": 2010,
+      "notes": "Learning quality."
+    },
+    {
+      "id": "SL.UEM.ADVN.ZS",
+      "name": "Unemployment with advanced education (% of labor force with advanced education)",
+      "source": "worldbank_wdi",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "educated_unemployment",
+      "years": 1991,
+      "notes": "Input to derived ratio."
+    },
+    {
+      "id": "IC.FRM.TRNG.ZS",
+      "name": "Firms offering formal training (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N4"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_training",
+      "years": 2006,
+      "notes": "Firms train in-house when skills are scarce."
+    },
+    {
+      "id": "IC.FRM.OUTG.ZS",
+      "name": "Value lost due to electrical outages (% of sales, affected firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "es_outage_losses",
+      "years": 2006,
+      "notes": "Class C. The WDI series is the Enterprise Surveys MEDIAN loss from outages (% of sales), identical to Data360 WB_ES_T_BREADY_IN4_MEDIAN in all 466 overlapping country-years; it is 0 for most economies because the median firm loses nothing. No all-firms mean is published. Outages per month (ES.OUTG_NUM) and generator ownership (ES.GEN_OWN) carry N5 instead."
+    },
+    {
+      "id": "IC.ELC.OUTG.ZS",
+      "name": "Firms experiencing electrical outages (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_outage_incidence",
+      "years": 2006,
+      "notes": "Incidence, not cost."
+    },
+    {
+      "id": "IC.ELC.DURS",
+      "name": "Time to obtain an electrical connection (days)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "es_connection_delay",
+      "years": 2006,
+      "notes": "Rationing at the going price."
+    },
+    {
+      "id": "EG.ELC.ACCS.ZS",
+      "name": "Access to electricity (% of population)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "elec_access",
+      "slow": true,
+      "years": 1990,
+      "notes": "Access, a household measure; Class C."
+    },
+    {
+      "id": "EG.USE.ELEC.KH.PC",
+      "name": "Electric power consumption (kWh per capita)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log",
+      "family": "elec_consumption",
+      "slow": true,
+      "years": 1990,
+      "notes": "Quantity; note WDI series ends around 2014 for many countries."
+    },
+    {
+      "id": "EG.ELC.LOSS.ZS",
+      "name": "Transmission and distribution losses (% of output)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "elec_losses",
+      "years": 1990,
+      "notes": "Utility performance proxy."
+    },
+    {
+      "id": "LP.LPI.OVRL.XQ",
+      "name": "Logistics performance index, overall (1-5)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "lpi",
+      "years": 2007,
+      "notes": "Survey-based; Class C."
+    },
+    {
+      "id": "LP.LPI.INFR.XQ",
+      "name": "LPI: quality of trade and transport infrastructure (1-5)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "lpi",
+      "years": 2007,
+      "notes": "Same family."
+    },
+    {
+      "id": "LP.LPI.CUST.XQ",
+      "name": "LPI: efficiency of customs clearance (1-5)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "lpi",
+      "years": 2007,
+      "notes": "Same family."
+    },
+    {
+      "id": "IT.NET.BBND.P2",
+      "name": "Fixed broadband subscriptions (per 100 people)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N7"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "broadband",
+      "years": 2000,
+      "notes": "ICT quantity."
+    },
+    {
+      "id": "FP.CPI.TOTL.ZG",
+      "name": "Inflation, consumer prices (annual %)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N10"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "inflation",
+      "regime_sensitive": "monetary",
+      "years": 1990,
+      "notes": "Level. v0.1.2: the derived 5-year volatility is in the SAME family (one CPI series, one piece of evidence; P4), and under formal dollarization or a currency board (registry/static_monetary_regimes.json) the indicator is class C for that economy: CPI inflation says nothing about national macro risk when there is no national monetary policy (Panama). Clip extreme values before transform in the engine (winsorize at 1st/99th percentile)."
+    },
+    {
+      "id": "GGXWDG_NGDP",
+      "name": "General government gross debt (% of GDP)",
+      "source": "weo",
+      "nodes": [
+        "N10"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "public_debt",
+      "years": 1990,
+      "notes": "IMF WEO via SDMX 3.0."
+    },
+    {
+      "id": "GGXCNL_NGDP",
+      "name": "General government net lending/borrowing (% of GDP)",
+      "source": "weo",
+      "nodes": [
+        "N10"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "fiscal_balance",
+      "years": 1990,
+      "notes": "Higher balance = less risk."
+    },
+    {
+      "id": "NGDP_RPCH",
+      "name": "Real GDP growth (%), WEO",
+      "source": "weo",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "growth_weo",
+      "years": 1990,
+      "notes": "Context; projections beyond latest actual flagged by ingest."
+    },
+    {
+      "id": "BCA_NGDPD",
+      "name": "Current account balance (% of GDP), WEO",
+      "source": "weo",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "current_account",
+      "years": 1990,
+      "notes": "Backup."
+    },
+    {
+      "id": "RL.EST",
+      "name": "WGI rule of law (estimate)",
+      "source": "worldbank_zip",
+      "source_code": "GOV_WGI_RL.EST",
+      "source_id": 3,
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "price",
+      "class": "D",
+      "direction": -1,
+      "transform": "none",
+      "family": "wgi_rl",
+      "years": 1996,
+      "notes": "Composite perception index: Class D, context only, never decisive. v0.1.1: fetched from World Bank source 3 (Worldwide Governance Indicators, code GOV_WGI_RL.EST), which serves the governance estimate on its -2.5..2.5 scale; the DS57 archive copy under RL.EST was on a different scale (engine-issues 15)."
+    },
+    {
+      "id": "CC.EST",
+      "name": "WGI control of corruption (estimate)",
+      "source": "worldbank_zip",
+      "source_code": "GOV_WGI_CC.EST",
+      "source_id": 3,
+      "nodes": [
+        "N11.corruption"
+      ],
+      "test": "price",
+      "class": "D",
+      "direction": -1,
+      "transform": "none",
+      "family": "wgi_cc",
+      "years": 1996,
+      "notes": "Class D. v0.1.1: source 3 code GOV_WGI_CC.EST (estimate scale)."
+    },
+    {
+      "id": "RQ.EST",
+      "name": "WGI regulatory quality (estimate)",
+      "source": "worldbank_zip",
+      "source_code": "GOV_WGI_RQ.EST",
+      "source_id": 3,
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "D",
+      "direction": -1,
+      "transform": "none",
+      "family": "wgi_rq",
+      "years": 1996,
+      "notes": "Class D. v0.1.1: source 3 code GOV_WGI_RQ.EST (estimate scale)."
+    },
+    {
+      "id": "PV.EST",
+      "name": "WGI political stability and absence of violence (estimate)",
+      "source": "worldbank_zip",
+      "source_code": "GOV_WGI_PV.EST",
+      "source_id": 3,
+      "nodes": [
+        "N11.policy"
+      ],
+      "test": "price",
+      "class": "D",
+      "direction": -1,
+      "transform": "none",
+      "family": "wgi_pv",
+      "years": 1996,
+      "notes": "Class D. v0.1.1: source 3 code GOV_WGI_PV.EST (estimate scale)."
+    },
+    {
+      "id": "GE.EST",
+      "name": "WGI government effectiveness (estimate)",
+      "source": "worldbank_zip",
+      "source_code": "GOV_WGI_GE.EST",
+      "source_id": 3,
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "wgi_ge",
+      "years": 1996,
+      "notes": "Context. v0.1.1: source 3 code GOV_WGI_GE.EST (estimate scale)."
+    },
+    {
+      "id": "VA.EST",
+      "name": "WGI voice and accountability (estimate)",
+      "source": "worldbank_zip",
+      "source_code": "GOV_WGI_VA.EST",
+      "source_id": 3,
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "wgi_va",
+      "years": 1996,
+      "notes": "Context only, never votes. v0.1.5: used by params.candour to mark economies where firms may under-report bribery (voice and accountability estimate at or below candour.va_est_max); self-reported bribery indicators flagged regime_sensitive 'low_voice' are class C there."
+    },
+    {
+      "id": "IC.FRM.BRIB.ZS",
+      "name": "Bribery incidence (% of firms experiencing at least one bribe request)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.corruption"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_bribery",
+      "years": 2006,
+      "notes": "The tax that corruption levies; Class A per Workbook N11.",
+      "regime_sensitive": "low_voice",
+      "review_note": "v0.1.5: self-reported by firms; class C (informs, does not vote) where voice and accountability is very low, because under-reporting there can make corruption look absent."
+    },
+    {
+      "id": "IC.FRM.CORR.ZS",
+      "name": "Informal payments to public officials (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.corruption"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_bribery",
+      "years": 2006,
+      "notes": "Same family.",
+      "regime_sensitive": "low_voice",
+      "review_note": "v0.1.5: self-reported by firms; class C (informs, does not vote) where voice and accountability is very low, because under-reporting there can make corruption look absent."
+    },
+    {
+      "id": "IC.TAX.GIFT.ZS",
+      "name": "Firms expected to give gifts in meetings with tax officials (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.corruption"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_tax_gifts",
+      "years": 2006,
+      "notes": "",
+      "review_note": "v0.1.4: removed from N11.taxes. Gifts expected by tax officials measure bribery, not the tax burden; mapping it to both nodes counted one piece of evidence twice and drove every N11.taxes candidate under E_below = 2. v0.1.5: self-reported by firms; class C (informs, does not vote) where voice and accountability is very low, because under-reporting there can make corruption look absent.",
+      "regime_sensitive": "low_voice"
+    },
+    {
+      "id": "IC.FRM.METG.ZS",
+      "name": "Firms visited or required to meet with tax officials (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.taxes"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_tax_visits",
+      "years": 2006,
+      "notes": "Compliance burden proxy."
+    },
+    {
+      "id": "GC.TAX.TOTL.GD.ZS",
+      "name": "Tax revenue (% of GDP)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.taxes"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "tax_revenue",
+      "years": 1990,
+      "notes": "Relative to expectation given income; weak."
+    },
+    {
+      "id": "IC.FRM.CMPU.ZS",
+      "name": "Firms competing against unregistered firms (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.taxes",
+        "N11.regulation"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_informality",
+      "years": 2006,
+      "notes": "Informality as circumvention of taxes and regulation."
+    },
+    {
+      "id": "IC.FRM.FREG.ZS",
+      "name": "Firms formally registered when operations started (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.taxes",
+        "N11.regulation"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": -1,
+      "transform": "none",
+      "family": "es_informality",
+      "years": 2006,
+      "notes": "Same family, inverse direction."
+    },
+    {
+      "id": "IC.FRM.DURS",
+      "name": "Time required to obtain an operating license (days)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "es_license_days",
+      "years": 2006,
+      "notes": "Regulatory cost in time."
+    },
+    {
+      "id": "IC.BUS.NDNS.ZS",
+      "name": "New business density (registrations per 1,000 people 15-64)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "camels",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "business_density",
+      "years": 2006,
+      "notes": "Entry; Workbook lists under quantity. Mapped to the camels test family as the only entry-dynamics measure available."
+    },
+    {
+      "id": "VC.IHR.PSRC.P5",
+      "name": "Intentional homicides (per 100,000 people)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N11.crime"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "homicide",
+      "years": 1990,
+      "notes": ""
+    },
+    {
+      "id": "ECI_HS92",
+      "name": "Economic Complexity Index (HS92)",
+      "source": "eci",
+      "nodes": [
+        "N12"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "eci",
+      "years": 1995,
+      "notes": "Growth Lab rankings CSV via Dataverse. ICR on income = complexity gap."
+    },
+    {
+      "id": "IC.FRM.EXS.ZS",
+      "name": "Firms exporting directly at least 10% of sales (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N12"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "es_exporters",
+      "years": 2006,
+      "notes": "Weak self-discovery proxy."
+    },
+    {
+      "id": "IC.FRM.NPRD.ZS",
+      "name": "Firms introducing a new product or process and spending on R&D (% of firms)",
+      "source": "worldbank_wdi",
+      "nodes": [
+        "N12"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "es_innovation",
+      "years": 2006,
+      "notes": "Sparse."
+    },
+    {
+      "id": "DERIV.REAL_DEPOSIT",
+      "name": "Real deposit rate, CPI-deflated (%)",
+      "source": "derived",
+      "formula": "100 * ((1 + FR.INR.DPST/100) / (1 + FP.CPI.TOTL.ZG/100) - 1)",
+      "nodes": [
+        "N2"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "real_deposit_rate",
+      "years": 1990,
+      "notes": "High real deposit rates mean savers must be paid well: savings scarce (Mindbook). v0.1.2: Fisher real rate (i - pi)/(1 + pi), the same arithmetic as WDI FR.INR.RINR, instead of the simple difference i - pi, which overstates the negative real rate at high inflation."
+    },
+    {
+      "id": "DERIV.REAL_LENDING_CPI",
+      "name": "Real lending rate, CPI-deflated (%)",
+      "source": "derived",
+      "formula": "100 * ((1 + FR.INR.LEND/100) / (1 + FP.CPI.TOTL.ZG/100) - 1)",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "real_lending_rate",
+      "fallback_for": "FR.INR.RINR",
+      "years": 1990,
+      "notes": "v0.1.1, revised v0.1.2: a strict FALLBACK, not a second vote. The engine gives it no signal for an economy where FR.INR.RINR is available in the window (fallback_for), so the real_lending_rate family is never the median of a GDP-deflator and a CPI reading; where FR.INR.RINR is missing it carries the price of finance alone, feeds the top-split real-rate statistic (top_split.rate_source) and the CM.FINANCE x-variable (x_source). Fisher formula (i - pi)/(1 + pi), as WDI."
+    },
+    {
+      "id": "DERIV.CROWDING_OUT",
+      "name": "Claims on central government as share of total domestic credit",
+      "source": "derived",
+      "formula": "FS.AST.CGOV.GD.ZS / FS.AST.DOMS.GD.ZS",
+      "nodes": [
+        "N3",
+        "N10"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "crowding_out",
+      "years": 1990,
+      "notes": "Banks lending to government instead of firms."
+    },
+    {
+      "id": "DERIV.CREDIT_GROWTH",
+      "name": "Real private credit growth (3-year average, %)",
+      "source": "derived",
+      "formula": "avg3(dlog(FS.AST.PRVT.GD.ZS * NY.GDP.PCAP.KD * SP.POP.TOTL)) * 100",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "credit_growth",
+      "years": 1990,
+      "notes": "Top-split statistic."
+    },
+    {
+      "id": "DERIV.NET_CASHFLOW_BANKS",
+      "name": "Net cash flow from banks (real credit growth minus real lending rate)",
+      "source": "derived",
+      "formula": "DERIV.CREDIT_GROWTH - FR.INR.RINR",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "net_cashflow_banks",
+      "years": 1990,
+      "notes": "Mindbook footnote 23. Top-split statistic."
+    },
+    {
+      "id": "DERIV.EDU_UNEMP_RATIO",
+      "name": "Unemployment of the tertiary-educated relative to total unemployment",
+      "source": "derived",
+      "formula": "SL.UEM.ADVN.ZS / SL.UEM.TOTL.ZS",
+      "nodes": [
+        "N4"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": -1,
+      "transform": "none",
+      "family": "educated_unemployment",
+      "years": 1991,
+      "notes": "High educated unemployment argues against skills being scarce."
+    },
+    {
+      "id": "DERIV.INFLATION_VOL",
+      "name": "Inflation volatility (standard deviation over 5 years)",
+      "source": "derived",
+      "formula": "sd5(FP.CPI.TOTL.ZG)",
+      "nodes": [
+        "N10"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "inflation",
+      "regime_sensitive": "monetary",
+      "years": 1990,
+      "notes": "v0.1.2: same family as the inflation level (was inflation_volatility), so level and volatility count once in E and AB_count; class C under hard pegs and dollarization, as the level."
+    },
+    {
+      "id": "DERIV.INVESTMENT_GAP_PRIVATE",
+      "name": "Placeholder: private investment share",
+      "source": "derived",
+      "formula": "unavailable_in_prototype",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "investment_private",
+      "years": 1990,
+      "notes": "IMF ICSD not ingested in prototype; listed so the gap is visible."
+    },
+    {
+      "id": "STATIC.LANDLOCKED",
+      "name": "Landlocked (1/0)",
+      "source": "static",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "landlocked",
+      "years": 0,
+      "notes": "ICR control; comparator feature; N9 context."
+    },
+    {
+      "id": "ES.GEN_OWN",
+      "name": "Percent of firms owning or sharing a generator",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N5"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_generators",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_BREADY_IN9 (Enterprise Surveys, all sectors). Workbook N5 'Generator ownership' class B: firms self-insure against an unreliable grid only if the constraint binds. Fills the registry's connectors_not_built family es_generators. Despite the BREADY_ code prefix the series runs 2006-2026. Higher = more circumvention = more likely binding."
+    },
+    {
+      "id": "ES.OUTG_NUM",
+      "name": "Number of electrical outages in a typical month (count)",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "es_outage_frequency",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_BREADY_IN2 (Enterprise Surveys, all sectors). Workbook N5 'Outage frequency and duration' (A/C): average number of outages in a typical month is a hard measure of quantity rationing of grid power, so class A. Count, right-skewed (max ~100): log1p per Workbook 4.1. The duration series published alongside (BREADY_IN3_MEDIAN, median hours) is zero for 277 of 469 country-years and is not ingested."
+    },
+    {
+      "id": "ES.OBST_ELEC_MAJOR",
+      "name": "Percent of firms identifying electricity as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N5",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_IN12 (Enterprise Surveys, all sectors). Firm perception: share of firms naming electricity as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N5 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_ELEC_TOP",
+      "name": "Percent of firms choosing electricity as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N5",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST8 (Enterprise Surveys, all sectors). Firm perception: share of firms naming electricity as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N5 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.FIN_INTERNAL",
+      "name": "Proportion of investment financed internally (%)",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_internal_finance",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_FIN1 (Enterprise Surveys, all sectors). Workbook N0 'Self-financing' class B: share of fixed-asset purchases financed from internal funds (retained earnings). This is the internal-finance share that registry 10.11 / IC.FRM.BNKS.ZS notes wait for; it is given the existing family es_self_financing (same construct, same ES source) so it does not double count with the WDI bank-use shares. COORDINATOR: when this lands, consider retiring IC.FRM.BNKS.ZS / IC.FRM.BKWC.ZS from that family or making this the family's lead. Higher = firms bypass external finance = more likely binding; ambiguous where firms simply have no profitable projects (read with ES.FIN_NO_NEED).",
+      "review_note": "v0.1.3 coordinator review: its own family: the WDI bank-use shares in es_self_financing are class C access measures, a different construct"
+    },
+    {
+      "id": "ES.FIN_NO_NEED",
+      "name": "Percent of firms not needing a loan",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": -1,
+      "transform": "none",
+      "family": "es_loan_no_need",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_FIN20 (Enterprise Surveys, all sectors). Workbook N0 'Self-financing' row (class B) and reading rule: a high 'did not apply, no need' share puts the country on the low-returns branch. Denominator = firms that did and did not apply. Direction -1: more firms not needing a loan = finance less likely binding."
+    },
+    {
+      "id": "ES.FIN_DISCOURAGED",
+      "name": "Percent of firms reporting unfavorable rates, collateral, or procedures as main reason for not applying for loans",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "price",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_loan_discouraged",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_BREADY_FIN26 (Enterprise Surveys, all sectors). Workbook N0 self-financing row, the other half of the 'no need versus terms, collateral or procedures' split: firms that did not apply because rates, collateral or procedures were unfavourable (discouraged borrowers). A behavioural response to the price and terms of credit, so class B on the price test. Despite the BREADY_ prefix it runs 2006-2026. Higher = more binding."
+    },
+    {
+      "id": "ES.FIN_REJECT",
+      "name": "Percent of firms whose recent loan application was rejected",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_loan_rejection",
+      "slow": false,
+      "years": 2011,
+      "notes": "Data360 WB_ES_T_FIN21 (Enterprise Surveys, all sectors). Workbook N0 'Credit rationing' (A/C) and N3 'Firm-level access' (C): share of firms whose recent loan application was rejected. Class C because of the N3 pitfall (firms that expect refusal do not apply, so the rate is selected); the hard rationing measure is IC.FRM.CRDC.FL.ZS. From 2011."
+    },
+    {
+      "id": "ES.FIN_COLLAT_REQ",
+      "name": "Proportion of loans requiring collateral (%)",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_collateral",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_FIN11 (Enterprise Surveys, all sectors). Proportion of loans requiring collateral (incidence). NOT the Workbook's class A 'collateral as share of loan' (value of collateral, ES fin10), which Data360 and the ES API no longer publish; incidence is a weaker access measure, so class C. Higher = tighter terms."
+    },
+    {
+      "id": "ES.OBST_FIN_MAJOR",
+      "name": "Percent of firms identifying access to finance as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N3",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_FIN16 (Enterprise Surveys, all sectors). Firm perception: share of firms naming access to finance as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N3 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_FIN_TOP",
+      "name": "Percent of firms choosing access to finance as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N3",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST1 (Enterprise Surveys, all sectors). Firm perception: share of firms naming access to finance as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N3 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_TRANS_MAJOR",
+      "name": "Percent of firms identifying transportation as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N6",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_IN11 (Enterprise Surveys, all sectors). Firm perception: share of firms naming transportation as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N6 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_TRANS_TOP",
+      "name": "Percent of firms choosing transportation as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N6",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST15 (Enterprise Surveys, all sectors). Firm perception: share of firms naming transportation as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N6 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_CUSTOMS_MAJOR",
+      "name": "Percent of firms identifying customs and trade regulations as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N6",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_TR9 (Enterprise Surveys, all sectors). Firm perception: share of firms naming customs and trade regulations as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N6 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding. Customs is mapped to N6 (Workbook N6 pitfall: customs and border procedures are the policy-fixable part of trade costs)."
+    },
+    {
+      "id": "ES.OBST_CUSTOMS_TOP",
+      "name": "Percent of firms choosing customs and trade regulations as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N6",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST7 (Enterprise Surveys, all sectors). Firm perception: share of firms naming customs and trade regulations as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N6 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.CUSTOMS_DAYS_EXP",
+      "name": "Days to clear direct exports through customs",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "es_customs_days",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_TR1 (Enterprise Surveys, all sectors). Average days to clear direct exports through customs, as reported by exporting firms; computed for manufacturing establishments only (Data360 definition). Workbook N6 'Time and cost to trade' class C. N6 per the Workbook pitfall (customs and border procedures are the policy-fixable part of transport). Same family as the import series."
+    },
+    {
+      "id": "ES.CUSTOMS_DAYS_IMP",
+      "name": "Days to clear imports from customs",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "es_customs_days",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_TR23 (Enterprise Surveys, all sectors). Average days for imported goods to clear customs, all importing firms (TR23; TR2 is the manufacturing-only variant and is not used). Class C, same family as exports."
+    },
+    {
+      "id": "ES.BORDER_COST_EXP",
+      "name": "Typical costs to comply with all export requirements (% of value of goods exported)",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_border_compliance_cost",
+      "slow": false,
+      "years": 2022,
+      "notes": "Data360 WB_ES_T_BREADY_TR20 (Enterprise Surveys, all sectors). Typical cost to comply with all export requirements (% of value of goods exported): an ad valorem trade cost reported by firms, the same kind of price as the Workbook's class A trade-cost row. Only surveys since 2021 (B-READY module), ~150 economies. Same family as the import series."
+    },
+    {
+      "id": "ES.BORDER_COST_IMP",
+      "name": "Typical costs to comply with all import requirements (% of value of goods imported)",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_border_compliance_cost",
+      "slow": false,
+      "years": 2021,
+      "notes": "Data360 WB_ES_T_BREADY_TR25 (Enterprise Surveys, all sectors). Typical cost to comply with all import requirements (% of value of goods imported). Class A ad valorem cost; surveys since 2021 only. Same family as exports."
+    },
+    {
+      "id": "ES.OBST_SKILLS_MAJOR",
+      "name": "Percent of firms identifying an inadequately educated workforce as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N4",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_WK10 (Enterprise Surveys, all sectors). Firm perception: share of firms naming an inadequately educated workforce as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N4 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_SKILLS_TOP",
+      "name": "Percent of firms choosing inadequately educated workforce as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N4",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST9 (Enterprise Surveys, all sectors). Firm perception: share of firms naming an inadequately educated workforce as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N4 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_LAND_MAJOR",
+      "name": "Percent of firms identifying access to land as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N8"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N8",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_REG8 (Enterprise Surveys, all sectors). Firm perception: share of firms naming access to land as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N8 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_LAND_TOP",
+      "name": "Percent of firms choosing access to land as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N8"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N8",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST2 (Enterprise Surveys, all sectors). Firm perception: share of firms naming access to land as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N8 with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_CORR_MAJOR",
+      "name": "Percent of firms identifying corruption as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.corruption"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_corruption",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_CORR11 (Enterprise Surveys, all sectors). Firm perception: share of firms naming corruption as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_corruption with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_CORR_TOP",
+      "name": "Percent of firms choosing corruption as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.corruption"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_corruption",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST4 (Enterprise Surveys, all sectors). Firm perception: share of firms naming corruption as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_corruption with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_TAXRATE_MAJOR",
+      "name": "Percent of firms identifying tax rates as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.taxes"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_taxes",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_REG4 (Enterprise Surveys, all sectors). Firm perception: share of firms naming tax rates as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_taxes with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_TAXADM_MAJOR",
+      "name": "Percent of firms identifying tax administration as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.taxes"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_taxes",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_REG5 (Enterprise Surveys, all sectors). Firm perception: share of firms naming tax administration as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_taxes with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_TAXRATE_TOP",
+      "name": "Percent of firms choosing tax rates as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.taxes"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_taxes",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST14 (Enterprise Surveys, all sectors). Firm perception: share of firms naming tax rates as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_taxes with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_TAXADM_TOP",
+      "name": "Percent of firms choosing tax administration as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.taxes"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_taxes",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST13 (Enterprise Surveys, all sectors). Firm perception: share of firms naming tax administration as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_taxes with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_LABOR_MAJOR",
+      "name": "Percent of firms identifying labor regulations as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_labor",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_WK9 (Enterprise Surveys, all sectors). Firm perception: share of firms naming labor regulations as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_labor with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding. Node N11.labor is the Workbook's 'Labor regulation and unions' sub-node; it is not yet used in registry/indicators.json (coordinator to confirm the node id).",
+      "review_note": "Mapped to N11.regulation: nodes.json has no labor sub-node."
+    },
+    {
+      "id": "ES.OBST_LABOR_TOP",
+      "name": "Percent of firms choosing labor regulations as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_labor",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST10 (Enterprise Surveys, all sectors). Firm perception: share of firms naming labor regulations as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_labor with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding. Node N11.labor: see ES.OBST_LABOR_MAJOR.",
+      "review_note": "Mapped to N11.regulation: nodes.json has no labor sub-node."
+    },
+    {
+      "id": "ES.OBST_LICENSE_MAJOR",
+      "name": "Percent of firms identifying business licensing and permits as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_regulation",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_BUS5 (Enterprise Surveys, all sectors). Firm perception: share of firms naming business licensing and permits as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_regulation with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_LICENSE_TOP",
+      "name": "Percent of firms choosing business licensing and permits as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_regulation",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST3 (Enterprise Surveys, all sectors). Firm perception: share of firms naming business licensing and permits as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_regulation with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_INFORMAL_MAJOR",
+      "name": "Percent of firms identifying practices of competitors in the informal sector as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_regulation",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_INFOR2 (Enterprise Surveys, all sectors). Firm perception: share of firms naming practices of competitors in the informal sector as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_regulation with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding. Mapped to N11.regulation only (unfair competition from firms that escape regulation and tax); IC.FRM.CMPU.ZS covers the tax-side circumvention reading."
+    },
+    {
+      "id": "ES.OBST_INFORMAL_TOP",
+      "name": "Percent of firms choosing practices of the informal sector as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_regulation",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST12 (Enterprise Surveys, all sectors). Firm perception: share of firms naming practices of the informal sector as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_regulation with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding. Mapped to N11.regulation only, as ES.OBST_INFORMAL_MAJOR."
+    },
+    {
+      "id": "ES.OBST_COURTS_MAJOR",
+      "name": "Percent of firms identifying the courts as a major or very severe constraint",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_property",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_CRIME9 (Enterprise Surveys, all sectors). Firm perception: share of firms naming the courts as a major or very severe constraint (rated separately for each obstacle). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_property with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_COURTS_TOP",
+      "name": "Percent of firms choosing courts as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_property",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST5 (Enterprise Surveys, all sectors). Firm perception: share of firms naming courts as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_property with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding."
+    },
+    {
+      "id": "ES.OBST_CRIME_TOP",
+      "name": "Percent of firms choosing crime, theft and disorder as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.crime"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_crime",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST6 (Enterprise Surveys, all sectors). Firm perception: share of firms naming crime, theft and disorder as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_crime with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding. The 'major or very severe constraint' share for crime is no longer published (Data360 WB_ES and the ES API have no crime topic as of 2026-10-26), so this family has only the biggest-obstacle share."
+    },
+    {
+      "id": "ES.OBST_POLITICAL_TOP",
+      "name": "Percent of firms choosing political instability as their biggest obstacle",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.policy"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_policy",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_OBST11 (Enterprise Surveys, all sectors). Firm perception: share of firms naming political instability as a biggest obstacle (one choice per firm, so shares across the 15 obstacles sum to about 100). Workbook 4.6/4.7: obstacle shares are class C perceptions, scored as ICRs (steep income gradient) with the within-country rank alongside; under 10.1 a class C family on the price test informs and never votes. Shares family es_obstacle_N11_policy with the other ES obstacle measure(s) for this node so they count once. Higher = more firms complain = more likely binding. The 'major constraint' share for political instability is no longer published, so this family has only the biggest-obstacle share."
+    },
+    {
+      "id": "ES.REG_MGMT_TIME",
+      "name": "Senior management time spent dealing with the requirements of government regulation (%)",
+      "source": "extra",
+      "extra_group": "es360",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_mgmt_time_regulation",
+      "slow": false,
+      "years": 2006,
+      "notes": "Data360 WB_ES_T_REG1 (Enterprise Surveys, all sectors). Senior management time spent dealing with the requirements of government regulation (% of a typical week): the time tax of regulation, a cost measure in the Workbook N11 regulation 'price or cost (A)' column alongside licensing time. Higher = more binding."
+    },
+    {
+      "id": "IMF.LEND",
+      "name": "Lending interest rate, nominal (% per year), IMF MFS",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "lending_rate_nominal_imf",
+      "slow": false,
+      "years": 1990,
+      "notes": "Context input, no signal of its own (class X), placed on N0 and N3 price because it feeds the price of finance: the engine should deflate it exactly like FR.INR.LEND (Fisher, CPI: 100*((1+IMF.LEND/100)/(1+FP.CPI.TOTL.ZG/100)-1)) to extend DERIV.REAL_LENDING_CPI (family real_lending_rate, class A) where WDI lacks the nominal rate. Finding (Oct 2026): WDI FR.INR.LEND is a copy of this IMF series: on all 3,700 shared country-years the values agree to 0.01, and IMF.LEND adds no economy and no year that WDI lacks. It is kept for provenance only; the coverage gain comes from IMF.LEND_EA_NFC (20 EU economies) and IMF.LEND_FC (El Salvador, Cambodia). Coordinator: point the derived real rate at coalesce(FR.INR.LEND, IMF.LEND_EA_NFC, IMF.LEND_FC [dollarized only]) or add a DERIV entry with fallback_for.",
+      "review_note": "v0.1.3 coordinator review: identical to WDI FR.INR.LEND; context only"
+    },
+    {
+      "id": "IMF.LEND_EA_NFC",
+      "name": "Bank lending rate to non-financial corporations, loans up to 1 year, outstanding amounts (% per year), harmonised euro-area statistics via IMF MFS",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "lending_rate_nominal_imf",
+      "slow": false,
+      "years": 2003,
+      "notes": "Substitute nominal lending rate for euro-area and other EU reporters that no longer report the IFS lending rate (MFS162), which is why WDI lacks FR.INR.LEND for them. Where both exist (Italy) the two agree closely (2023: 4.91 vs 4.89). Context input (class X) for the CPI-deflated real lending rate, used only where FR.INR.LEND and IMF.LEND are both missing; same family as IMF.LEND.",
+      "caveat": "Substitute definition: ECB harmonised MIR rate on short-term corporate loans, not the IFS representative lending rate.",
+      "review_note": "v0.1.3 coordinator review: euro-area fallback lending rate; not yet wired into the real-rate derivation (follow-up)"
+    },
+    {
+      "id": "IMF.LEND_FC",
+      "name": "Lending rate on foreign-currency loans (% per year), IMF MFS",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "lending_rate_nominal_imf",
+      "slow": false,
+      "years": 1990,
+      "notes": "Useful as the lending rate only where most lending is in dollars: El Salvador (officially dollarized) and Cambodia (heavily dollarized). For other economies it is a second rate, not the price of domestic credit; the coordinator should restrict its use to economies flagged dollarized in registry/static_monetary_regimes.json or with IMF.FSI_FX_LOANS above ~50%. Context input (class X); same family as IMF.LEND.",
+      "caveat": "Foreign-currency (mostly US dollar) loans: deflate with US or own CPI only for officially or heavily dollarized economies.",
+      "review_note": "v0.1.3 coordinator review: foreign-currency lending rate; only meaningful for dollarized economies; not yet wired (follow-up)"
+    },
+    {
+      "id": "IMF.DEPO",
+      "name": "Deposit interest rate, nominal (% per year), IMF MFS",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "deposit_rate_nominal_imf",
+      "slow": false,
+      "years": 1990,
+      "notes": "Context input (class X) for the real deposit rate (DERIV.REAL_DEPOSIT, N2 price class A; Workbook N0 and N2). Deflate like FR.INR.DPST with the Fisher formula where WDI lacks the deposit rate.",
+      "review_note": "v0.1.3 coordinator review: context input"
+    },
+    {
+      "id": "IMF.GBOND_YLD",
+      "name": "Government bond yield, nominal (% per year), IMF MFS",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "gov_bond_yield",
+      "slow": false,
+      "years": 1990,
+      "notes": "Level of the local-currency long-term government yield; input to IMF.GBOND_SPREAD_US. Context only."
+    },
+    {
+      "id": "IMF.GBOND_SPREAD_US",
+      "name": "Government bond yield spread over US 10-year Treasury (percentage points), proxy for sovereign spread",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N1",
+        "N10"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "sovereign_spreads",
+      "slow": false,
+      "years": 1990,
+      "notes": "PROXY for the Workbook's sovereign spread over US Treasuries (N1 and N10 price, class A), which needs the licensed EMBI. Fills the registry's connectors_not_built family 'sovereign_spreads'. Higher = costlier sovereign borrowing = international finance / macro risk more likely binding (+1). Caveats: local-currency yields embed the inflation and depreciation premium, so high-inflation economies read high even without default risk; coverage is mostly middle and high income economies with a domestic bond market (about 65), and 18 series end in 2017. The coordinator may prefer to class it B or to make it regime_sensitive.",
+      "caveat": "Proxy: local-currency government bond yield minus the US 10-year yield, so it includes expected inflation and depreciation as well as default risk; no EMBI licence. Coverage is thin (about 34 economies with 2023+ data).",
+      "review_note": "v0.1.3 coordinator review: kept class A so the N10 rule-out family requirement can be met, with an explicit caveat"
+    },
+    {
+      "id": "IMF.NGSD_NGDP",
+      "name": "Gross national savings (% of GDP), WEO",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N2"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "savings",
+      "slow": false,
+      "years": 1990,
+      "notes": "Same construct as NY.GNS.ICTR.ZS (N2, price test, class C, a quantity: low savings consistent with a savings story, direction -1) and the registry's existing WEO backup NGSD_NGDP (family savings): shares the 'savings' family so it counts once and acts as a backup where WDI is missing. WEO 'actual' data end earlier than 2025 for some economies; the 2025 value can be an estimate."
+    },
+    {
+      "id": "IMF.NID_NGDP",
+      "name": "Total investment / gross capital formation (% of GDP), WEO",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "investment",
+      "slow": false,
+      "years": 1990,
+      "notes": "Context, like NE.GDI.FTOT.ZS and the existing WEO backup NID_NGDP (family investment): the investment level used by the top split, not a signal. Backup where WDI is missing."
+    },
+    {
+      "id": "IMF.FSI_NPL",
+      "name": "Nonperforming loans to total gross loans (%), IMF FSI",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "npl",
+      "slow": false,
+      "years": 2000,
+      "notes": "Workbook N3 'Non-performing loans and provisioning', FSI, class C. Same source and construct as WDI FB.AST.NPER.ZS (which WDI takes from the IMF FSI), so it shares family 'npl' and counts once; it adds recent years and economies. Higher = weaker loan books (+1)."
+    },
+    {
+      "id": "IMF.FSI_ROA",
+      "name": "Bank return on assets (%), IMF FSI",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "bank_profitability",
+      "slow": false,
+      "years": 2001,
+      "notes": "Workbook N3 'Bank profitability and its durability', class A/B. Proposed B, not A: ROA alone cannot separate protected rents from risk premia (the Workbook needs the P/E of listed banks for that), so high ROA is read as behavior consistent with costly intermediation, not as a price. Higher = more binding (+1). Cross-country accounting differences (FSI metadata) are a further reason not to call it A."
+    },
+    {
+      "id": "IMF.FSI_CAR",
+      "name": "Regulatory capital to risk-weighted assets (%), IMF FSI",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "bank_capital",
+      "slow": false,
+      "years": 2000,
+      "notes": "Bank solvency, a quantity (class C, per the brief). Direction -1: thin capital constrains lending; but very high ratios can also mean banks that do not lend, so the signal is weak, and the coordinator may prefer context (X)."
+    },
+    {
+      "id": "IMF.FSI_LIQ_STL",
+      "name": "Liquid assets to short-term liabilities (%), IMF FSI",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "bank_liquidity",
+      "slow": false,
+      "years": 2000,
+      "notes": "Workbook N0 'Bank liquidity' (liquid assets to deposits; FSI) is listed as class B with a reading rule: liquid banks plus a low real rate point to the low-returns branch. Direction -1 (liquid banks = finance less likely binding). Proposed C rather than B because national definitions of liquid assets and short-term liabilities differ widely (FSI metadata) and levels run from 20% to over 200%, so cross-country ICRs are noisy; promote to B if the coordinator accepts that noise."
+    },
+    {
+      "id": "IMF.FSI_INTMARGIN",
+      "name": "Interest margin to gross income (%), IMF FSI",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "bank_income_mix",
+      "slow": false,
+      "years": 2000,
+      "notes": "Share of bank gross income earned from the lending-deposit margin. Related to the Workbook's N3 spread decomposition, but it is an income-mix ratio, not the spread or a margin over assets, so class C. Higher = banks live off the intermediation margin (+1)."
+    },
+    {
+      "id": "IMF.FSI_FX_LIAB",
+      "name": "Foreign-currency liabilities to total liabilities of deposit takers (%), IMF FSI, dollarization proxy",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N10"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "dollarization",
+      "slow": false,
+      "years": 2001,
+      "notes": "Workbook N10 circumvention (deposit dollarization share, class B). The public MFS data carry no foreign-currency deposit split, so this FSI ratio is the proxy; it includes non-deposit FX funding. Fills the connectors_not_built family 'dollarization'. Under formal dollarization (Ecuador, El Salvador, Panama) it reads ~100 by construction: the coordinator should make it regime_sensitive.",
+      "caveat": "Proxy for deposit dollarization: includes non-deposit foreign-currency funding.",
+      "regime_sensitive": "monetary",
+      "review_note": "v0.1.3 coordinator review: reads near 100 under formal dollarization; downgraded there like CPI inflation"
+    },
+    {
+      "id": "IMF.FSI_FX_LOANS",
+      "name": "Foreign-currency loans to total loans of deposit takers (%), IMF FSI, dollarization proxy",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N10"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "dollarization",
+      "slow": false,
+      "years": 2001,
+      "notes": "Loan dollarization; same family as IMF.FSI_FX_LIAB (counts once). Workbook N10 circumvention class B. Also regime_sensitive under formal dollarization.",
+      "caveat": "Proxy: loan dollarization, not deposit dollarization.",
+      "regime_sensitive": "monetary",
+      "review_note": "v0.1.3 coordinator review: as above"
+    },
+    {
+      "id": "IMF.DIP_OFC_SHARE",
+      "name": "Share of inward direct investment positions held by offshore-centre counterparts (%)",
+      "source": "extra",
+      "extra_group": "imf",
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "offshore_fdi",
+      "slow": false,
+      "years": 2009,
+      "notes": "Workbook N11 property rights circumvention (class B): inward FDI routed through offshore centres (IMF CDIS share from Mauritius, BVI, Netherlands, etc.). Fills the connectors_not_built family 'offshore_fdi'. Higher = more investment structured through jurisdictions offering treaty and legal protection (+1). Offshore list: NLD, LUX, IRL, MUS, VGB, CYM, BMU, CYP, SGP, HKG, CHE, BHS, JEY, GGY, IMN, PAN. Caveat: tax treaty shopping drives the share too, so it is not only a property-rights signal; and it is high in small economies next to a hub.",
+      "caveat": "Lower bound: confidential and unreported counterpart cells count as zero."
+    },
+    {
+      "id": "ESCAP.TC_MFG_MED",
+      "name": "Trade costs, manufacturing (ISIC D): median over partners (comprehensive trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Comprehensive cost (tariff included). All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.TC_MFG_TOP10",
+      "name": "Trade costs, manufacturing (ISIC D): mean vs ten largest economies (comprehensive trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Comprehensive cost (tariff included). All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.TC_AGR_MED",
+      "name": "Trade costs, agriculture, hunting, forestry and fishing (ISIC A+B): median over partners (comprehensive trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Comprehensive cost (tariff included). All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.TC_AGR_TOP10",
+      "name": "Trade costs, agriculture, hunting, forestry and fishing (ISIC A+B): mean vs ten largest economies (comprehensive trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Comprehensive cost (tariff included). All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.TC_TOT_MED",
+      "name": "Trade costs, total goods: median over partners (comprehensive trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Comprehensive cost (tariff included). All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.TC_TOT_TOP10",
+      "name": "Trade costs, total goods: mean vs ten largest economies (comprehensive trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Comprehensive cost (tariff included). All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.NTC_MFG_MED",
+      "name": "Trade costs, manufacturing (ISIC D): median over partners (non-tariff trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Non-tariff component: tariff wedge removed, closer to the transport/logistics/procedure cost N6 is about; a near-duplicate of the comprehensive series, same family. All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.NTC_MFG_TOP10",
+      "name": "Trade costs, manufacturing (ISIC D): mean vs ten largest economies (non-tariff trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Non-tariff component: tariff wedge removed, closer to the transport/logistics/procedure cost N6 is about; a near-duplicate of the comprehensive series, same family. All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.NTC_AGR_MED",
+      "name": "Trade costs, agriculture, hunting, forestry and fishing (ISIC A+B): median over partners (non-tariff trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Non-tariff component: tariff wedge removed, closer to the transport/logistics/procedure cost N6 is about; a near-duplicate of the comprehensive series, same family. All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.NTC_AGR_TOP10",
+      "name": "Trade costs, agriculture, hunting, forestry and fishing (ISIC A+B): mean vs ten largest economies (non-tariff trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Non-tariff component: tariff wedge removed, closer to the transport/logistics/procedure cost N6 is about; a near-duplicate of the comprehensive series, same family. All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.NTC_TOT_MED",
+      "name": "Trade costs, total goods: median over partners (non-tariff trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Non-tariff component: tariff wedge removed, closer to the transport/logistics/procedure cost N6 is about; a near-duplicate of the comprehensive series, same family. All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "ESCAP.NTC_TOT_TOP10",
+      "name": "Trade costs, total goods: mean vs ten largest economies (non-tariff trade cost, % ad valorem)",
+      "source": "extra",
+      "extra_group": "escap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log",
+      "family": "escap_trade_costs",
+      "slow": false,
+      "years": 1995,
+      "notes": "Workbook N6 first row: bilateral ad valorem trade costs with main partners, class A (a price). High = costlier to trade = transport/logistics more likely binding. Non-tariff component: tariff wedge removed, closer to the transport/logistics/procedure cost N6 is about; a near-duplicate of the comprehensive series, same family. All twelve ESCAP series share one family so they count once; the coordinator should pick one voter (suggested ESCAP.NTC_TOT_TOP10 or ESCAP.TC_MFG_TOP10) and show the agriculture split per the N6 pitfall. Partly geography (distance, landlocked): ICR should control for landlocked/distance. Latest years (2024-2025) cover fewer pairs. log transform: costs are right-skewed (tens to hundreds of percent).",
+      "icr_extra_controls": [
+        "log_remoteness"
+      ],
+      "regime_sensitive": "trade_hub",
+      "review_note": "Coordinator review: comprehensive bilateral trade costs include distance and partners' own frictions, so the income-conditional residual also controls for log remoteness; in re-export and accounting hubs (registry/static_trade_hubs.json) output minus exports is a poor proxy for domestic trade, so the measure is class C there (v0.1.5)."
+    },
+    {
+      "id": "PRX.INSECURE_ALL",
+      "name": "Perceived tenure insecurity, any property (% of adults)",
+      "source": "extra",
+      "extra_group": "prindex",
+      "nodes": [
+        "N11.property",
+        "N8"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "prindex_tenure_insecurity",
+      "slow": true,
+      "years": 2019,
+      "notes": "allprop_security == 0 (insecure about home or any other property), weighted share of adults 18+, DK/refused in denominator. The Prindex headline measure. Workbook N8 lists perceived tenure insecurity (Prindex) among land indicators, and N11 property rights lists Prindex under 'quantity or perception'. It is a household perception, so class C per Workbook 4.6 (perceptions are C); it is not a price or a rationing measure, so it informs but cannot vote on the price test under rule 10.1. Kept on test 'price' because that is where the Workbook places perception ICRs; the coordinator may prefer 'context'. Higher = more adults expect to lose their property = land/property constraint more likely binding (direction +1). Only two rounds (about 2019 and 2023/24), so slow-ish. All five share one family; suggested display series PRX.INSECURE_ALL. slow=true because the survey runs every ~4-5 years; perceptions move slowly."
+    },
+    {
+      "id": "PRX.INSECURE_HOME",
+      "name": "Perceived tenure insecurity, home (% of adults)",
+      "source": "extra",
+      "extra_group": "prindex",
+      "nodes": [
+        "N11.property",
+        "N8"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "prindex_tenure_insecurity",
+      "slow": true,
+      "years": 2019,
+      "notes": "mainprop_security == 0, weighted share of adults 18+. Workbook N8 lists perceived tenure insecurity (Prindex) among land indicators, and N11 property rights lists Prindex under 'quantity or perception'. It is a household perception, so class C per Workbook 4.6 (perceptions are C); it is not a price or a rationing measure, so it informs but cannot vote on the price test under rule 10.1. Kept on test 'price' because that is where the Workbook places perception ICRs; the coordinator may prefer 'context'. Higher = more adults expect to lose their property = land/property constraint more likely binding (direction +1). Only two rounds (about 2019 and 2023/24), so slow-ish. All five share one family; suggested display series PRX.INSECURE_ALL. slow=true because the survey runs every ~4-5 years; perceptions move slowly."
+    },
+    {
+      "id": "PRX.INSECURE_HOME_LAND",
+      "name": "Perceived tenure insecurity, home with land attached (% of adults living in one)",
+      "source": "extra",
+      "extra_group": "prindex",
+      "nodes": [
+        "N11.property",
+        "N8"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "prindex_tenure_insecurity",
+      "slow": true,
+      "years": 2019,
+      "notes": "mainprop_security == 0 among adults whose home has land attached for household use (land_attached == 1): the closest split to land tenure in the public file; n >= 100. Workbook N8 lists perceived tenure insecurity (Prindex) among land indicators, and N11 property rights lists Prindex under 'quantity or perception'. It is a household perception, so class C per Workbook 4.6 (perceptions are C); it is not a price or a rationing measure, so it informs but cannot vote on the price test under rule 10.1. Kept on test 'price' because that is where the Workbook places perception ICRs; the coordinator may prefer 'context'. Higher = more adults expect to lose their property = land/property constraint more likely binding (direction +1). Only two rounds (about 2019 and 2023/24), so slow-ish. All five share one family; suggested display series PRX.INSECURE_ALL. slow=true because the survey runs every ~4-5 years; perceptions move slowly."
+    },
+    {
+      "id": "PRX.INSECURE_HOME_NOLAND",
+      "name": "Perceived tenure insecurity, home without land (% of adults living in one)",
+      "source": "extra",
+      "extra_group": "prindex",
+      "nodes": [
+        "N11.property",
+        "N8"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "prindex_tenure_insecurity",
+      "slow": true,
+      "years": 2019,
+      "notes": "mainprop_security == 0 among adults whose home has no land attached (land_attached == 2, apartments and similar): the housing split; n >= 100. Workbook N8 lists perceived tenure insecurity (Prindex) among land indicators, and N11 property rights lists Prindex under 'quantity or perception'. It is a household perception, so class C per Workbook 4.6 (perceptions are C); it is not a price or a rationing measure, so it informs but cannot vote on the price test under rule 10.1. Kept on test 'price' because that is where the Workbook places perception ICRs; the coordinator may prefer 'context'. Higher = more adults expect to lose their property = land/property constraint more likely binding (direction +1). Only two rounds (about 2019 and 2023/24), so slow-ish. All five share one family; suggested display series PRX.INSECURE_ALL. slow=true because the survey runs every ~4-5 years; perceptions move slowly."
+    },
+    {
+      "id": "PRX.INSECURE_OTHER",
+      "name": "Perceived tenure insecurity, other land or property (% of adults with such rights)",
+      "source": "extra",
+      "extra_group": "prindex",
+      "nodes": [
+        "N11.property",
+        "N8"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "prindex_tenure_insecurity",
+      "slow": true,
+      "years": 2019,
+      "notes": "otherprop_security == 0 among adults in households with rights to other land or property (other_property == 1); often agricultural plots; n >= 100. Workbook N8 lists perceived tenure insecurity (Prindex) among land indicators, and N11 property rights lists Prindex under 'quantity or perception'. It is a household perception, so class C per Workbook 4.6 (perceptions are C); it is not a price or a rationing measure, so it informs but cannot vote on the price test under rule 10.1. Kept on test 'price' because that is where the Workbook places perception ICRs; the coordinator may prefer 'context'. Higher = more adults expect to lose their property = land/property constraint more likely binding (direction +1). Only two rounds (about 2019 and 2023/24), so slow-ish. All five share one family; suggested display series PRX.INSECURE_ALL. slow=true because the survey runs every ~4-5 years; perceptions move slowly."
+    },
+    {
+      "id": "RTS.MP_OVERALL",
+      "name": "Return to an additional year of schooling, Mincerian (%), Montenegro-Patrinos",
+      "source": "extra",
+      "extra_group": "rts",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "rts_mincer_mp",
+      "slow": true,
+      "years": 1970,
+      "notes": "Workbook N4 first row: Mincerian return to schooling, overall and tertiary, is the price of skills (class A, Workbook 4.6 lists 'returns to schooling' as a class A example). Higher return = skills scarcer relative to demand = human capital more likely binding. ICR should condition on years of schooling as well as income (Mindbook Fig. 5: returns fall as schooling rises). Pitfalls (Workbook N4): public-sector premia and credential queueing inflate returns; run camels-and-hippos before accepting. Series end in 2013 (MP) and mostly before 2015 (PP), so recency weights will be low or zero for most countries. MP is the harmonized series; preferred voter. Level returns share the family with the overall return.",
+      "reference_window_years": 20,
+      "review_note": "Coordinator review: returns to schooling are estimated rarely and move slowly: 20-year reference window, slow-moving; the age is shown and still lowers the weight (v0.1.3)."
+    },
+    {
+      "id": "RTS.MP_PRIMARY",
+      "name": "Return to primary schooling per year (%), Montenegro-Patrinos",
+      "source": "extra",
+      "extra_group": "rts",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "rts_mincer_mp",
+      "slow": true,
+      "years": 1970,
+      "notes": "Workbook N4 first row: Mincerian return to schooling, overall and tertiary, is the price of skills (class A, Workbook 4.6 lists 'returns to schooling' as a class A example). Higher return = skills scarcer relative to demand = human capital more likely binding. ICR should condition on years of schooling as well as income (Mindbook Fig. 5: returns fall as schooling rises). Pitfalls (Workbook N4): public-sector premia and credential queueing inflate returns; run camels-and-hippos before accepting. Series end in 2013 (MP) and mostly before 2015 (PP), so recency weights will be low or zero for most countries. MP is the harmonized series; preferred voter. Level returns share the family with the overall return.",
+      "reference_window_years": 20,
+      "review_note": "Coordinator review: returns to schooling are estimated rarely and move slowly: 20-year reference window, slow-moving; the age is shown and still lowers the weight (v0.1.3)."
+    },
+    {
+      "id": "RTS.MP_SECONDARY",
+      "name": "Return to secondary schooling per year (%), Montenegro-Patrinos",
+      "source": "extra",
+      "extra_group": "rts",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "rts_mincer_mp",
+      "slow": true,
+      "years": 1970,
+      "notes": "Workbook N4 first row: Mincerian return to schooling, overall and tertiary, is the price of skills (class A, Workbook 4.6 lists 'returns to schooling' as a class A example). Higher return = skills scarcer relative to demand = human capital more likely binding. ICR should condition on years of schooling as well as income (Mindbook Fig. 5: returns fall as schooling rises). Pitfalls (Workbook N4): public-sector premia and credential queueing inflate returns; run camels-and-hippos before accepting. Series end in 2013 (MP) and mostly before 2015 (PP), so recency weights will be low or zero for most countries. MP is the harmonized series; preferred voter. Level returns share the family with the overall return.",
+      "reference_window_years": 20,
+      "review_note": "Coordinator review: returns to schooling are estimated rarely and move slowly: 20-year reference window, slow-moving; the age is shown and still lowers the weight (v0.1.3)."
+    },
+    {
+      "id": "RTS.MP_TERTIARY",
+      "name": "Return to tertiary schooling per year (%), Montenegro-Patrinos",
+      "source": "extra",
+      "extra_group": "rts",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "rts_mincer_mp",
+      "slow": true,
+      "years": 1970,
+      "notes": "Workbook N4 first row: Mincerian return to schooling, overall and tertiary, is the price of skills (class A, Workbook 4.6 lists 'returns to schooling' as a class A example). Higher return = skills scarcer relative to demand = human capital more likely binding. ICR should condition on years of schooling as well as income (Mindbook Fig. 5: returns fall as schooling rises). Pitfalls (Workbook N4): public-sector premia and credential queueing inflate returns; run camels-and-hippos before accepting. Series end in 2013 (MP) and mostly before 2015 (PP), so recency weights will be low or zero for most countries. MP is the harmonized series; preferred voter. Level returns share the family with the overall return.",
+      "reference_window_years": 20,
+      "review_note": "Coordinator review: returns to schooling are estimated rarely and move slowly: 20-year reference window, slow-moving; the age is shown and still lowers the weight (v0.1.3)."
+    },
+    {
+      "id": "RTS.PP_OVERALL",
+      "name": "Return to an additional year of schooling, Mincerian (%), Psacharopoulos-Patrinos compilation",
+      "source": "extra",
+      "extra_group": "rts",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "rts_mincer_pp",
+      "slow": true,
+      "years": 1960,
+      "notes": "Workbook N4 first row: Mincerian return to schooling, overall and tertiary, is the price of skills (class A, Workbook 4.6 lists 'returns to schooling' as a class A example). Higher return = skills scarcer relative to demand = human capital more likely binding. ICR should condition on years of schooling as well as income (Mindbook Fig. 5: returns fall as schooling rises). Pitfalls (Workbook N4): public-sector premia and credential queueing inflate returns; run camels-and-hippos before accepting. Series end in 2013 (MP) and mostly before 2015 (PP), so recency weights will be low or zero for most countries. The PP compilation mixes studies and methods; a separate family from MP so it is not double-counted with it, but the coordinator may prefer to treat it as the same family (same construct) and use it only where MP is missing.",
+      "reference_window_years": 20,
+      "review_note": "Coordinator review: returns to schooling are estimated rarely and move slowly: 20-year reference window, slow-moving; the age is shown and still lowers the weight (v0.1.3)."
+    },
+    {
+      "id": "RTS.PP_TERTIARY",
+      "name": "Return to higher education per year, Mincerian (%), Psacharopoulos-Patrinos compilation",
+      "source": "extra",
+      "extra_group": "rts",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "rts_mincer_pp",
+      "slow": true,
+      "years": 1960,
+      "notes": "Workbook N4 first row: Mincerian return to schooling, overall and tertiary, is the price of skills (class A, Workbook 4.6 lists 'returns to schooling' as a class A example). Higher return = skills scarcer relative to demand = human capital more likely binding. ICR should condition on years of schooling as well as income (Mindbook Fig. 5: returns fall as schooling rises). Pitfalls (Workbook N4): public-sector premia and credential queueing inflate returns; run camels-and-hippos before accepting. Series end in 2013 (MP) and mostly before 2015 (PP), so recency weights will be low or zero for most countries. The PP compilation mixes studies and methods; a separate family from MP so it is not double-counted with it, but the coordinator may prefer to treat it as the same family (same construct) and use it only where MP is missing.",
+      "reference_window_years": 20,
+      "review_note": "Coordinator review: returns to schooling are estimated rarely and move slowly: 20-year reference window, slow-moving; the age is shown and still lowers the weight (v0.1.3)."
+    },
+    {
+      "id": "BL.YRS_1564",
+      "name": "Average years of schooling, ages 15-64 (v3), Barro-Lee",
+      "source": "extra",
+      "extra_group": "barrolee",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "bl_attainment",
+      "slow": true,
+      "years": 1950,
+      "notes": "Workbook N4 'Attainment and learning: years of schooling ... Barro-Lee', class C (a stock/quantity, not a price). More schooling = skills less scarce = N4 less likely binding (direction -1), but under rule 10.1 it informs and does not vote. Also the conditioning variable for the returns-to-schooling ICR (Mindbook Fig. 5). slow=true: educational attainment is a slow-moving stock (Workbook 4.7). Five-year observations; v3 ends 2015, v2.2 (25+) ends 2010. All six Barro-Lee series share one family; suggested voter/display BL.YRS_2564."
+    },
+    {
+      "id": "BL.TERT_COMPL_1564",
+      "name": "Completed tertiary education (% of population), ages 15-64 (v3), Barro-Lee",
+      "source": "extra",
+      "extra_group": "barrolee",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "bl_attainment",
+      "slow": true,
+      "years": 1950,
+      "notes": "Workbook N4 'Attainment and learning: years of schooling ... Barro-Lee', class C (a stock/quantity, not a price). More schooling = skills less scarce = N4 less likely binding (direction -1), but under rule 10.1 it informs and does not vote. Also the conditioning variable for the returns-to-schooling ICR (Mindbook Fig. 5). slow=true: educational attainment is a slow-moving stock (Workbook 4.7). Five-year observations; v3 ends 2015, v2.2 (25+) ends 2010. All six Barro-Lee series share one family; suggested voter/display BL.YRS_2564."
+    },
+    {
+      "id": "BL.YRS_2564",
+      "name": "Average years of schooling, ages 25-64 (v3), Barro-Lee",
+      "source": "extra",
+      "extra_group": "barrolee",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "bl_attainment",
+      "slow": true,
+      "years": 1950,
+      "notes": "Workbook N4 'Attainment and learning: years of schooling ... Barro-Lee', class C (a stock/quantity, not a price). More schooling = skills less scarce = N4 less likely binding (direction -1), but under rule 10.1 it informs and does not vote. Also the conditioning variable for the returns-to-schooling ICR (Mindbook Fig. 5). slow=true: educational attainment is a slow-moving stock (Workbook 4.7). Five-year observations; v3 ends 2015, v2.2 (25+) ends 2010. All six Barro-Lee series share one family; suggested voter/display BL.YRS_2564."
+    },
+    {
+      "id": "BL.TERT_COMPL_2564",
+      "name": "Completed tertiary education (% of population), ages 25-64 (v3), Barro-Lee",
+      "source": "extra",
+      "extra_group": "barrolee",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "bl_attainment",
+      "slow": true,
+      "years": 1950,
+      "notes": "Workbook N4 'Attainment and learning: years of schooling ... Barro-Lee', class C (a stock/quantity, not a price). More schooling = skills less scarce = N4 less likely binding (direction -1), but under rule 10.1 it informs and does not vote. Also the conditioning variable for the returns-to-schooling ICR (Mindbook Fig. 5). slow=true: educational attainment is a slow-moving stock (Workbook 4.7). Five-year observations; v3 ends 2015, v2.2 (25+) ends 2010. All six Barro-Lee series share one family; suggested voter/display BL.YRS_2564."
+    },
+    {
+      "id": "BL.YRS_25PLUS",
+      "name": "Average years of schooling, ages 25+ (v2.2), Barro-Lee",
+      "source": "extra",
+      "extra_group": "barrolee",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "bl_attainment",
+      "slow": true,
+      "years": 1950,
+      "notes": "Workbook N4 'Attainment and learning: years of schooling ... Barro-Lee', class C (a stock/quantity, not a price). More schooling = skills less scarce = N4 less likely binding (direction -1), but under rule 10.1 it informs and does not vote. Also the conditioning variable for the returns-to-schooling ICR (Mindbook Fig. 5). slow=true: educational attainment is a slow-moving stock (Workbook 4.7). Five-year observations; v3 ends 2015, v2.2 (25+) ends 2010. All six Barro-Lee series share one family; suggested voter/display BL.YRS_2564."
+    },
+    {
+      "id": "BL.TERT_COMPL_25PLUS",
+      "name": "Completed tertiary education (% of population), ages 25+ (v2.2), Barro-Lee",
+      "source": "extra",
+      "extra_group": "barrolee",
+      "nodes": [
+        "N4"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "bl_attainment",
+      "slow": true,
+      "years": 1950,
+      "notes": "Workbook N4 'Attainment and learning: years of schooling ... Barro-Lee', class C (a stock/quantity, not a price). More schooling = skills less scarce = N4 less likely binding (direction -1), but under rule 10.1 it informs and does not vote. Also the conditioning variable for the returns-to-schooling ICR (Mindbook Fig. 5). slow=true: educational attainment is a slow-moving stock (Workbook 4.7). Five-year observations; v3 ends 2015, v2.2 (25+) ends 2010. All six Barro-Lee series share one family; suggested voter/display BL.YRS_2564."
+    },
+    {
+      "id": "GFDD.OVERHEAD",
+      "name": "Bank overhead costs to total assets (%)",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.EI.04",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "gfdd_overhead",
+      "slow": false,
+      "years": 1999,
+      "notes": "Mindbook/Workbook N3: the intermediation wedge decomposes as spread = f(reserve requirement eps, operating cost c, deposit rate); the criterion is eps + c. Overhead costs to total assets is the operating-cost term c: a price of intermediation (class A). Higher = costlier intermediation = N3 more likely binding."
+    },
+    {
+      "id": "GFDD.NIM",
+      "name": "Bank net interest margin (%)",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.EI.01",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "gfdd_nim",
+      "slow": false,
+      "years": 2000,
+      "notes": "Mindbook/Workbook N3: the intermediation wedge decomposes as spread = f(reserve requirement eps, operating cost c, deposit rate); the criterion is eps + c. Net interest margin is the realized intermediation markup (class A price). Higher = costlier intermediation. Pitfall: high margins are expected when rates are high for savings reasons (N2); read with the deposit rate."
+    },
+    {
+      "id": "GFDD.SPREAD",
+      "name": "Bank lending-deposit spread",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.EI.02",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "none",
+      "family": "spread",
+      "slow": false,
+      "years": 1980,
+      "notes": "Lending minus deposit rate (IFS based). Same construct as WDI FR.INR.LNDP, so it is put in the registry's existing 'spread' family to count once; useful where WDI is missing. Class A price; higher = costlier intermediation."
+    },
+    {
+      "id": "GFDD.ROA",
+      "name": "Bank return on assets (%, after tax)",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.EI.05",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "gfdd_profitability",
+      "slow": false,
+      "years": 1999,
+      "notes": "Bank return on assets after tax. Workbook N3 rates profitability A/B but its reading is ambiguous without P/E ratios (high ROA can be protected rents, i.e. an intermediation markup, or compensation for risk), so proposed class C per the contract's 'when unsure' rule. Direction +1 on the rent reading."
+    },
+    {
+      "id": "GFDD.CONC3",
+      "name": "Bank concentration (%)",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.OI.01",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "gfdd_concentration",
+      "slow": false,
+      "years": 2000,
+      "notes": "Assets of the three largest commercial banks as % of total commercial bank assets. Workbook N3 'Concentration and entry' class C (structure, not a price). Higher = less competition = more likely markup-driven intermediation costs."
+    },
+    {
+      "id": "GFDD.FOREIGN_ASSETS",
+      "name": "Foreign bank assets among total bank assets (%)",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.OI.16",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "gfdd_foreign_banks",
+      "slow": false,
+      "years": 2005,
+      "notes": "Foreign bank assets as % of total bank assets. Workbook N3 'foreign bank share' class C. Higher = more entry/competition = N3 less likely binding (-1). Series ends around 2013 (Claessens-van Horen bank ownership data)."
+    },
+    {
+      "id": "GFDD.FOREIGN_COUNT",
+      "name": "Foreign banks among total banks (%)",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.OI.15",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "gfdd_foreign_banks",
+      "slow": false,
+      "years": 1995,
+      "notes": "Foreign banks as % of the number of banks; same family as FOREIGN_ASSETS (asset share preferred)."
+    },
+    {
+      "id": "GFDD.ZSCORE",
+      "name": "Bank Z-score",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.SI.01",
+      "nodes": [
+        "N3"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log",
+      "family": "gfdd_zscore",
+      "slow": false,
+      "years": 2000,
+      "notes": "Bank Z-score (distance to insolvency: (ROA + equity/assets)/sd(ROA)). Class C (a soundness state, not a price); proposed direction -1: a fragile banking system (low Z) makes intermediation riskier and dearer. Weak signal; consider context. log: right-skewed."
+    },
+    {
+      "id": "GFDD.LIQ_DEP",
+      "name": "Liquid assets to deposits and short term funding (%)",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.SI.06",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": -1,
+      "transform": "none",
+      "family": "gfdd_liquidity",
+      "slow": false,
+      "years": 1998,
+      "notes": "Liquid assets to deposits and short-term funding. Workbook N0 'Bank liquidity: liquid assets to deposits ... class B': banks hoarding liquidity while investment is low point to low returns, not scarce funds. Higher = finance less likely binding (-1). The test assignment (circumvention) follows the Workbook's class B; the coordinator may prefer 'price' with class C."
+    },
+    {
+      "id": "GFDD.CREDIT_DEP",
+      "name": "Bank credit to bank deposits (%)",
+      "source": "extra",
+      "extra_group": "gfdd",
+      "source_code": "GFDD.SI.04",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "gfdd_liquidity",
+      "slow": false,
+      "years": 1960,
+      "notes": "Bank credit to bank deposits. Workbook N0 lists the credit-to-deposit ratio with bank liquidity (class B). High = banks fully lent out relative to their deposit base = loanable funds scarce (+1). Same family as LIQ_DEP (one liquidity construct)."
+    },
+    {
+      "id": "DB.ELEC_DAYS",
+      "name": "Getting electricity: time (days)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "IC.ELC.TIME",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_electricity",
+      "slow": false,
+      "years": 2009,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Workbook N5 lists historic DB 'getting electricity' with outage measures (A/C). Days to obtain a permanent commercial connection. Distinct from the Enterprise Survey IC.ELC.DURS (firm-reported), but same construct: coordinator may merge families."
+    },
+    {
+      "id": "DB.ELEC_COST",
+      "name": "Getting electricity: cost (% of income per capita)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "IC.ELC.ACS.COST",
+      "nodes": [
+        "N5"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_electricity",
+      "slow": false,
+      "years": 2009,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Connection cost as % of income per capita. Same family as ELEC_DAYS."
+    },
+    {
+      "id": "DB.PROP_DAYS",
+      "name": "Registering property: time (days)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "IC.REG.PRRT.DURS.TM",
+      "nodes": [
+        "N11.property",
+        "N8"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_property",
+      "slow": false,
+      "years": 2004,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Workbook N8: time and cost to register property (historic Doing Business). Days to transfer a property title."
+    },
+    {
+      "id": "DB.PROP_COST",
+      "name": "Registering property: cost (% of property value)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "IC.REG.PRRT.COST.PRT.VAL",
+      "nodes": [
+        "N11.property",
+        "N8"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_property",
+      "slow": false,
+      "years": 2004,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Workbook N8: transfer cost as % of property value. Same family as PROP_DAYS."
+    },
+    {
+      "id": "DB.CONTRACT_DAYS",
+      "name": "Enforcing contracts: time (days)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "ENF.CONT.DURS.DY",
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_contracts",
+      "slow": false,
+      "years": 2003,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Workbook N11 property rights, price/cost column: 'contract enforcement time and cost' (class A)."
+    },
+    {
+      "id": "DB.CONTRACT_COST",
+      "name": "Enforcing contracts: cost (% of claim)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "ENF.CONT.COEN.COST.ZS",
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_contracts",
+      "slow": false,
+      "years": 2003,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Workbook N11 property rights: contract enforcement cost. Same family as CONTRACT_DAYS."
+    },
+    {
+      "id": "DB.START_DAYS",
+      "name": "Starting a business: time (days, standard case)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "IC.REG.DURS.MA.DY",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_start",
+      "slow": false,
+      "years": 2003,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Workbook N11 regulation/entry, price column: licensing time. The 'men' series is the standard DB case (before DB2017 there was one case). Related but not identical to the ES operating-license days IC.FRM.DURS."
+    },
+    {
+      "id": "DB.START_COST",
+      "name": "Starting a business: cost (% of income per capita, standard case)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "IC.REG.COST.PC.MA.ZS",
+      "nodes": [
+        "N11.regulation"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_start",
+      "slow": false,
+      "years": 2003,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Cost of start-up procedures, standard ('men') case. Same family as START_DAYS."
+    },
+    {
+      "id": "DB.INSOLV_RECOVERY",
+      "name": "Resolving insolvency: recovery rate (cents on the dollar)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "RESLV.ISV.RCOV.RT",
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": -1,
+      "transform": "none",
+      "family": "db_insolvency",
+      "slow": false,
+      "years": 2003,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Recovery rate for secured creditors: the realized value of creditor rights. Higher = stronger property/creditor rights = less likely binding (direction -1). Also relevant to N3 (collateral value)."
+    },
+    {
+      "id": "DB.EXP_TIME_HRS",
+      "name": "Time to export: border plus documentary compliance (hours, DB16-20)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "TRD.ACRS.BRDR.EXPT.BRDR.COMP.HR.DB1619+TRD.ACRS.BRDR.DOC.COMP.HR.DB1619",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_trade",
+      "slow": false,
+      "years": 2014,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Sum of border-compliance and documentary-compliance hours for exports (DB16-20 methodology).  Workbook N6 table rates DB time and cost to trade as class C; class A is proposed here per this connector's brief (time and money price of border services). The coordinator should decide; if kept A, the ESCAP trade-cost family is the stronger N6 price.",
+      "review_note": "v0.1.3 coordinator review: Workbook N6 table rates Doing Business time and cost to trade as class C (standardized case, expert estimate)"
+    },
+    {
+      "id": "DB.IMP_TIME_HRS",
+      "name": "Time to import: border plus documentary compliance (hours, DB16-20)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "TRD.ACRS.BRDR.IMP.BRDR.COMP.HR.DB1619+TRD.ACRS.BRDR.IMP.DOC.COMP.HR.DB1619",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_trade",
+      "slow": false,
+      "years": 2014,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Sum of border-compliance and documentary-compliance hours for imports (DB16-20). Workbook N6 table rates DB time and cost to trade as class C; class A is proposed here per this connector's brief (time and money price of border services). The coordinator should decide; if kept A, the ESCAP trade-cost family is the stronger N6 price.",
+      "review_note": "v0.1.3 coordinator review: Workbook N6 table rates Doing Business time and cost to trade as class C (standardized case, expert estimate)"
+    },
+    {
+      "id": "DB.EXP_COST_USD",
+      "name": "Cost to export: border plus documentary compliance (USD, DB16-20)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "TRD.ACRS.BRDR.EXPT.COST.BRDR.COMP.CD.DB1619+TRD.ACRS.BRDR.EXPT.COST.DOC.COMP.CD.DB1619",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_trade",
+      "slow": false,
+      "years": 2014,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Sum of border and documentary compliance cost for exports (DB16-20). Workbook N6 table rates DB time and cost to trade as class C; class A is proposed here per this connector's brief (time and money price of border services). The coordinator should decide; if kept A, the ESCAP trade-cost family is the stronger N6 price.",
+      "review_note": "v0.1.3 coordinator review: Workbook N6 table rates Doing Business time and cost to trade as class C (standardized case, expert estimate)"
+    },
+    {
+      "id": "DB.IMP_COST_USD",
+      "name": "Cost to import: border plus documentary compliance (USD, DB16-20)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "TRD.ACRS.BRDR.IMP.COST.BRDR.COMP.CD.DB1619+TRD.ACRS.BRDR.IMP.COST.DOC.COMP.CD.DB1619",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_trade",
+      "slow": false,
+      "years": 2014,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Sum of border and documentary compliance cost for imports (DB16-20). Workbook N6 table rates DB time and cost to trade as class C; class A is proposed here per this connector's brief (time and money price of border services). The coordinator should decide; if kept A, the ESCAP trade-cost family is the stronger N6 price.",
+      "review_note": "v0.1.3 coordinator review: Workbook N6 table rates Doing Business time and cost to trade as class C (standardized case, expert estimate)"
+    },
+    {
+      "id": "DB.EXP_DAYS_0615",
+      "name": "Time to export (days, DB06-15)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "TRD.ACRS.BRDR.EXPT.DURS.DY.DB0615",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_trade",
+      "slow": false,
+      "years": 2005,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Old trading-across-borders methodology (container, days), data years to 2014; not spliced with the hours series. Workbook N6 table rates DB time and cost to trade as class C; class A is proposed here per this connector's brief (time and money price of border services). The coordinator should decide; if kept A, the ESCAP trade-cost family is the stronger N6 price.",
+      "review_note": "v0.1.3 coordinator review: Workbook N6 table rates Doing Business time and cost to trade as class C (standardized case, expert estimate)"
+    },
+    {
+      "id": "DB.IMP_DAYS_0615",
+      "name": "Time to import (days, DB06-15)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "TRD.ACRS.BRDR.IMP.DURS.DY.DB0615",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_trade",
+      "slow": false,
+      "years": 2005,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Old methodology, days. Workbook N6 table rates DB time and cost to trade as class C; class A is proposed here per this connector's brief (time and money price of border services). The coordinator should decide; if kept A, the ESCAP trade-cost family is the stronger N6 price.",
+      "review_note": "v0.1.3 coordinator review: Workbook N6 table rates Doing Business time and cost to trade as class C (standardized case, expert estimate)"
+    },
+    {
+      "id": "DB.EXP_COST_0615",
+      "name": "Cost to export (US$ per container, deflated, DB06-15)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "TRD.ACRS.BRDR.EXPT.COST.CD.DB0615",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_trade",
+      "slow": false,
+      "years": 2005,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Old methodology, US$ per container (deflated). Workbook N6 table rates DB time and cost to trade as class C; class A is proposed here per this connector's brief (time and money price of border services). The coordinator should decide; if kept A, the ESCAP trade-cost family is the stronger N6 price.",
+      "review_note": "v0.1.3 coordinator review: Workbook N6 table rates Doing Business time and cost to trade as class C (standardized case, expert estimate)"
+    },
+    {
+      "id": "DB.IMP_COST_0615",
+      "name": "Cost to import (US$ per container, deflated, DB06-15)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "TRD.ACRS.BRDR.IMP.COST.CD.DB0615",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_trade",
+      "slow": false,
+      "years": 2005,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Old methodology, US$ per container (deflated). Workbook N6 table rates DB time and cost to trade as class C; class A is proposed here per this connector's brief (time and money price of border services). The coordinator should decide; if kept A, the ESCAP trade-cost family is the stronger N6 price.",
+      "review_note": "v0.1.3 coordinator review: Workbook N6 table rates Doing Business time and cost to trade as class C (standardized case, expert estimate)"
+    },
+    {
+      "id": "ATLAS.COI",
+      "name": "Complexity Outlook Index (HS92)",
+      "nodes": [
+        "N12"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "atlas_coi",
+      "notes": "Workbook N12 'Opportunity' row (Complexity Outlook Index, class C). High COI = many complex products near current capabilities; the N12 reading lists 'few nearby products' as a candidate sign, so direction -1. Informing only under rubric 10.1 (class C on price).",
+      "source": "extra",
+      "extra_group": "atlas",
+      "slow": false,
+      "years": 1995
+    },
+    {
+      "id": "ATLAS.DIVERSITY",
+      "name": "Export diversity: HS4 products with RCA >= 1 (count)",
+      "nodes": [
+        "N12"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "export_diversity",
+      "notes": "Static quantity, the diversity half of ECI; unallocated codes 9999 and XXXX excluded. Test 'price', class C, so it is displayed and feeds the dissent list but never votes (rubric 10.1): the Workbook's N12 reading says low diversification alone is a consequence of whatever binds, not evidence for N12, which is why it is not put on the camels test (where a class C family would vote). Computed from export_rca in hs92_country_product_year_4; reproduces the published 'diversity' column when those codes are counted, except 2004 where the published column is doubled.",
+      "source": "extra",
+      "extra_group": "atlas",
+      "slow": false,
+      "years": 1995
+    },
+    {
+      "id": "ATLAS.TRANSITIONS",
+      "name": "New HS4 export products in the last five years (count)",
+      "nodes": [
+        "N12"
+      ],
+      "test": "camels",
+      "class": "C",
+      "direction": -1,
+      "transform": "log1p",
+      "family": "transition_frequency",
+      "notes": "Workbook N12 'Transition frequency' row, class B. Rule: products with RCA < 0.5 in t-5 and RCA >= 1 in both t-1 and t. Test 'camels', not 'price': it is not a price, shadow price or rationing measure, and as a class B price family it would become N12's only voting price evidence under rubric 10.1, letting an outcome count call the node on price. It is the dynamic form of the Test 4 question (Workbook 4.5, reverse direction: which activities appear and thrive), the Mindbook's 'has it made good use of its options' test. Caveat: the Workbook defines it conditional on product-space position; this count is unconditional and scales with economy size and reporting noise. If the conditional version is not built, the coordinator may prefer class C.",
+      "source": "extra",
+      "extra_group": "atlas",
+      "slow": false,
+      "years": 1995,
+      "review_note": "v0.1.3 coordinator review: unconditional count that grows with economy size; not yet conditioned on position in the product space as Workbook N12 requires"
+    },
+    {
+      "id": "ATLAS.HHI",
+      "name": "Export concentration: Herfindahl-Hirschman index across HS4 products (0-1)",
+      "nodes": [
+        "N12"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "log",
+      "family": "export_concentration",
+      "notes": "Quantity measure, N12 class C, direction +1 (more concentrated = fewer discoveries). Sum of squared HS4 export shares, unallocated codes 9999 and XXXX excluded. Informing only under rubric 10.1. Commodity exporters score high for reasons unrelated to N12 (natural capital, N9).",
+      "source": "extra",
+      "extra_group": "atlas",
+      "slow": false,
+      "years": 1995
+    },
+    {
+      "id": "ATLAS.TOP5",
+      "name": "Share of the top five HS4 products in exports (%)",
+      "nodes": [
+        "N12"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "export_concentration",
+      "notes": "Same construct as ATLAS.HHI (family export_concentration, counts once); the more readable of the two for the Desk.",
+      "source": "extra",
+      "extra_group": "atlas",
+      "slow": false,
+      "years": 1995
+    },
+    {
+      "id": "CH.FIN",
+      "name": "Export tilt toward finance-dependent products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": -1,
+      "transform": "none",
+      "family": "camels_finance",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "CH.FIN.SE",
+      "notes": "Camels and hippos (test 4): theta on external finance dependence (Rajan-Zingales), estimated jointly with schooling intensity (Ciccone-Papaioannou). Workbook 4.5 Rajan-Zingales test on HS92 4-digit exports, RCA within the scored products. Negative theta: the economy exports fewer factor-heavy products than its income predicts (more camels), so the factor is more likely binding. Placebo kill criterion (99 industry-permuted vectors, 95th percentile, five-year stability and agreement with export shares): failed, so class X (shown, does not vote). Caveats: intensity assumed constant across countries; location is endogenous; exports only, not output."
+    },
+    {
+      "id": "CH.FIN.SE",
+      "name": "Standard error of the export tilt toward finance-dependent products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "camels_finance_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of CH.FIN; the engine sets the camels signal to zero when |theta| < 2 SE."
+    },
+    {
+      "id": "CH.SKILL",
+      "name": "Export tilt toward skill-intensive products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [
+        "N4"
+      ],
+      "test": "camels",
+      "class": "B",
+      "direction": -1,
+      "transform": "none",
+      "family": "camels_skill",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "CH.SKILL.SE",
+      "notes": "Camels and hippos (test 4): theta on schooling intensity (Ciccone-Papaioannou), estimated jointly with external finance dependence (Rajan-Zingales). Workbook 4.5 Rajan-Zingales test on HS92 4-digit exports, RCA within the scored products. Negative theta: the economy exports fewer factor-heavy products than its income predicts (more camels), so the factor is more likely binding. Placebo kill criterion (99 industry-permuted vectors, 95th percentile, five-year stability and agreement with export shares): passed. Caveats: intensity assumed constant across countries; location is endogenous; exports only, not output."
+    },
+    {
+      "id": "CH.SKILL.SE",
+      "name": "Standard error of the export tilt toward skill-intensive products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "camels_skill_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of CH.SKILL; the engine sets the camels signal to zero when |theta| < 2 SE."
+    },
+    {
+      "id": "CH.TIME",
+      "name": "Export tilt toward time-sensitive products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [
+        "N6"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": -1,
+      "transform": "none",
+      "family": "camels_time",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "CH.TIME.SE",
+      "notes": "Camels and hippos (test 4): theta on time sensitivity of shipments (Hummels-Schaur data). Workbook 4.5 Rajan-Zingales test on HS92 4-digit exports, RCA within the scored products. Negative theta: the economy exports fewer factor-heavy products than its income predicts (more camels), so the factor is more likely binding. Placebo kill criterion (99 industry-permuted vectors, 95th percentile, five-year stability and agreement with export shares): failed, so class X (shown, does not vote). Caveats: intensity assumed constant across countries; location is endogenous; exports only, not output."
+    },
+    {
+      "id": "CH.TIME.SE",
+      "name": "Standard error of the export tilt toward time-sensitive products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "camels_time_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of CH.TIME; the engine sets the camels signal to zero when |theta| < 2 SE."
+    }
+  ],
+  "comovement_specs": [
+    {
+      "id": "CM.FINANCE",
+      "node": "N0",
+      "also_nodes": [
+        "N3"
+      ],
+      "x": [
+        "FR.INR.RINR",
+        "DERIV.REAL_LENDING_CPI"
+      ],
+      "y": "NE.GDI.FTOT.ZS",
+      "lag": 1,
+      "expected_sign": -1,
+      "window_years": 20,
+      "notes": "If finance binds, investment should fall when real rates rise (Mindbook, Brazil). Wrong sign with high consistency is strong evidence against. v0.1.2: x is a list of candidates; the first with at least min_years pairs is used and recorded as x_source."
+    },
+    {
+      "id": "CM.MACRO",
+      "node": "N10",
+      "also_nodes": [],
+      "x": "FP.CPI.TOTL.ZG",
+      "y": "NE.GDI.FTOT.ZS",
+      "lag": 1,
+      "expected_sign": -1,
+      "window_years": 20,
+      "notes": "Investment should respond to stabilization."
+    }
+  ],
+  "connectors_not_built": {
+    "_comment": "Evidence families the Workbook defines that the prototype cannot compute. Nodes depending only on these show 'cannot tell: connector not built' rather than 'data gap'.",
+    "families": [
+      {
+        "family": "es_transport_losses",
+        "nodes": [
+          "N6"
+        ],
+        "source": "Enterprise Surveys (losses in transit)",
+        "class": "A"
+      },
+      {
+        "family": "camels_hippos_trade",
+        "nodes": [
+          "N5",
+          "N6",
+          "N11.property"
+        ],
+        "source": "Intensity vectors not yet built: electricity cost shares (BEA input-output), contract intensity (Nunn); N6 has only the class C air-freight proxy",
+        "class": "B"
+      },
+      {
+        "family": "sector_public_goods",
+        "nodes": [
+          "N13"
+        ],
+        "source": "RASFF / FDA refusals; sector studies",
+        "class": "B"
+      },
+      {
+        "family": "security_costs",
+        "nodes": [
+          "N11.crime"
+        ],
+        "source": "Enterprise Surveys (security spending, theft losses)",
+        "class": "A"
+      }
+    ]
+  }
+}

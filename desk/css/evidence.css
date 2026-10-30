@@ -1,0 +1,227 @@
+/* Evidence page (evidence-viz-prd C1). Uses the Desk tokens from desk.css. */
+.ev { padding-bottom: 64px; }
+.ev-head { padding-top: 28px; }
+.ev-head h1 { margin: 6px 0 8px; font-family: var(--serif); font-weight: 500; font-size: clamp(1.75rem, 3.4vw, 2.6rem); line-height: 1.1; max-width: 30ch; }
+.ev-sub { margin: 0; color: var(--muted); }
+.ev-controls { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px 16px; margin: 22px 0 10px; padding: 14px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.ev-controls .field span { font-size: 0.8125rem; color: var(--muted); }
+.ev-controls select, .ev-controls input { width: 100%; min-width: 0; }
+.ev-controls .ev-wide { grid-column: span 2; }
+.ev-figure { margin: 8px 0 0; }
+.ev-chart { width: 100%; min-height: 420px; }
+.ev-chart svg { display: block; max-width: 100%; height: auto; font-family: var(--sans); }
+.ev-readout { font-family: var(--serif); font-size: 1.1875rem; line-height: 1.5; margin: 10px 0 4px; max-width: 80ch; }
+.ev-readout strong { font-weight: 600; }
+.ev-foot { margin: 6px 0 0; max-width: 100ch; }
+.ev-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.ev-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule-strong); border-radius: var(--radius-tag); padding: 2px 4px 2px 10px; font-size: 0.8125rem; }
+.ev-chip button { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 6px; }
+.ev-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 6px; }
+.ev-verdict { margin: 18px 0; padding: 12px 14px; background: var(--surface-2); font-size: 0.9375rem; }
+.ev-verdict:empty { display: none; }
+.ev-verdict a { margin-left: 6px; }
+.ev-table { margin-top: 14px; }
+.ev-table summary { cursor: pointer; color: var(--accent); }
+.ev-table th { font-family: var(--mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.ev-table table { border-collapse: collapse; width: 100%; margin-top: 10px; font-variant-numeric: tabular-nums; font-size: 0.875rem; }
+.ev-table th, .ev-table td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--rule); }
+.ev-table td.num, .ev-table th.num { text-align: right; }
+.ev-table tr.target td { font-weight: 600; }
+.ev-empty { padding: 48px 0; color: var(--muted); }
+@media (max-width: 900px) {
+  .ev-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ev-controls .ev-wide { grid-column: span 2; }
+}
+.ev-verdict .chip { display: inline-block; padding: 1px 8px; margin: 0 2px; border: 1px solid var(--rule-strong); border-radius: var(--radius-tag); font-size: 0.875rem; }
+
+.ev-section { padding-top: 22px; margin-top: 18px; border-top: 1px solid var(--rule); }
+.ev-section:first-of-type { border-top: 0; }
+.ev-h2 { display: flex; align-items: baseline; gap: 12px; margin: 0 0 8px; font-family: var(--serif); font-size: clamp(1.35rem, 2.2vw, 1.6rem); font-weight: 500; }
+.ev-h2 { flex-wrap: wrap; }
+.ev-h2 .ev-q { font-weight: 400; font-size: 1.0625rem; color: var(--muted); }
+@media (max-width: 600px) { .ev-h2 .ev-q { flex-basis: 100%; font-size: 0.9375rem; } }
+.ev-num { font-family: var(--serif); font-weight: 500; font-size: 1.15em; color: var(--accent); flex: none; font-variant-numeric: lining-nums; }
+.ev-chart-bars { min-height: 200px; }
+#chart3 { min-height: 300px; }
+.ev-subcontrols { display: flex; flex-wrap: wrap; gap: 12px 16px; margin: 8px 0 4px; }
+.ev-subcontrols .field span { font-size: 0.8125rem; color: var(--muted); }
+
+/* Floating control bar: sticks to the top of the window while the charts scroll under it.
+   The box-shadow and clip-path extend its background to the window edges. */
+.ev-toolbar { position: sticky; top: 0; z-index: 20; margin: 22px 0 10px; background: var(--bg); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); box-shadow: 0 0 0 100vmax var(--bg); clip-path: inset(0 -100vmax); }
+.ev-toolbar .ev-controls { margin: 0; padding: 8px 0; border: 0; gap: 8px 12px; grid-template-columns: 1.1fr 2.2fr 1fr 0.9fr 1.1fr 1.1fr; }
+.ev-toolbar .ev-controls .ev-wide { grid-column: auto; }
+.ev-toolbar .ev-labels { margin: 0 0 10px; }
+.ev-toolbar .ev-labels:empty { display: none; }
+.ev-tb-toggle { display: none; }
+.ev-section { scroll-margin-top: 96px; }
+@media (max-width: 900px) {
+  .ev-tb-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 10px 0; border: 0; background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+  .ev-tb-summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ev-tb-action { flex: none; color: var(--accent); }
+  .ev-toolbar:not(.open) .ev-controls, .ev-toolbar:not(.open) .ev-labels { display: none; }
+  .ev-toolbar.open { max-height: 100vh; overflow-y: auto; }
+  .ev-toolbar .ev-controls { padding-top: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ev-toolbar .ev-controls .ev-wide { grid-column: span 2; }
+  .ev-section { scroll-margin-top: 56px; }
+}
+
+/* Key to the indicator classes. */
+.ev-key { margin: 6px 0 4px; font-size: 0.9375rem; }
+.ev-key summary { cursor: pointer; color: var(--accent); }
+.ev-key table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 0.875rem; }
+.ev-key th, .ev-key td { text-align: left; vertical-align: top; padding: 5px 8px; border-bottom: 1px solid var(--rule); }
+.ev-key th.num, .ev-key td.num { text-align: right; }
+.ev-key p { max-width: 90ch; }
+.ev-key ul { max-width: 90ch; margin: 4px 0 8px; padding-left: 1.2em; }
+.ev-key li { margin: 2px 0; }
+#how-to-read { margin-bottom: 2px; }
+
+/* Plot's hover tip defaults to a white box; draw it with the page tokens so it reads in dark mode. */
+.ev-chart svg { --plot-background: var(--surface); }
+.ev-chart g[aria-label="tip"] path { stroke: var(--rule-strong); }
+.ev-chart g[aria-label="tip"] text, .ev-chart g[aria-label="tip"] tspan { fill: var(--text); }
+
+/* Indicator options whose data end before the window (disabled options are greyed by the browser). */
+.ev-controls option.ev-opt-old { color: var(--muted); }
+.ev-empty .btn { margin-left: 4px; }
+
+/* "Back to 2026": shown in the control bar while the page is set to a past year. */
+.ev-asof-row { display: flex; gap: 6px; align-items: center; }
+.ev-asof-row select { flex: 1; min-width: 5.4em; }
+.ev-back { flex: none; white-space: nowrap; }
+.ev-asof-row .ev-back { padding-inline: 8px; }
+.ev-back[hidden] { display: none; }
+.ev-toolbar.ev-past #c-asof { border-color: var(--tier-candidate); box-shadow: inset 0 0 0 1px var(--tier-candidate); }
+.ev-tb-row { display: none; }
+.ev-tb-row .ev-back { display: none; }
+@media (max-width: 900px) {
+  .ev-tb-row { display: flex; align-items: center; gap: 10px; }
+  .ev-tb-row .ev-tb-toggle { flex: 1; min-width: 0; }
+  .ev-tb-row .ev-back:not([hidden]) { display: inline-flex; }
+  .ev-toolbar.open .ev-tb-row .ev-back { display: none; }
+}
+/* Every control in the bar at the same size, whether or not it sits inside its <label>. */
+.ev-controls select, .ev-controls input, .ev-controls .ev-back { font-size: 0.875rem; }
+.ev-controls .ev-asof > label { line-height: 1.5; }
+
+/* ---------- phase 2: rail and node views ---------- */
+/* The rail is a table of contents in TNFA's manner: a hairline rail, the current entry marked in amber. */
+.ev-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 36px; align-items: start; }
+.ev-main { min-width: 0; }
+.ev-rail { position: sticky; top: calc(var(--tb-h, 84px) + 16px); max-height: calc(100vh - var(--tb-h, 84px) - 32px); overflow-y: auto; padding: 18px 0 24px; font-size: 0.875rem; }
+.ev-rail-title { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+.ev-rail-group { margin-bottom: 12px; }
+.ev-rail-label { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+.ev-rail ul { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--rule); }
+.ev-rail-item { display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 12px; margin-left: -1px; border-left: 2px solid transparent; color: var(--text); text-decoration: none; line-height: 1.3; }
+.ev-rail-item:hover { color: var(--accent); }
+.ev-rail-item.current { border-left-color: var(--brand-amber); font-weight: 600; color: var(--text); background: var(--accent-soft); }
+.ev-rail-item.sub { padding-left: 26px; font-size: 0.8125rem; }
+.tier-dot { flex: none; width: 11px; height: 11px; border: 1px solid var(--rule-strong); }
+.tier-dot.t-likely_binding { background: var(--tier-binding); border-color: var(--tier-binding); }
+.tier-dot.t-candidate { background: var(--tier-candidate); border-color: var(--tier-candidate); }
+.tier-dot.t-probably_not { background: var(--tier-probnot); border-color: var(--tier-probnot); }
+.tier-dot.t-ruled_out { background: var(--tier-ruled); border-color: var(--tier-ruled); }
+.tier-dot.t-cannot_tell_weak { background: repeating-linear-gradient(135deg, var(--tier-cannot) 0 2px, var(--tier-cannot-hatch) 2px 3px); border-color: var(--tier-cannot-hatch); }
+.tier-dot.t-cannot_tell_conflicting { background: repeating-linear-gradient(45deg, transparent 0 2px, var(--tier-cannot-hatch) 2px 3px), repeating-linear-gradient(135deg, var(--tier-cannot) 0 2px, var(--tier-cannot-hatch) 2px 3px); border-color: var(--tier-cannot-hatch); }
+.tier-dot.t-cannot_tell_data_gap { background: transparent; border: 1px dashed var(--tier-cannot-hatch); }
+.tier-dot.t-context_only, .tier-dot.t-desk_undiagnosable { background: var(--tier-context); }
+.tier-dot.none { border-color: transparent; }
+.ev-nodeview { border-top: 0; }
+.ev-node-q { margin: 0 0 6px; font-family: var(--serif); font-size: 1.1875rem; color: var(--muted); }
+.ev-node-verdict { margin: 0 0 10px; font-size: 0.9375rem; line-height: 1.7; max-width: 90ch; }
+.ev-node-verdict .tier-badge { margin: 0 6px 0 2px; }
+.ev-node-verdict:empty { display: none; }
+.ev-chart-node { min-height: 240px; }
+.ev-strip-notes { margin-top: 6px; font-size: 0.875rem; color: var(--muted); max-width: 100ch; }
+.ev-strip-notes p { margin: 0 0 4px; }
+.ev-strip-notes strong { color: var(--text); font-weight: 600; }
+/* Keyboard path to the C7 and C9 row picks (bindRowClick): a one-tab-stop toolbar after the chart. It shows only while one of its
+   buttons has focus, and then only that button, laid over the chart just under its row (the script sets top); it never moves the
+   page below it, so scroll anchoring cannot carry the focused button off screen. */
+#sec-node .ev-figure { position: relative; }
+.ev-rowkeys { position: absolute; left: 0; right: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 6px 8px; background: var(--surface); border: 1px solid var(--rule-strong); font-size: 0.8125rem; }
+.ev-rowkeys:not(:focus-within), .ev-rowkeys button:not(:focus) { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ev-rowkeys > span { color: var(--muted); }
+.ev-rowkeys button { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--radius); padding: 2px 8px; text-align: left; cursor: pointer; }
+.ev-stack { display: block; max-width: 100%; height: auto; }
+#node-controls[hidden] { display: none; }
+.ev-detail-head { margin-top: 36px; padding-top: 24px; border-top: 2px solid var(--text); }
+.ev-detail-head h2 { font-size: clamp(1.4rem, 2.6vw, 2rem); line-height: 1.12; max-width: 34ch; margin: 4px 0 8px; }
+@media (max-width: 900px) {
+  /* Phones and tablets: the rail becomes a scrolling strip of entries above the view. */
+  .ev-layout { display: block; }
+  /* relative, not static: the rail must contain its visually-hidden tier labels, or they widen the page */
+  .ev-rail { position: relative; top: auto; max-height: none; overflow-x: auto; overflow-y: hidden; display: flex; gap: 4px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .ev-rail-title, .ev-rail-label { display: none; }
+  .ev-rail-group { margin: 0; flex: none; }
+  .ev-rail ul { display: flex; border-left: 0; gap: 4px; }
+  .ev-rail-item, .ev-rail-item.sub { padding: 6px 10px; margin: 0; border: 1px solid var(--rule); white-space: nowrap; font-size: 0.8125rem; }
+  .ev-rail-item.current { border-color: var(--brand-amber); }
+}
+/* The rail scrolls: draw its focus ring inside, or the overflow clips it. */
+.ev-rail-item:focus-visible { outline-offset: -2px; }
+/* Keyboard focus never lands under the pinned control bar (WCAG 2.4.11). */
+html:has(.ev-toolbar) { scroll-padding-top: calc(var(--tb-h, 84px) + 12px); }
+/* Scroll targets clear the pinned control bar. */
+.ev-section, .ev-detail-head { scroll-margin-top: calc(var(--tb-h, 84px) + 12px); }
+
+/* Phase 4: the node's tests (C5, C6, C8) and composition (C11). */
+.ev-subcontrols .field { min-width: 0; }
+.ev-subcontrols select { max-width: min(100%, 22rem); }
+.ev-test > .kicker { display: block; margin-bottom: 2px; }
+.ev-test .ev-h2 { margin-top: 0; }
+.ev-top-products { margin-top: 10px; }
+.ev-top-products summary { cursor: pointer; color: var(--text); }
+.ev-top-products table { margin-top: 6px; font-size: 0.875rem; }
+.ev-top-products td, .ev-top-products th { padding: 3px 12px 3px 0; text-align: left; }
+.ev-top-products .num { text-align: right; }
+.ev-test .ev-chart { min-height: 200px; }
+
+/* ---------- year player (charts 1 and 2) ---------- */
+.ev-player { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 6px 0 4px; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+.ev-player [data-pl="play"] { min-width: 9.5rem; }
+.ev-player.on [data-pl="play"] { min-width: 6.5rem; }
+/* accent + accent-ink: 5.6:1 light, 7.8:1 dark (chart-focus + bg was 3.9:1 in light, below AA for 11px text) */
+.ev-player.playing [data-pl="play"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.ev-player input[type="range"] { flex: 1 1 200px; min-width: 140px; accent-color: var(--chart-focus); }
+.ev-player output { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; min-width: 3ch; font-variant-numeric: tabular-nums; }
+.ev-player .pl-speed { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--muted); }
+.ev-player .pl-note { flex-basis: 100%; margin: 0; }
+/* Readout behind the player's frame: marked by a dashed rule and muted ink, not by fading (0.45 opacity fell to 2:1). */
+.pl-behind figcaption { border-left: 2px dashed var(--rule-strong); padding-left: 10px; }
+.pl-behind figcaption, .pl-behind figcaption .ev-readout, .pl-behind figcaption strong { color: var(--muted); }
+@media (max-width: 560px) { .ev-player .pl-speed span { display: none; } }
+
+/* PRD 8.1: the four tests as tabs under the strip, each with a direction chip; the indicator view's back control. */
+.ev-tabs { display: flex; flex-wrap: wrap; gap: 0; margin: 18px 0 0; border-bottom: 1px solid var(--rule); }
+.ev-tab { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 9px 16px 8px; margin-bottom: -1px; background: transparent; border: 1px solid transparent; border-bottom: 3px solid transparent; border-radius: 0; color: var(--muted); font: inherit; font-size: 0.9375rem; cursor: pointer; text-align: left; }
+.ev-tab:hover { color: var(--text); }
+.ev-tab.on { color: var(--text); font-weight: 600; border-color: var(--rule); border-bottom: 3px solid var(--accent); background: var(--surface); }
+.ev-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.ev-tab-name { white-space: nowrap; }
+.ev-chip-dir { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.01em; white-space: nowrap; }
+.ev-chip-dir.toward { color: var(--chart-binding, #9c1f45); }
+.ev-chip-dir.away, .ev-chip-dir.mixed, .ev-chip-dir.none { color: var(--muted); font-weight: 500; }
+.ev-tabs + .ev-section.ev-test { border-top: 0; margin-top: 0; padding-top: 18px; }
+.ev-back { margin: 0 0 6px; }
+@media (max-width: 640px) {
+  .ev-tab { flex: 1 1 50%; padding: 8px 10px; font-size: 0.875rem; }
+}
+
+/* UX #22: a node whose price test cannot run says so under its rating. */
+.ev-noprice { display: block; margin-top: 6px; padding-left: 10px; border-left: 2px solid var(--amber, #c8871a); }
+
+/* PRD 7.1: chart 2's own compact play control, mirroring chart 1's player. */
+.ev-player-mini { border-bottom: 0; padding: 4px 0; }
+.ev-player-mini.playing #pl2-play { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.ev-player-mini #pl2-play { min-width: 9.5rem; }
+.ev-player-mini output { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 3ch; }
+
+/* PRD 8.1: from 1,400 px the indicator view sits beside the node view instead of replacing it. */
+@media (min-width: 1400px) {
+  main.ev.ev-split { max-width: 1880px; }
+  .ev-split .ev-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .ev-split #view-ind { border-left: 1px solid var(--rule); padding-left: 28px; position: sticky; top: var(--ev-toolbar-h, 72px); max-height: calc(100vh - var(--ev-toolbar-h, 72px)); overflow-y: auto; overscroll-behavior: contain; }
+}
