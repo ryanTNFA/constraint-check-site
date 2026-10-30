@@ -465,14 +465,12 @@ table.data td .sub { display: block; font-size: 0.75rem; color: var(--muted); }
 .narr p { font-family: var(--serif); font-size: 1rem; line-height: 1.55; }
 .narr ul { font-family: var(--serif); font-size: 1rem; padding-left: 20px; }
 
-/* ---------- proposal check ---------- */
-.proposal-out { margin-top: 16px; }
-.mapped { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-.mapped label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule-strong); padding: 3px 8px; border-radius: var(--radius); font-size: 0.875rem; color: var(--text); background: var(--surface); }
-.mapped label .why { color: var(--muted); font-size: 0.75rem; }
-.para { border: 1px solid var(--rule); background: var(--surface); padding: 14px 16px; margin-top: 10px; }
-.para p { font-family: var(--serif); font-size: 1.05rem; line-height: 1.55; margin: 0 0 8px; }
-.para .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+/* ---------- bring your own AI (idea briefing) ---------- */
+.briefing-form { display: grid; gap: 12px; max-width: 760px; }
+.briefing-form .field { display: grid; gap: 4px; }
+.briefing-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.briefing-steps { margin: 14px 0 6px; padding-left: 20px; max-width: 760px; }
+.briefing-steps li { margin-bottom: 4px; }
 
 /* ---------- picker ---------- */
 .picker-head { padding-block: 32px 16px; }

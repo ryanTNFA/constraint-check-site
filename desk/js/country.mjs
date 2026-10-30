@@ -4,7 +4,7 @@ import { renderTree } from './tree.mjs';
 import { createCard, plainTier, PLAIN_TIER, bottomLine, fcsNote, refSpan } from './card.mjs';
 import { renderComparators, SET_PLAIN } from './comparators.mjs';
 import { buildMemo, memoHTML } from './memo.mjs';
-import { renderProposal } from './proposal.mjs';
+import { buildBriefing } from './briefing.mjs';
 
 initTheme();
 const iso = (qs('iso') || '').toUpperCase();
@@ -14,7 +14,7 @@ const $ = (id) => document.getElementById(id);
 const state = {
   iso, registry: null, scorecard: null, countries: [], matrix: null, narrative: null, fcs: null, index: null,
   engine: null, engineStatus: { ok: false, message: '' },
-  activeSet: 'structural', peers: null, overrides: {}, view: null, lastRecompute: '', proposalParas: [],
+  activeSet: 'structural', peers: null, overrides: {}, view: null, lastRecompute: '',
 };
 let card = null;
 
@@ -72,7 +72,7 @@ async function main() {
   await applyComparators();
   renderAll();
   renderProvenance();
-  renderProposal($('proposal-body'), { getState: () => state, registry: state.registry, onOpenNode: (id) => card.open(id), onParagraphs: (list) => { state.proposalParas = list; } });
+  renderBriefingBox();
   renderExport();
   wireSectionLinks();
   // Links from the Evidence page open a node card directly: country.html?iso=KEN&node=N3.
@@ -489,6 +489,32 @@ function renderProvenance() {
 }
 
 // ---------------- export ----------------
+// "Bring your own AI" (docs/proposal-review.md): the idea and this Snapshot's evidence go into one Markdown file for the
+// user's own AI assistant. Nothing is sent anywhere; the Desk runs no model.
+function renderBriefingBox() {
+  const body = $('proposal-body'); body.replaceChildren();
+  const titleIn = h('input', { type: 'text', id: 'idea-title', placeholder: 'For example: Rural mini-grid program', autocomplete: 'off' });
+  const ideaIn = h('textarea', { id: 'idea-text', placeholder: 'What it does, for whom and where; roughly how big; and how it is meant to raise private investment or growth. The more specific, the better the answer.' });
+  const status = h('span', { class: 'small muted', 'aria-live': 'polite' }, '');
+  const flash = (msg) => { status.textContent = msg; setTimeout(() => { status.textContent = ''; }, 4000); };
+  const make = () => buildBriefing({ idea: ideaIn.value, title: titleIn.value, memo: memoText(), view: state.view, scorecard: state.scorecard, registry: state.registry, activeSet: state.activeSet, pageUrl: location.href.split('#')[0] });
+  const ready = () => { if (ideaIn.value.trim()) return true; flash('Describe the idea first.'); ideaIn.focus(); return false; };
+  const words = (t) => t.split(/\s+/).filter(Boolean).length.toLocaleString('en-US');
+  body.append(
+    h('div', { class: 'briefing-form' },
+      h('div', { class: 'field' }, h('label', { for: 'idea-title' }, 'Short title (optional)'), titleIn),
+      h('div', { class: 'field' }, h('label', { for: 'idea-text' }, 'Your program idea'), ideaIn)),
+    h('div', { class: 'briefing-actions' },
+      h('button', { class: 'btn primary', type: 'button', onclick: () => { if (!ready()) return; const t = make(); downloadText(`${iso}-idea-briefing.md`, t); flash(`Downloaded ${iso}-idea-briefing.md (about ${words(t)} words).`); } }, 'Download the briefing file'),
+      h('button', { class: 'btn', type: 'button', onclick: async () => { if (!ready()) return; const t = make(); try { await navigator.clipboard.writeText(t); flash(`Copied (about ${words(t)} words). Paste it into your AI assistant.`); } catch { flash('Copy failed; use Download instead.'); } } }, 'Copy it instead'),
+      status),
+    h('ol', { class: 'briefing-steps small' },
+      h('li', {}, 'Describe the idea above and download the file. It holds instructions for the AI, your idea, the growth-diagnostics method, and every piece of evidence on this page.'),
+      h('li', {}, 'Open the AI assistant you already use, attach the file or paste it in, and ask it to follow the instructions.'),
+      h('li', {}, 'Read the answer critically. The AI can be wrong, and this tool’s ratings are not yet validated: check the indicators it cites against this page before relying on it.')),
+    h('p', { class: 'small muted' }, 'The file uses the comparison countries and any overrides currently on this page. A built-in review is a possible future feature (docs/proposal-review.md).'));
+}
+
 function renderExport() {
   const body = $('export-body'); body.replaceChildren();
   const status = h('span', { class: 'small muted', 'aria-live': 'polite' }, '');
@@ -499,9 +525,9 @@ function renderExport() {
     h('button', { class: 'btn quiet', type: 'button', onclick: downloadMemo }, `Download ${iso}-memo.md`),
     h('button', { class: 'btn quiet', type: 'button', onclick: async () => { try { await navigator.clipboard.writeText(location.href); flash('Link copied.'); } catch { flash(location.href); } } }, 'Copy link to this view'),
     status));
-  body.append(h('p', { class: 'small muted', style: 'margin-top:8px' }, 'The link encodes the comparison countries, edited peers and your overrides. Paragraphs from Check a program idea are included when you have run one.'));
+  body.append(h('p', { class: 'small muted', style: 'margin-top:8px' }, 'The link encodes the comparison countries, edited peers and your overrides.'));
 }
-function memoText() { return buildMemo({ scorecard: state.scorecard, view: state.view, registry: state.registry, overrides: state.overrides, activeSet: state.activeSet, peers: state.peers, narrative: state.narrative, fcs: state.fcs, proposals: state.proposalParas, countries: state.countries, plain: plainCtx() }); }
+function memoText() { return buildMemo({ scorecard: state.scorecard, view: state.view, registry: state.registry, overrides: state.overrides, activeSet: state.activeSet, peers: state.peers, narrative: state.narrative, fcs: state.fcs, countries: state.countries, plain: plainCtx() }); }
 function downloadMemo() { downloadText(`${iso}-memo.md`, memoText()); }
 async function copyMemoRich() {
   const md = memoText(); const html = memoHTML(md, { title: `Constraint Check memo: ${state.scorecard.country.name}` });

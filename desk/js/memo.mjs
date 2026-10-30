@@ -1,4 +1,4 @@
-// The hand-off memo, built from what is on screen. Order: bottom line, program ideas checked,
+// The hand-off memo, built from what is on screen. Order: bottom line,
 // one evidence box per rated area, caveats, then appendices for analysts. Markdown is the source;
 // memoHTML() turns it into HTML for "Copy for email or Word" and "Print or save as PDF".
 import { nodeCode, fmt, fmtSigned, fmtValue, tierLabel, unitHint, shortName, sourceLabel, isStale, englishList, gNorm, reasonClause } from './common.mjs';
@@ -73,17 +73,9 @@ export function buildMemo(ctx) {
   }
   out.push('');
 
-  // 2. program ideas checked
-  const props = Array.isArray(ctx.proposals) ? ctx.proposals : [];
-  if (props.length) {
-    out.push('## 2. Program ideas checked');
-    out.push('');
-    for (const p of props) { out.push(`**${short(p.id)}.** ${p.text}`); out.push(''); }
-  }
-
   // 3. one evidence box per rated area
   const rated = view.nodes.filter((n) => !/^N11\./.test(n.id) && ['likely_binding', 'candidate', 'probably_not', 'ruled_out'].includes(n.tier));
-  out.push(`## ${props.length ? 3 : 2}. Evidence for the rated areas`);
+  out.push('## 2. Evidence for the rated areas');
   out.push('');
   if (!rated.length) { out.push('No area has a rating other than unclear. Open any area on the page for what would settle it.'); out.push(''); }
   for (const n of rated) {
@@ -107,7 +99,7 @@ export function buildMemo(ctx) {
   }
 
   // 4. caveats
-  out.push(`## ${props.length ? 4 : 3}. Caveats`);
+  out.push('## 3. Caveats');
   out.push('');
   out.push('- Prototype: the scoring rules have not been tested against expert diagnoses, and the tool has no track record yet.');
   out.push('- Public data only, no field work. Every rating is about what holds back private investment, not household needs.');
