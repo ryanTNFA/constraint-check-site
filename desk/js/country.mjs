@@ -38,21 +38,21 @@ function plainCtx() {
 
 async function main() {
   if (!iso) { showError('No economy selected. Open this page as country.html?iso=XXX or pick an economy from the list.'); return; }
-  document.querySelector('a.brand').href = withData('/constraint-check-site/desk/');
-  document.querySelector('.topnav a').href = withData('/constraint-check-site/desk/');
-  const snapLink = $('nav-snapshot'); if (snapLink) { snapLink.href = withData(`/constraint-check-site/desk/country.html?iso=${iso}`); snapLink.addEventListener('click', () => { snapLink.href = withData(`/constraint-check-site/desk/country.html?iso=${iso}${location.hash}`); }); }
-  const ev = $('nav-evidence'); if (ev) ev.href = withData(`/constraint-check-site/desk/evidence.html?iso=${iso}`);
+  document.querySelector('a.brand').href = withData('/C:/Program Files/Git/constraint-check-site/desk/');
+  document.querySelector('.topnav a').href = withData('/C:/Program Files/Git/constraint-check-site/desk/');
+  const snapLink = $('nav-snapshot'); if (snapLink) { snapLink.href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${iso}`); snapLink.addEventListener('click', () => { snapLink.href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${iso}${location.hash}`); }); }
+  const ev = $('nav-evidence'); if (ev) ev.href = withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${iso}`);
   // The summary page reads the same overrides (o=) from the link, so carry the current hash at click time.
-  const sm = $('nav-summary'); if (sm) sm.addEventListener('click', () => { sm.href = withData(`/constraint-check-site/desk/summary.html?iso=${iso}${location.hash}`); });
+  const sm = $('nav-summary'); if (sm) sm.addEventListener('click', () => { sm.href = withData(`/C:/Program Files/Git/constraint-check-site/desk/summary.html?iso=${iso}${location.hash}`); });
   try {
-    const [registry, scorecard, countries, fcs, index] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/countries.json`, { optional: true }), getJSON('/constraint-check-site/registry/static_fcs.json', { optional: true }), getJSON(`${DATA}/index.json`, { optional: true })]);
+    const [registry, scorecard, countries, fcs, index] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/countries.json`, { optional: true }), getJSON('/C:/Program Files/Git/constraint-check-site/registry/static_fcs.json', { optional: true }), getJSON(`${DATA}/index.json`, { optional: true })]);
     state.registry = registry; state.scorecard = scorecard; state.countries = countries || []; state.fcs = fcs; state.index = index;
   } catch (e) { showError(`Could not load the snapshot for ${iso}: ${e.message}. The engine CLI (or desk/dev/mock.mjs) must write ${DATA}/${iso}.json first.`); return; }
-  state.narrative = await getJSON(`/constraint-check-site/synth/narratives/${iso}.json`, { optional: true });
+  state.narrative = await getJSON(`/C:/Program Files/Git/constraint-check-site/synth/narratives/${iso}.json`, { optional: true });
   try {
-    const mod = await import('/constraint-check-site/engine/src/scorecard.mjs');
+    const mod = await import('/C:/Program Files/Git/constraint-check-site/engine/src/scorecard.mjs');
     if (typeof mod.recomputeWithPeers === 'function') { state.engine = mod; state.engineStatus = { ok: true, message: '' }; }
-    else state.engineStatus = { ok: false, message: '/constraint-check-site/engine/src/scorecard.mjs loaded but does not export recomputeWithPeers().' };
+    else state.engineStatus = { ok: false, message: '/C:/Program Files/Git/constraint-check-site/engine/src/scorecard.mjs loaded but does not export recomputeWithPeers().' };
   } catch (e) { state.engineStatus = { ok: false, message: `the engine module /engine/src/scorecard.mjs could not be imported (${e.message}).` }; }
 
   const hs = parseHash();
@@ -123,7 +123,7 @@ async function applyComparators() {
   writeHash(state);
 }
 function fallbackView(base) {
-  const nodes = base.nodes.map((n) => (n.tier_by_set && n.tier_by_set[state.activeSet] ? { ...n, tier: n.tier_by_set[state.activeSet], tier_reason: n.tier_by_set[state.activeSet] === n.tier ? n.tier_reason : `${plainTier(n.tier_by_set[state.activeSet])} under the ${state.activeSet} set (precomputed by the engine; the rule text below describes the structural-set computation). ${n.tier_reason}` } : n));
+  const nodes = base.nodes.map((n) => (n.tier_by_set && n.tier_by_set[state.activeSet] ? { ...n, ...(n.tier_by_set[state.activeSet] === n.tier ? {} : { cannot_tell_reason: null, cannot_tell_detail: null }), tier: n.tier_by_set[state.activeSet], tier_reason: n.tier_by_set[state.activeSet] === n.tier ? n.tier_reason : `${plainTier(n.tier_by_set[state.activeSet])} under the ${state.activeSet} set (precomputed by the engine; the rule text below describes the structural-set computation). ${n.tier_reason}` } : n));
   return { nodes, ranking: base.ranking, statements: base.statements, indicators: base.indicators, setKey: state.activeSet, note: 'Ranking and statements are shown for the default set; the engine module is not available for a browser recompute.' };
 }
 
@@ -133,7 +133,7 @@ function renderAll() { renderTreePanel(); renderStatements(); renderPeersLine();
 function renderHeader() {
   const sc = state.scorecard; const c = sc.country; const m = sc.meta;
   $('country-name').textContent = c.name; $('country-iso').textContent = c.iso3;
-  $('banner-text').textContent = `Constraint Check has not yet been tested against expert growth diagnoses. Its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
+  $('banner-text').textContent = `Constraint Check has not yet been tested against expert growth diagnoses. Its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/C:/Program Files/Git/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
   const note = fcsNote(state.fcs, c.iso3, c.name);
   const el = $('fcs-note');
   if (note) { el.hidden = false; el.textContent = note; } else el.hidden = true;
@@ -338,10 +338,12 @@ function renderStatements() {
     const g = bl.groups;
     b3.append(h('p', {}, `We cannot tell about ${bl.nUnclear} area${bl.nUnclear === 1 ? '' : 's'}, for different reasons:`));
     const ul = h('ul', { class: 'reasons' });
-    if (g.mixed.length) ul.append(h('li', {}, h('strong', {}, `Evidence too weak or pointing both ways (${g.mixed.length}): `), ...names(g.mixed), '.', bl.closest ? ` Closest to a call: ${bl.closest.short} (leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''));
+    if (g.oneKind.length) ul.append(h('li', {}, h('strong', {}, `Only one kind of evidence speaks (${g.oneKind.length}): `), ...names(g.oneKind), '. A second kind (a price, a response to change, or firms working around it) would settle it either way.', bl.closest ? ` Closest to a call: ${bl.closest.short} (leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''));
+    if (g.mixed.length) ul.append(h('li', {}, h('strong', {}, `The evidence points both ways (${g.mixed.length}): `), ...names(g.mixed), '. Possibly a problem for some sectors or regions only.'));
     if (g.toolGap.length) ul.append(h('li', {}, h('strong', {}, `The tool has no adequate measure yet (${g.toolGap.length}): `), ...names(g.toolGap), `. This is a gap in the tool, not in ${c}'s data; ask an economist.`));
     if (g.dataGap.length) ul.append(h('li', {}, h('strong', {}, `Too little recent data for ${c} (${g.dataGap.length}): `), ...names(g.dataGap), '. New data would settle it.'));
     if (g.sector.length) ul.append(h('li', {}, h('strong', {}, `Needs a sector study (${g.sector.length}): `), ...names(g.sector), '.'));
+    if (g.elimination.length) ul.append(h('li', {}, h('strong', {}, `Judged by elimination (${g.elimination.length}): `), ...names(g.elimination), '. It can be called only once the other causes of low returns are ruled out.', ...g.elimination.map((x) => (x.node.elimination && x.node.elimination.direction !== 'none' ? ` Today the evidence leans ${x.node.elimination.direction === 'toward' ? 'toward' : 'away from'} a problem.` : ''))));
     b3.append(ul);
     if (bl.firmsTop) {
       const r = bl.firmsTop.r; const m = String(r.name || '').match(/choosing (.+?) as their biggest obstacle/i);

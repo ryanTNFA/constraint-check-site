@@ -56,10 +56,12 @@ export function buildMemo(ctx) {
   if (bl.nUnclear) {
     const gr = bl.groups;
     out.push(`- **Unclear (${bl.nUnclear} area${bl.nUnclear === 1 ? '' : 's'}), for different reasons:**`);
-    if (gr.mixed.length) out.push(`  - Evidence too weak or pointing both ways (${gr.mixed.length}): ${englishList(gr.mixed.map((x) => x.short))}.${bl.closest ? ` Closest to a call: ${bl.closest.short} (leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''}`);
+    if (gr.oneKind.length) out.push(`  - Only one kind of evidence speaks (${gr.oneKind.length}): ${englishList(gr.oneKind.map((x) => x.short))}. A second kind would settle it either way.${bl.closest ? ` Closest to a call: ${bl.closest.short} (leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''}`);
+    if (gr.mixed.length) out.push(`  - The evidence points both ways (${gr.mixed.length}): ${englishList(gr.mixed.map((x) => x.short))}. Possibly a problem for some sectors or regions only.`);
     if (gr.toolGap.length) out.push(`  - The tool has no adequate measure yet (${gr.toolGap.length}): ${englishList(gr.toolGap.map((x) => x.short))}. A gap in the tool, not in ${c.name}'s data; ask an economist.`);
     if (gr.dataGap.length) out.push(`  - Too little recent data for ${c.name} (${gr.dataGap.length}): ${englishList(gr.dataGap.map((x) => x.short))}. New data would settle it.`);
     if (gr.sector.length) out.push(`  - Needs a sector study (${gr.sector.length}): ${englishList(gr.sector.map((x) => x.short))}.`);
+    for (const x of gr.elimination) out.push(`  - Judged by elimination: ${x.short}. It can be called only once the other causes of low returns are ruled out${x.node.elimination && x.node.elimination.direction !== 'none' ? `; today the evidence leans ${x.node.elimination.direction === 'toward' ? 'toward' : 'away from'} a problem` : ''}.`);
   }
   if (bl.towardLeans.length || bl.awayLeans.length) {
     const parts = [];

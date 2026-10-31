@@ -1,6 +1,6 @@
 // Node evidence card: a side drawer. Also the plain-language helpers that the statements,
 // the tree, Proposal Check and the memo share, so every surface says the same thing.
-import { nodeCode, h, fmt, fmtSigned, fmtSignal, fmtValue, tierLabel, tierClass, isCannotTell, unitHint, shortName, sourceLink, sourceLabel, missingTestReason, subreasonLabel, TEST_ORDER, TEST_NUM, USER_TIERS, isStale, withData, TIER_ORD, englishList, isRegistryGap, DATA_GAP_KINDS } from './common.mjs';
+import { nodeCode, h, fmt, fmtSigned, fmtSignal, fmtValue, tierLabel, tierClass, isCannotTell, unitHint, shortName, sourceLink, sourceLabel, missingTestReason, subreasonLabel, TEST_ORDER, TEST_NUM, USER_TIERS, isStale, withData, TIER_ORD, englishList, isRegistryGap, DATA_GAP_KINDS, cannotTellCode, leanOf, CANNOT_TELL_PLAIN } from './common.mjs';
 
 const FOCUSABLE = 'button, [href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"])';
 
@@ -67,7 +67,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
         h('h2', { id: 'drawer-title' }, reg ? reg.short : nodeId),
         h('div', { class: 'small muted' }, reg ? reg.label : ''),
         reg && reg.question ? h('p', { class: 'q' }, reg.question) : null,
-        h('a', { class: 'small', href: withData(`/constraint-check-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) }, 'Charts for this area (analyst view) →')),
+        h('a', { class: 'small', href: withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) }, 'Charts for this area (analyst view) →')),
       h('button', { class: 'btn quiet small drawer-close', type: 'button', 'aria-label': 'Close evidence card', onclick: close }, 'Close')));
 
     if (!node) { drawer.append(h('p', { class: 'note' }, 'This area is not scored in the snapshot.')); return; }
@@ -79,6 +79,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
     const plainSec = h('section', { class: 'plain-read' }, h('h3', {}, 'What the evidence says'));
     plainSec.append(h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
       h('span', { class: `tier-badge lg ${tierClass(node.tier)}` }, h('span', {}, plainTier(node.tier))),
+      reasonTag(evidenceNode(node, view.nodes)),
       ov ? h('span', { class: 'small' }, '→ your override: ', h('span', { class: `tier-badge ${tierClass(ov.tier)}` }, h('span', {}, plainTier(ov.tier)))) : null,
       node.F ? h('span', { class: 'flag warn small' }, 'sensitive to the choice of comparison countries') : null,
       node.top_split_override ? h('span', { class: 'flag warn small' }, `first-decision cap applied${node.top_split_override_row ? ` (${node.top_split_override_row.replace(/_/g, ' ')})` : ''}`) : null));
@@ -164,6 +165,14 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
       sec.append(h('p', { class: 'small muted', style: 'margin-top:6px' }, 'How to read the table: “vs. what income predicts” is the gap to countries at the same income, in standard deviations (+1 is roughly the top sixth); the percentile is across all economies. “Toward / away” is the score the measure gives, from −2 (clearly away from a problem) to +2 (clearly toward one). Evidence type: A prices and rationing, B working around the problem, C quantities and opinions, D composite indices.'));
       if (fams.some((f) => f.votes === false)) sec.append(h('p', { class: 'small muted', style: 'margin-top:6px' }, 'Measures marked “informs, does not vote” are quantities or opinions (class C/D): they are shown, and listed on the other side where they disagree, but they do not move the score.'));
       drawer.append(sec);
+    } else if (node.tier === 'context_only' && indicators.some((r) => (r.nodes || []).includes(node.id))) {
+      // a context area with measures of its own (N11.policy, rubric 0.1.7): described in plain words, not scored
+      const ul = h('ul', { class: 'small', style: 'margin:0;padding-left:18px;display:grid;gap:4px' });
+      for (const r of indicators.filter((x) => (x.nodes || []).includes(node.id))) {
+        const t = r.icr && r.icr.t != null ? `, ${fmtSigned(r.icr.t, 1)} vs. what income predicts` : '';
+        ul.append(h('li', {}, r.value_ref != null ? `${shortName(r)}: ${fmtValue(r, r.value_ref)} ${unitHint(r)} (${r.year_ref}${t}).` : `${shortName(r)}: no recent value for ${country}.`));
+      }
+      drawer.append(h('section', {}, h('h3', {}, 'What the measures show'), ul, h('p', { class: 'small muted', style: 'margin-top:6px' }, 'Shown for context. These measures carry no score and do not enter any rating.')));
     } else if (!node.sub_nodes) {
       drawer.append(h('section', {}, h('h3', {}, 'Evidence'), h('p', { class: 'note' }, node.tier === 'desk_undiagnosable' ? 'Coordination failures cannot be judged from national statistics; this needs sector work.' : node.tier === 'context_only' ? 'Geography, natural capital and market size are context: they enter every comparison as controls and are recorded in the growth problem.' : 'No measure with a usable reading for this area in the current window.')));
     }
@@ -231,7 +240,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
 
     // load-bearing
     if ((ev.load_bearing || []).length) drawer.append(h('section', {}, h('h3', {}, 'Measures the rating depends on'), h('p', { class: 'small' }, `Removing any one of these voting measures changes the rating: ${ev.load_bearing.map(prettyFamily).join(', ')}.`)));
-    if ((ev.informing_dissent || []).length) drawer.append(h('section', {}, h('h3', {}, 'Supporting measures that disagree'), h('p', { class: 'small' }, `Quantities or opinions that disagree with the rating by a full point or more. They do not vote, but they block the firmest ratings: ${ev.informing_dissent.map(prettyFamily).join(', ')}.`)));
+    if ((ev.informing_dissent || []).length && ev.tier !== 'elimination') drawer.append(h('section', {}, h('h3', {}, 'Supporting measures that disagree'), h('p', { class: 'small' }, `Quantities or opinions that disagree with the rating by a full point or more. They do not vote, but they block the firmest ratings: ${ev.informing_dissent.map(prettyFamily).join(', ')}.`)));
 
     // hand-off: what would change this, in-country checks, data gaps
     const nsec = h('section', { class: 'narr' }, h('h3', {}, 'What would change this, what to check in-country, data gaps'));
@@ -308,6 +317,7 @@ export const PLAIN_TIER = {
   ruled_out: 'Ruled out',
   desk_undiagnosable: 'Needs sector study',
   context_only: 'Context, not a constraint',
+  elimination: 'Judged by elimination',
 };
 export const plainTier = (t) => PLAIN_TIER[t] || tierLabel(t);
 
@@ -349,6 +359,13 @@ const TEST_PLAIN = {
   changes: 'When it eases, does investment respond?',
   circumvention: 'Do firms pay to work around it?',
   camels: 'Do industries that need little of it do better?',
+};
+/** Each test as a noun phrase: "only one kind of evidence speaks (firms paying to get around it)". */
+const TEST_NOUN = {
+  price: 'a high price or rationing',
+  changes: 'how investment responds when it eases',
+  circumvention: 'firms paying to get around it',
+  camels: 'which industries do better without it',
 };
 const CLASS_SHORT = { A: 'price or rationing', B: 'strong indirect evidence', C: 'quantity or opinion', D: 'composite index', X: 'context' };
 const CLASS_PLAIN = {
@@ -484,12 +501,25 @@ function whyNotRuledOut(n, P) {
   return out;
 }
 
+/** Reason and lean beside a grey badge: "one kind of evidence ↗". Null for any other tier. */
+export function reasonTag(n) {
+  const code = cannotTellCode(n);
+  const lean = leanOf(n);
+  if (!code && !lean) return null;
+  return h('span', { class: 'ct-reason' },
+    lean ? h('span', { class: `lean-mark ${lean.band}`, title: lean.words, 'aria-label': lean.words }, lean.mark) : null,
+    code ? ` ${CANNOT_TELL_PLAIN[code].label}` : '');
+}
+
 /** One plain paragraph that leads every card and tree hover. */
 export function plainSummary(node, ctx, { brief = false } = {}) {
   if (!node) return 'Not scored in this snapshot.';
   const P = ctx.registry.params.tiers; const t = node.tier; const c = ctx.country;
-  if (t === 'context_only') return 'Context, not a constraint: geography, natural resources and market size enter every comparison as controls.';
+  if (t === 'context_only') return node.id === 'N11.policy'
+    ? 'Context to describe, not rated: political stability is partly an outcome of the other constraints, so the tool reports the measures below without scoring them.'
+    : 'Context, not a constraint: geography, natural resources and market size enter every comparison as controls.';
   if (t === 'desk_undiagnosable') return 'Needs a sector study: this cannot be judged from national statistics.';
+  if (t === 'elimination') return eliminationSentence(node);
   const ev = evidenceNode(node, ctx.nodes);
   const evShort = ev !== node ? plainShort(ctx.registry, ev.id) : '';
   const toward = topFacts(ev, ctx, 1, brief ? 1 : 2), away = topFacts(ev, ctx, -1, 1);
@@ -506,21 +536,46 @@ export function plainSummary(node, ctx, { brief = false } = {}) {
     const counter = topFacts(ev, ctx, 1, 1)[0];
     s.push(counter ? `Strongest counter-evidence: ${counter.text}.` : 'No scored measure points toward a problem.');
     if (t === 'probably_not' && !brief) { const w = whyNotRuledOut(ev, P); if (w.length) s.push(`Not ruled out because ${englishList(w)}.`); }
-  } else if (t === 'cannot_tell_data_gap') {
-    const sub = ev.tier_subreason || node.tier_subreason;
-    if (isRegistryGap(sub)) s.push(`Unclear: the tool has no adequate measure for this yet (${subreasonLabel(sub)}). This is a gap in the tool, not in ${c}'s data.`);
-    else if (sub === 'stale') s.push(`Unclear: the newest high-quality evidence for ${c} is older than ${P.cannot_tell_data_gap.staleness_limit_years} years.`);
-    else s.push(`Unclear: too few recent measures for ${c} (${plural(ev.E ?? 0, 'independent source', 'independent sources')}; ${P.cannot_tell_data_gap.E_below} needed).`);
-    if (!brief && (toward.length || away.length)) s.push(`What there is: ${[...toward.slice(0, 1).map((x) => `toward a problem, ${x.text}`), ...away.map((x) => `away, ${x.text}`)].join('; ')}.`);
   } else {
-    s.push(t === 'cannot_tell_conflicting' ? 'Unclear: the tests point in opposite directions.' : 'Unclear: the evidence is too weak to call.');
-    s.push(leanSentence(ev, P));
-    if (!brief) {
-      if (toward.length) s.push(`Toward a problem: ${toward[0].text}.`);
-      if (away.length) s.push(`Away: ${away[0].text}.`);
+    // front-door PRD W1: one of four plain reasons, never a bare "unclear"
+    const code = cannotTellCode(ev) || cannotTellCode(node);
+    const whatThereIs = () => { if (!brief && (toward.length || away.length)) s.push(`What there is: ${[...toward.slice(0, 1).map((x) => `toward a problem, ${x.text}`), ...away.map((x) => `away, ${x.text}`)].join('; ')}.`); };
+    if (code === 'not_connected') {
+      s.push(`Unclear: the evidence that could settle this isn’t connected to the tool yet. This is a gap in the tool, not in ${c}’s data.`);
+      whatThereIs();
+    } else if (code === 'no_recent_data') {
+      const sub = ev.tier_subreason || node.tier_subreason;
+      if (sub === 'stale' && ev.R != null) s.push(`Unclear: ${c} has no recent high-quality data on this; the newest is from ${ev.R}, more than ${P.cannot_tell_data_gap.staleness_limit_years} years ago.`);
+      else s.push(`Unclear: ${c} has too few recent measures on this (${plural(ev.E ?? 0, 'independent source', 'independent sources')}; ${P.cannot_tell_data_gap.E_below} needed).`);
+      whatThereIs();
+    } else if (code === 'one_kind') {
+      const lean = leanOf(ev);
+      const speaking = speakingTests(ev);
+      const what = speaking.length ? ` (${englishList(speaking.map((k) => TEST_NOUN[k]))})` : '';
+      s.push(lean ? `Unclear: it ${lean.words}, but only one kind of evidence speaks${what}.` : `Unclear: it leans neither way, and only one kind of evidence speaks${what}.`);
+      if (!brief && toward.length) s.push(`Toward a problem: ${toward[0].text}.`);
+      if (!brief && away.length) s.push(`Away: ${away[0].text}.`);
+    } else {
+      s.push('Unclear: the evidence points both ways.');
+      if (toward.length) s.push(`Strongest toward a problem: ${toward[0].text}.`);
+      if (away.length) s.push(`Strongest away: ${away[0].text}.`);
+      if (!brief) s.push(leanSentence(ev, P));
     }
   }
   return s.join(' ');
+}
+/** Tests with a score on this node, from the engine's cannot_tell detail when present. */
+function speakingTests(n) {
+  const d = n.cannot_tell_detail;
+  if (d && Array.isArray(d.speaking_tests)) return d.speaking_tests.map((x) => x.test);
+  return TEST_ORDER.filter((k) => n.tests && n.tests[k] && n.tests[k].T != null && Math.abs(n.tests[k].T) >= 0.5);
+}
+/** N12 (rubric 0.1.7, decision D1): judged by elimination, with the lean of its evidence. */
+export function eliminationSentence(n) {
+  const l = n.elimination || {};
+  const lean = l.direction === 'toward' ? 'leans toward a self-discovery problem' : l.direction === 'away' ? 'leans away from a self-discovery problem' : 'leans neither way';
+  const counts = l.families ? ` (${l.toward} of ${plural(l.families, 'measure', 'measures')} toward, ${l.away} away)` : '';
+  return `Not settled by public data alone. The pattern of new products and diversification ${lean}${counts}. It becomes a candidate only if the other low-return areas are ruled out.`;
 }
 function leanSentence(n, P) {
   if (n.N == null) return 'There is no score.';
@@ -533,6 +588,7 @@ function leanSentence(n, P) {
 export function whatWouldMove(node, ctx) {
   const P = ctx.registry.params.tiers; const t = node.tier; const c = ctx.country;
   const ev = evidenceNode(node, ctx.nodes);
+  if (t === 'elimination') return ['It is judged by elimination: it becomes worth a closer look only if the other causes of low returns (infrastructure, skills, micro and macro risks) are ruled out. A rule for that is planned for the next rubric.'];
   if (t === 'context_only' || t === 'desk_undiagnosable' || (ev.N == null && t !== 'cannot_tell_data_gap')) return t === 'desk_undiagnosable' ? ['Only a sector study can rate this area.'] : [];
   const out = [];
   const L = P.likely_binding, C = P.candidate, PN = P.probably_not, R = P.ruled_out;
@@ -550,10 +606,19 @@ export function whatWouldMove(node, ctx) {
     out.push(`It would move back to ‘unclear’ if the score rose above ${fmtSigned((ev.C ?? 0) >= PN.C_min ? PN.N_max : PN.N_alt_max)} (today ${fmtSigned(ev.N)}) or a counter-signal strengthened.`);
   } else if (t === 'cannot_tell_data_gap') {
     const sub = ev.tier_subreason || node.tier_subreason;
-    if (isRegistryGap(sub)) out.push(`Only a new measure in the tool can move this: ${(DATA_GAP_KINDS[sub] || {}).resolves || 'more high-quality evidence in the registry'}. No amount of data for ${c} changes it today.`);
-    else if (sub === 'stale') out.push('A newer observation of the main high-quality measure would let the tool rate this area.');
-    else out.push(`A second recent high-quality measure for ${c} would let the tool rate this area (today ${ev.E ?? 0} of ${P.cannot_tell_data_gap.E_below}).`);
+    const needs = ((ev.connectors_missing || []).length ? ev.connectors_missing : node.connectors_missing || []).map(prettyFamily);
+    if (isRegistryGap(sub)) out.push(`Only a new measure in the tool can move this${needs.length ? `: the evidence it needs is ${englishList(needs)}` : `: ${(DATA_GAP_KINDS[sub] || {}).resolves || 'more high-quality evidence in the registry'}`}. No amount of data for ${c} changes it today.`);
+    else {
+      const absent = [...new Set((ctx.indicators || []).filter((r) => (r.nodes || []).includes(ev.id) && (r.class === 'A' || r.class === 'B') && (r.value_ref == null || r.stale_year != null)).map((r) => shortName(r)))].slice(0, 3);
+      if (sub === 'stale') out.push(`A newer observation of the main high-quality measure would let the tool rate this area${absent.length ? `: ${englishList(absent)}` : ''}.`);
+      else out.push(`A second recent high-quality measure for ${c} would let the tool rate this area (today ${ev.E ?? 0} of ${P.cannot_tell_data_gap.E_below})${absent.length ? `. Missing or out of date: ${englishList(absent)}` : ''}.`);
+    }
   } else if (ev.N != null) {
+    if (cannotTellCode(ev) === 'one_kind') {
+      const d = ev.cannot_tell_detail;
+      const missing = d && Array.isArray(d.missing_tests) ? d.missing_tests : TEST_ORDER.filter((k) => !(ev.tests && ev.tests[k] && ev.tests[k].T != null));
+      if (missing.length) out.push(`A second kind of evidence would settle it either way: ${englishList(missing.map((k) => TEST_NOUN[k]))}. The field questions are a start.`);
+    }
     if (ev.N >= 0) {
       const need = priceNeed(C.N_min);
       out.push(`To reach ‘worth a closer look’ the score would need +${fmt(C.N_min, 2)} with ${C.C_min} tests agreeing, or +${fmt(C.N_alt_min, 2)} on fewer (today ${fmtSigned(ev.N)}, ${ev.C ?? 0} agreeing).${need != null && need <= 2 ? ` With the other tests unchanged, the price test would need to reach about ${fmtSigned(need, 1)} (today ${fmtSigned(priceT, 2)}).` : ''}`);
@@ -661,18 +726,20 @@ export function bottomLine(ctx) {
   for (const x of [...ruled, ...probNot]) { x.away = topFacts(x.ev, ctx, -1, 1)[0] || null; x.counter = topFacts(x.ev, ctx, 1, 1)[0] || null; }
   const look = by((t) => t === 'candidate' || t === 'likely_binding').map(item);
   for (const x of look) x.facts = topFacts(x.ev, ctx, 1, 2);
-  const unclearIds = by((t) => isCannotTell(t) || t === 'desk_undiagnosable');
-  const groups = { mixed: [], toolGap: [], dataGap: [], sector: [] };
+  const unclearIds = by((t) => isCannotTell(t) || t === 'desk_undiagnosable' || t === 'elimination');
+  // the four plain reasons of front-door PRD W1, plus sector study and N12's elimination status
+  const groups = { oneKind: [], mixed: [], toolGap: [], dataGap: [], sector: [], elimination: [] };
+  const groupOf = { one_kind: 'oneKind', mixed: 'mixed', not_connected: 'toolGap', no_recent_data: 'dataGap' };
   for (const id of unclearIds) {
     const n = nodeOf(id);
     if (n.tier === 'desk_undiagnosable') groups.sector.push(item(id));
-    else if (n.tier === 'cannot_tell_data_gap') (isRegistryGap(n.tier_subreason) ? groups.toolGap : groups.dataGap).push(item(id));
-    else groups.mixed.push(item(id));
+    else if (n.tier === 'elimination') groups.elimination.push(item(id));
+    else groups[groupOf[cannotTellCode(evidenceNode(n, view.nodes)) || cannotTellCode(n)] || 'mixed'].push(item(id));
   }
-  const scoredMixed = groups.mixed.filter((x) => x.node.N != null);
+  const scoredMixed = [...groups.oneKind, ...groups.mixed].filter((x) => x.node.N != null);
   const closest = scoredMixed.length ? scoredMixed.slice().sort((a, b) => Math.abs(b.node.N) - Math.abs(a.node.N))[0] : null;
   // leans below the bar: unclear areas whose score is at least half-way to the first tier on either side
-  const leanPool = unclearIds.map(item).filter((x) => x.node.N != null && x.node.tier !== 'desk_undiagnosable');
+  const leanPool = unclearIds.map(item).filter((x) => x.node.N != null && x.node.tier !== 'desk_undiagnosable' && x.node.tier !== 'elimination');
   const towardLeans = leanPool.filter((x) => x.node.N >= 0.25).sort((a, b) => b.node.N - a.node.N);
   const awayLeans = leanPool.filter((x) => x.node.N <= -0.25).sort((a, b) => a.node.N - b.node.N);
   for (const x of towardLeans.slice(0, 1)) x.fact = topFacts(x.ev, ctx, 1, 1)[0] || null;

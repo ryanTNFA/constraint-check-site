@@ -3,7 +3,7 @@
 // indicator charts (C1 to C3); it passes what these views need in `ctx`.
 import { nodeCode, h, fmt, fmtSigned, shortName, sourceLabel, tierLabel, tierClass, withData } from './common.mjs';
 import { stripRows, familyRows, obstacleRows, indexSeries, exportShares, TEST_ORDER } from './evidence_math.mjs';
-import { plainTier, tierBySetLine } from './card.mjs';
+import { plainTier, tierBySetLine, reasonTag } from './card.mjs';
 import { median, isNum } from '../../engine/src/stats.mjs';
 
 const TEST_LABEL = { price: 'Test 1 · Price', changes: 'Test 2 · Changes', circumvention: 'Test 3 · Circumvention', camels: 'Test 4 · Camels and hippos' };
@@ -127,7 +127,11 @@ export function railModel(registry) {
     const items = [];
     for (const n of kids(id)) {
       items.push({ id: n.id, short: n.short, context: !n.diagnosable });
-      if (n.rollup_of) for (const s of n.rollup_of) { const sn = registry.nodeById[s]; if (sn) items.push({ id: sn.id, short: sn.short, sub: true }); }
+      if (n.rollup_of) {
+        for (const s of n.rollup_of) { const sn = registry.nodeById[s]; if (sn) items.push({ id: sn.id, short: sn.short, sub: true }); }
+        // sub-areas outside the roll-up are context (N11.policy, rubric 0.1.7)
+        for (const c of kids(n.id)) if (!n.rollup_of.includes(c.id)) items.push({ id: c.id, short: c.short, sub: true, context: !c.diagnosable });
+      }
     }
     return items;
   };
@@ -218,11 +222,12 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
   const bySet = tierBySetLine(sn, set);
   verdictEl.append(...[
     h('span', {}, 'The tool’s rating: '), h('span', { class: `tier-badge ${tierClass(tier)}` }, h('span', {}, plainTier(tier))),
+    ' ', reasonTag(tier === sn.tier ? sn : { ...sn, tier, cannot_tell_reason: null, cannot_tell_detail: null }),
     lean ? h('span', { class: 'small muted' }, ` ${lean}.`) : null,
-    ' ', h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${iso}&node=${encodeURIComponent(view)}`) }, 'Open the rating card for the reasoning'),
+    ' ', h('a', { href: withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${iso}&node=${encodeURIComponent(view)}`) }, 'Open the rating card for the reasoning'),
     bySet ? h('span', { class: 'small muted ev-byset' }, ` ${bySet}`) : null,
   ].filter(Boolean));
-  const np = noPriceNote(scorecard, view, countryName);
+  const np = sn.tier === 'elimination' ? null : noPriceNote(scorecard, view, countryName);
   if (np) verdictEl.append(h('span', { class: 'small ev-noprice' }, np));
 }
 

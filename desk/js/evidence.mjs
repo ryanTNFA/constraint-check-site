@@ -300,8 +300,8 @@ async function loadCountry() {
     getJSON(`${DATA}/${state.iso}.json`, { optional: true }),
     getJSON(`${DATA}/coverage/${state.iso}.json`, { optional: true }),
   ]);
-  $('nav-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}`);
-  $('nav-summary').href = withData(`/constraint-check-site/desk/summary.html?iso=${state.iso}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
+  $('nav-snapshot').href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${state.iso}`);
+  $('nav-summary').href = withData(`/C:/Program Files/Git/constraint-check-site/desk/summary.html?iso=${state.iso}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
 }
 
 // ---------- compute ----------
@@ -632,7 +632,7 @@ function renderVerdict(c) {
     box.append(h('span', { class: `chip ${tierClass(n.tier)}` }, `${nodeCode(n.id)} ${state.registry.nodeById[n.id] ? state.registry.nodeById[n.id].short : ''}: ${tierLabel(n.tier)}`));
     if (i < items.length - 1) box.append(' · ');
   });
-  box.append(h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${state.iso}`) }, 'Open the Snapshot'));
+  box.append(h('a', { href: withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${state.iso}`) }, 'Open the Snapshot'));
 }
 
 function renderTable(c) {
@@ -680,7 +680,7 @@ async function render() {
 }
 
 // ---------- node view (rail, C9, C4, C7) ----------
-const hrefFor = (view) => withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(view)}${location.hash}`);
+const hrefFor = (view) => withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(view)}${location.hash}`);
 
 function nodeControls() {
   const box = $('node-controls');
@@ -1443,7 +1443,7 @@ async function main() {
     Object.assign(state, { registry, countries, fits, index });
     state.byIso = Object.fromEntries(countries.map((c) => [c.iso3, c]));
     if (!state.byIso[state.iso]) state.iso = 'KEN';
-    $('nav-all').href = withData('/constraint-check-site/desk/');
+    $('nav-all').href = withData('/C:/Program Files/Git/constraint-check-site/desk/');
     await loadCountry();
     if (!state.node || !(VIEWS.includes(state.node) || registry.nodeById[state.node])) {
       const ind = state.ind && registry.indicatorById[state.ind];

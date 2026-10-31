@@ -1,6 +1,6 @@
 {
   "_comment": "Rubric parameters v0.1.4 (Workbook Appendix B as corrected by docs/CHANGELOG-rubric.md). Every number here is a starting point to be calibrated in Phase 0. The engine must read all thresholds from this file; nothing numeric is hard-coded.",
-  "rubric_version": "0.1.6",
+  "rubric_version": "0.1.7",
   "snapshot_reference_window_years": 12,
   "icr": {
     "controls": [
@@ -120,7 +120,8 @@
       "F_max": 0,
       "lone_circumvention_family_needs_peer_gap": true
     },
-    "concordance_abs_T_min": 0.5
+    "concordance_abs_T_min": 0.5,
+    "cannot_tell_lean_clear_abs_N": 0.5
   },
   "ranking": {
     "_comment": "v0.1.2: the bootstrap never resamples a node below E_below voting families (nodes with at most E_below voting families are not resampled and are listed in ranking.not_resampled).",

@@ -4,12 +4,12 @@
    The dark theme is a tool-only extension derived from the same tokens; the website has none.
    --chart-* and --tier-* are the TNFA data palette (validated for colour-vision deficiency and contrast). */
 
-@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-italic-400600.woff2") format("woff2"); font-weight: 400 600; font-style: italic; font-display: swap; }
-@font-face { font-family: "Libertinus Serif Display"; src: url("/constraint-check-site/desk/fonts/libertinus-serif-display-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "Inter"; src: url("/constraint-check-site/desk/fonts/inter-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/newsreader-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/newsreader-italic-400600.woff2") format("woff2"); font-weight: 400 600; font-style: italic; font-display: swap; }
+@font-face { font-family: "Libertinus Serif Display"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/libertinus-serif-display-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/inter-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/ibm-plex-mono-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
 
 :root {
   /* surfaces and text (TNFA: bg-soft, white, bone, ink, ink-muted, toc-rail) */
@@ -305,7 +305,7 @@ label { font-size: 0.875rem; color: var(--muted); }
   border-color: var(--tier-cannot-hatch);
 }
 .t-cannot_tell_data_gap { background: transparent; color: var(--tier-cannot-ink); border: 1px dashed var(--tier-cannot-hatch); }
-.t-desk_undiagnosable, .t-context, .t-context_only { background: var(--tier-context); color: var(--tier-context-ink); border-color: var(--rule); }
+.t-desk_undiagnosable, .t-context, .t-context_only, .t-elimination { background: var(--tier-context); color: var(--tier-context-ink); border-color: var(--rule); }
 .tier-badge.t-cannot_tell_conflicting span, .tier-badge.t-cannot_tell_weak span { background: var(--tier-cannot); padding: 0 4px; border-radius: 2px; }
 .swatch { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--rule-strong); vertical-align: -2px; margin-right: 6px; border-radius: var(--radius-tag); }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.8125rem; color: var(--muted); margin: 8px 0 12px; }
@@ -544,3 +544,8 @@ details.rule-detail .stat-grid { margin-top: 8px; }
   body { background: #fff; color: #000; }
   .banner { background: #fff; border-color: #000; } .banner .alert-mark { background: #000; }
 }
+
+/* Lean of an unclear area (front-door PRD W1): an arrow beside the grey, never a fill, so it cannot read as a verdict. */
+.lean-mark { display: inline-block; min-width: 1.1em; text-align: center; font-weight: 600; color: var(--text); line-height: 1; }
+.lean-mark.slight { font-weight: 400; color: var(--muted); }
+.ct-reason { font-size: .8125rem; color: var(--muted); }

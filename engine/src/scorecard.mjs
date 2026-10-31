@@ -20,7 +20,7 @@ import { evaluateNode, rollupNode, rankNodes, statements, bootstrapRanks, applyT
 import { topSplit, RATE_SOURCES } from './topsplit.mjs';
 import { growthUniverse, growthProblem } from './growth.mjs';
 
-export const ENGINE_VERSION = '0.1.4';
+export const ENGINE_VERSION = '0.1.5';
 export const DEFAULT_SETS = ['structural', 'regional', 'aspirational'];
 export const DESK_SERIES = ['NY.GDP.PCAP.KD', 'NY.GDP.PCAP.KD.ZG', 'NE.GDI.FTOT.ZS', 'FR.INR.RINR', 'FS.AST.PRVT.GD.ZS', 'FP.CPI.TOTL.ZG'];
 export const RATIONING_INDICATOR = 'IC.FRM.CRDC.FL.ZS';
@@ -377,6 +377,51 @@ export function registryVotingCapacity(registry, nodeIds, params) {
   return out;
 }
 
+/**
+ * The lean of a node judged by elimination (front-door PRD W2, decision D1): how many of its
+ * evidence families point toward a problem (s > 0) and away (s < 0), and their weighted mean
+ * signal. Every family counts here, voting or informing, since none decides a tier.
+ */
+export function eliminationLean(families) {
+  const byId = new Map();
+  for (const f of families || []) if (f.weight > 0 && isNum(f.signal) && !byId.has(f.id)) byId.set(f.id, f);
+  const fams = [...byId.values()];
+  let num = 0;
+  let den = 0;
+  for (const f of fams) {
+    num += f.weight * f.signal;
+    den += f.weight;
+  }
+  const mean = den > 0 ? num / den : null;
+  return {
+    families: fams.length,
+    toward: fams.filter((f) => f.signal > 0).length,
+    away: fams.filter((f) => f.signal < 0).length,
+    neutral: fams.filter((f) => f.signal === 0).length,
+    weighted_mean: mean,
+    direction: mean === null || mean === 0 ? 'none' : mean > 0 ? 'toward' : 'away',
+  };
+}
+
+/** Turn an evaluated node into one judged by elimination: evidence kept, tier 'elimination', no rating. */
+function eliminationNode(ev) {
+  const lean = eliminationLean(ev.families);
+  const dir = lean.direction === 'none' ? 'no lean' : `leans ${lean.direction}`;
+  return {
+    ...ev,
+    tier: 'elimination',
+    tier_subreason: null,
+    tier_reason: `judged by elimination (rubric 0.1.7, decision D1): not rated from public data alone; it becomes a candidate only if the other low-return areas are ruled out. Evidence ${dir}: ${lean.toward} famil${lean.toward === 1 ? 'y' : 'ies'} toward a problem, ${lean.away} away, ${lean.neutral} neutral; weighted mean signal ${isNum(lean.weighted_mean) ? Math.round(lean.weighted_mean * 100) / 100 : 'n/a'}`,
+    cannot_tell_reason: null,
+    cannot_tell_detail: null,
+    blockers: { likely_binding: [], ruled_out: [] },
+    tier_by_set: Object.fromEntries(Object.keys(ev.tier_by_set).map((s) => [s, 'elimination'])),
+    fragility: null,
+    load_bearing: [],
+    elimination: lean,
+  };
+}
+
 function unscoredNode(def, tier, reason) {
   return {
     id: def.id,
@@ -386,6 +431,8 @@ function unscoredNode(def, tier, reason) {
     tier,
     tier_subreason: null,
     tier_reason: reason,
+    cannot_tell_reason: null,
+    cannot_tell_detail: null,
     blockers: { likely_binding: [], ruled_out: [] },
     N: null,
     C: null,
@@ -451,7 +498,9 @@ export function assembleVerdicts({ indicators, comovement: cm, setMembers, activ
     ];
   }
   const defs = R.node_defs;
-  const leafDefs = defs.filter((d) => d.diagnosable && !d.rollup_of && !d.desk_undiagnosable && !d.context_only);
+  const leafDefs = defs.filter((d) => d.diagnosable && !d.rollup_of && !d.desk_undiagnosable && !d.context_only && !d.elimination);
+  // Nodes judged by elimination (N12, engine 0.1.5): computed for their evidence and lean, never tiered or ranked.
+  const elimDefs = defs.filter((d) => d.diagnosable && d.elimination);
   const rollupDefs = defs.filter((d) => Array.isArray(d.rollup_of));
   const connectorFamiliesByNode = {};
   for (const c of R.connectors_not_built) {
@@ -510,10 +559,15 @@ export function assembleVerdicts({ indicators, comovement: cm, setMembers, activ
     const rationingSignal = rationing ? signalForSet(rationing, activeSet) : null;
     const financeIds = defs.filter((d) => d.diagnosable && (d.branch === 'finance' || d.id === 'N0')).map((d) => d.id);
     for (const id of financeIds) if (ev[id]) applyTopSplitOverride(ev[id], ts, rationingSignal, params);
-    for (const d of rollupDefs) ev[d.id] = rollupNode(d, d.rollup_of.map((s) => ev[s]));
+    for (const d of rollupDefs) ev[d.id] = rollupNode(d, d.rollup_of.map((s) => ev[s]), params);
     return ev;
   };
   const evaluated = evalAll(1);
+  for (const d of elimDefs) {
+    const familiesBySet = {};
+    for (const s of setNames) familiesBySet[s] = buildFamilies(recordsBySet[s], d.id);
+    evaluated[d.id] = eliminationNode(evaluateNode({ nodeId: d.id, familiesBySet, activeSet, setsWithMembers, params, snapshotYear, fragility: 'sets' }));
+  }
 
   const records = [];
   for (const d of defs) {
@@ -525,12 +579,12 @@ export function assembleVerdicts({ indicators, comovement: cm, setMembers, activ
         short: d.short,
         parent: d.parent,
         connectors_missing: connectorFamiliesByNode[d.id] || [],
-        scored: true,
+        scored: !d.elimination,
       });
     } else if (d.desk_undiagnosable) {
-      records.push(unscoredNode(d, 'desk_undiagnosable', 'Cannot be judged from macro data; sector work required (Workbook N13)'));
+      records.push(unscoredNode(d, 'desk_undiagnosable', d.status_note || 'Cannot be judged from macro data; sector work required (Workbook N13)'));
     } else if (d.context_only) {
-      records.push(unscoredNode(d, 'context_only', 'Context, not a removable constraint; enters the ICRs as controls (Workbook N9)'));
+      records.push(unscoredNode(d, 'context_only', d.status_note || 'Context, not a removable constraint; enters the ICRs as controls (Workbook N9)'));
     }
   }
   const rollupIds = rollupDefs.map((d) => d.id);

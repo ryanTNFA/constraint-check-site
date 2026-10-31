@@ -3,7 +3,7 @@
 // test scores as columns; then the verdict layer's tier and the analyst's own conclusion. Conclusions are stored in
 // the URL with the same `o=` encoding the Snapshot uses for overrides, so the two pages and the memo share them.
 import { nodeCode, getJSON, loadRegistry, initTheme, h, fmtSigned, qs, withData, dataBase, downloadText, tierLabel, tierClass, parseHash, writeHash, missingTestReason, USER_TIERS } from './common.mjs';
-import { plainTier, tierBySetLine } from './card.mjs';
+import { plainTier, tierBySetLine, reasonTag } from './card.mjs';
 import { heatRow, TEST_ORDER } from './evidence_math.mjs';
 import { railModel, nodeScope, VIEWS } from './evidence_node.mjs';
 
@@ -69,8 +69,10 @@ function buildModel() {
       // The rating under the comparison countries chosen above (the verdict layer computes one per set).
       const tier = it.context ? 'context_only' : node ? ((node.tier_by_set && node.tier_by_set[state.set]) || node.tier) : null;
       const bySet = node && !it.context ? tierBySetLine(node, state.set) : '';
+      // the engine's reason code describes the structural set; under another set the Desk derives it from the tier
+      const tagNode = node && tier ? (tier === node.tier ? node : { ...node, tier, cannot_tell_reason: null, cannot_tell_detail: null }) : null;
       rows.push({
-        ...hr, id: it.id, short: it.short, sub: !!it.sub, context: !!it.context, tier, bySet,
+        ...hr, id: it.id, short: it.short, sub: !!it.sub, context: !!it.context, tier, bySet, tagNode,
         empty: Object.fromEntries(TEST_ORDER.map((t) => [t, hr.tests[t] == null ? emptyReason(R, scope, t, sc) : null])),
         benchEmpty: hr.bench == null ? (R.indicators.indicators.some((i) => i.direction && (i.nodes || []).some((n) => scope.includes(n))) ? 'no data' : 'no indicator') : null,
         why: Object.fromEntries(TEST_ORDER.map((t) => [t, hr.tests[t] == null ? missingTestReason(t, it.id, R) : null])),
@@ -111,13 +113,13 @@ function render() {
   const body = h('tbody', {});
   for (const r of state.model) {
     if (r.group) { body.append(h('tr', { class: 'sm-group' }, h('th', { colspan: '9', scope: 'colgroup' }, r.group))); continue; }
-    const href = withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(r.id)}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
+    const href = withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(r.id)}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
     const bt = r.bench != null ? `${r.nBench} indicators with data: ${r.toward} at least 0.75 sd toward binding, ${r.away} at least 0.75 sd away. Median of their binding-side distances from what income and structure predict.` : 'No indicator of this node has a value in the window.';
     body.append(h('tr', { class: `${r.sub ? 'sm-sub' : ''}${r.context ? ' sm-context' : ''}${state.overrides[r.id] ? ' sm-overridden' : ''}` },
       h('th', { scope: 'row', class: 'sm-node' }, h('a', { href }, h('span', { class: 'sm-id' }, r.sub ? '' : nodeCode(r.id)), ' ', r.short)),
       valueCell(r.bench == null ? null : Math.max(-3, Math.min(3, r.bench)), r.benchEmpty, bt),
       ...TEST_ORDER.map((t) => valueCell(r.tests[t], r.empty[t], r.why[t] || `${TEST_HEAD[t]}: the verdict layer's test score, from −2 (evidence against) to +2 (for).`)),
-      h('td', { class: 'sm-tier' }, r.tier ? h('span', { class: `tier-badge ${tierClass(r.tier)}`, title: r.bySet || null }, h('span', {}, plainTier(r.tier))) : '—'),
+      h('td', { class: 'sm-tier' }, r.tier ? [h('span', { class: `tier-badge ${tierClass(r.tier)}`, title: r.bySet || null }, h('span', {}, plainTier(r.tier))), r.tagNode ? reasonTag(r.tagNode) : null] : '—'),
       ...conclusionCells(r)));
   }
   $('heat-wrap').replaceChildren(h('table', { class: 'sm-table', id: 'heat' }, h('caption', { class: 'visually-hidden' }, `Diagnostic heat map for ${nameOf(state.iso)}`), h('thead', {}, head), body));
@@ -146,9 +148,9 @@ function renderText() {
   const active = activeSet();
   $('foot').textContent = `Benchmarking: the median, across the node's indicators with a value, of each one's distance from what income and structure predict, in standard deviations, turned so positive is the binding side (the C9 evidence strip's dots). Tests 1 to 4: the verdict layer's test scores (T), from −2 (evidence against the constraint binding) to +2 (for). Colour saturates at ±${LIM}. Comparators: benchmarking measures against every economy with data, not a comparator set; the test scores are computed with the verdict layer's ${active} comparators${state.set !== active ? `` : ''}. The rating column follows the comparators chosen above (the verdict layer computes a rating under each set; hover a rating to see where the sets disagree). "Not computed": the prototype has no specification or data connector for that test; "no data": it has one, but this economy has no usable value; "no indicator": nothing in the registry measures it. Hover a cell for details. Snapshot ${sc.meta ? sc.meta.snapshot_id : ''}, rubric ${sc.meta ? sc.meta.rubric_version : ''}. Your conclusions are yours, not the tool's; they live in this page's link, which the Snapshot and its memo read too.`;
   const hash = location.hash;
-  $('to-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
-  $('nav-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
-  $('nav-evidence').href = withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}`);
+  $('to-snapshot').href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
+  $('nav-snapshot').href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
+  $('nav-evidence').href = withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${state.iso}`);
 }
 
 function save() { writeHash({ set: state.set, overrides: state.overrides }); renderText(); }
@@ -242,7 +244,7 @@ async function main() {
     const [registry, countries] = await Promise.all([loadRegistry(), getJSON(`${DATA}/countries.json`)]);
     Object.assign(state, { registry, countries });
     if (!countries.some((c) => c.iso3 === state.iso)) state.iso = 'KEN';
-    $('nav-all').href = withData('/constraint-check-site/desk/');
+    $('nav-all').href = withData('/C:/Program Files/Git/constraint-check-site/desk/');
     const cs = $('c-country');
     for (const c of countries.slice().sort((a, b) => a.name.localeCompare(b.name))) cs.append(h('option', { value: c.iso3 }, c.name));
     cs.value = state.iso;

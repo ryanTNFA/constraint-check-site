@@ -2,7 +2,7 @@
 // Layout: one row per leaf, in registry order, so every branch owns its own vertical band and no
 // edge passes under another branch's box (finance's areas all sit above the low-returns areas).
 // Micro risk's six sub-areas are stacked under its box, which keeps the tree to five columns.
-import { nodeCode, tierPaint, tierClass, h } from './common.mjs';
+import { nodeCode, tierPaint, tierClass, h, cannotTellCode, leanOf, CANNOT_TELL_PLAIN } from './common.mjs';
 import { plainTier, plainSummary, evidenceYears, yearsText } from './card.mjs';
 
 const NODE_W = 138, NODE_H = 30, DX = 48, DY = 156;
@@ -26,6 +26,10 @@ function addPattern(defs, id, stroke, width, size, cross = false) {
 /** Caption under a box: "9 sources · 2019–2025". */
 function caption(n) {
   if (!n) return 'not scored';
+  if (n.tier === 'elimination') return 'judged by elimination';
+  // an unclear box says why (front-door PRD W1): no bare grey
+  const code = cannotTellCode(n);
+  if (code) return CANNOT_TELL_PLAIN[code].label;
   const yr = yearsText(evidenceYears(n));
   if (!n.E) return `no voting sources${yr ? ` · ${yr}` : ''}`;
   return `${n.E} source${n.E === 1 ? '' : 's'}${yr ? ` · ${yr}` : n.R ? ` · data to ${n.R}` : ''}`;
@@ -125,6 +129,13 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
       if (d.data.desk_undiagnosable) return 'needs sector study';
       return caption(byId[d.id]);
     });
+  // the lean of an unclear area: an arrow at the box's right edge, never a fill
+  nodeG.filter((d) => !d.data.context_only && leanOf(byId[d.id])).append('text')
+    .attr('class', (d) => `lean-mark ${leanOf(byId[d.id]).band}`)
+    .attr('x', (d) => W(d) - 14).attr('y', (d) => Hh(d) / 2 + 5).attr('text-anchor', 'middle')
+    .style('fill', (d) => tierPaint(byId[d.id].tier).ink)
+    .text((d) => leanOf(byId[d.id]).mark)
+    .append('title').text((d) => leanOf(byId[d.id]).words);
   // override marks
   nodeG.filter((d) => overrides[d.id]).each(function (d) {
     const el = d3.select(this);
@@ -142,7 +153,7 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
     const ov = overrides[d.id];
     tip.innerHTML = '';
     tip.append(h('div', { class: 'tt-title' }, `${d.data.short}: ${d.data.context_only ? 'context' : plainTier(n ? n.tier : null)}`));
-    if (d.data.context_only) tip.append(h('div', {}, d.data.question || 'Context, not a removable constraint.'));
+    if (d.data.context_only) tip.append(h('div', {}, n && plainCtx ? plainSummary(n, plainCtx, { brief: true }) : d.data.question || 'Context, not a removable constraint.'));
     else if (!n) tip.append(h('div', {}, 'Not scored in this snapshot.'));
     else {
       tip.append(h('div', {}, plainCtx ? plainSummary(n, plainCtx, { brief: true }) : n.tier_reason));
@@ -164,9 +175,9 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
   const hideTip = () => tip && tip.classList.remove('show');
   nodeG.on('mouseenter', (evt, d) => showTip(d, evt)).on('mousemove', (evt, d) => positionTip(evt, d)).on('mouseleave', hideTip)
     .on('focus', (evt, d) => showTip(d, evt)).on('blur', hideTip)
-    .on('click', (evt, d) => { hideTip(); if (!d.data.context_only && onOpen) onOpen(d.id); })
+    .on('click', (evt, d) => { hideTip(); if (onOpen) onOpen(d.id); })
     .on('keydown', (evt, d) => {
-      if (evt.key === 'Enter' || evt.key === ' ') { evt.preventDefault(); hideTip(); if (!d.data.context_only && onOpen) onOpen(d.id); }
+      if (evt.key === 'Enter' || evt.key === ' ') { evt.preventDefault(); hideTip(); if (onOpen) onOpen(d.id); }
       else if (evt.key === 'ArrowDown' || evt.key === 'ArrowUp') {
         evt.preventDefault();
         const all = Array.from(container.querySelectorAll('g.node'));
@@ -180,9 +191,10 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
 }
 
 function ariaLabel(d, byId, overrides) {
-  if (d.data.context_only) return `${d.data.short}: context, not a removable constraint`;
+  if (d.data.context_only) return `${d.data.short}: context, not a removable constraint. Press Enter to see the measures.`;
   const n = byId[d.id];
-  const base = `${d.data.short}: ${plainTier(n ? n.tier : null)}${n && n.E != null ? `, ${caption(n)}` : ''}`;
+  const lean = leanOf(n);
+  const base = `${d.data.short}: ${plainTier(n ? n.tier : null)}${n && n.E != null ? `, ${caption(n)}` : ''}${lean ? `, ${lean.words}` : ''}`;
   const ov = overrides[d.id];
   return `${base}${ov ? `. Your override: ${plainTier(ov.tier)}` : ''}. Press Enter to open the evidence.`;
 }

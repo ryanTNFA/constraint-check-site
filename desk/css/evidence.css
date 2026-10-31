@@ -126,7 +126,7 @@
 .tier-dot.t-cannot_tell_weak { background: repeating-linear-gradient(135deg, var(--tier-cannot) 0 2px, var(--tier-cannot-hatch) 2px 3px); border-color: var(--tier-cannot-hatch); }
 .tier-dot.t-cannot_tell_conflicting { background: repeating-linear-gradient(45deg, transparent 0 2px, var(--tier-cannot-hatch) 2px 3px), repeating-linear-gradient(135deg, var(--tier-cannot) 0 2px, var(--tier-cannot-hatch) 2px 3px); border-color: var(--tier-cannot-hatch); }
 .tier-dot.t-cannot_tell_data_gap { background: transparent; border: 1px dashed var(--tier-cannot-hatch); }
-.tier-dot.t-context_only, .tier-dot.t-desk_undiagnosable { background: var(--tier-context); }
+.tier-dot.t-context_only, .tier-dot.t-desk_undiagnosable, .tier-dot.t-elimination { background: var(--tier-context); }
 .tier-dot.none { border-color: transparent; }
 .ev-nodeview { border-top: 0; }
 .ev-node-q { margin: 0 0 6px; font-family: var(--serif); font-size: 1.1875rem; color: var(--muted); }

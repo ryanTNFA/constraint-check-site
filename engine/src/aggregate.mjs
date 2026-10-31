@@ -418,6 +418,48 @@ export function assignTier(stats, ctx) {
   };
 }
 
+/** Data-gap sub-reasons that no economy's data can resolve: the registry has no route to the evidence. */
+const STRUCTURAL_GAP_SUBREASONS = new Set(['connector_not_built', 'no_ab_family', 'no_ab_price_family', 'registry_coverage']);
+export const CANNOT_TELL_REASONS = ['not_connected', 'no_recent_data', 'one_kind', 'mixed'];
+
+/**
+ * Plain reason behind a cannot_tell tier (engine 0.1.5, front-door PRD W1), so the Desk does not
+ * parse rule strings. Display only: no tier depends on it.
+ *   not_connected   structural data gap (connector_not_built, no_ab_family, no_ab_price_family, registry_coverage)
+ *   no_recent_data  economy-specific data gap (data_gap, stale)
+ *   one_kind        weak with C ≤ 1: only one test speaks with any strength
+ *   mixed           conflicting, or weak with C ≥ 2
+ * Returns {cannot_tell_reason, cannot_tell_detail: {subreason, speaking_tests, scored_tests, missing_tests, lean}},
+ * both null for any other tier. speaking_tests are those with |T| ≥ concordance_abs_T_min (the ones C counts
+ * when they agree with N); scored_tests have any T; missing_tests have none. The lean is sign(N) with band 'clear' from
+ * params.tiers.cannot_tell_lean_clear_abs_N, else 'slight'; null when N is missing or zero.
+ */
+export function cannotTellInfo(rec, params) {
+  if (typeof rec.tier !== 'string' || !rec.tier.startsWith('cannot_tell')) return { cannot_tell_reason: null, cannot_tell_detail: null };
+  const sub = rec.tier_subreason;
+  let reason;
+  if (rec.tier === 'cannot_tell_data_gap') reason = STRUCTURAL_GAP_SUBREASONS.has(sub) ? 'not_connected' : 'no_recent_data';
+  else if (rec.tier === 'cannot_tell_conflicting') reason = 'mixed';
+  else reason = (rec.C ?? 0) >= 2 ? 'mixed' : 'one_kind';
+  const tests = rec.tests || {};
+  const scored = TEST_ORDER.filter((k) => tests[k] && isNum(tests[k].T)).map((k) => ({ test: k, T: tests[k].T }));
+  const cmin = params && params.tiers && isNum(params.tiers.concordance_abs_T_min) ? params.tiers.concordance_abs_T_min : 0;
+  const clear = params && params.tiers && isNum(params.tiers.cannot_tell_lean_clear_abs_N) ? params.tiers.cannot_tell_lean_clear_abs_N : null;
+  const lean = isNum(rec.N) && rec.N !== 0
+    ? { direction: rec.N > 0 ? 'toward' : 'away', band: clear !== null && Math.abs(rec.N) >= clear ? 'clear' : 'slight', N: rec.N }
+    : null;
+  return {
+    cannot_tell_reason: reason,
+    cannot_tell_detail: {
+      subreason: sub || null,
+      speaking_tests: scored.filter((s) => Math.abs(s.T) >= cmin),
+      scored_tests: scored,
+      missing_tests: TEST_ORDER.filter((k) => !scored.some((s) => s.test === k)),
+      lean,
+    },
+  };
+}
+
 function withoutFamily(families, id) {
   return families.filter((f) => f.id !== id);
 }
@@ -521,6 +563,7 @@ export function evaluateNode({
     tier: final.tier,
     tier_subreason: final.subreason,
     tier_reason: final.reason,
+    ...cannotTellInfo({ tier: final.tier, tier_subreason: final.subreason, C: base.C, N: base.N, tests }, p),
     blockers: final.blockers,
     N: base.N,
     N_weights: base.test_weights,
@@ -596,8 +639,9 @@ function subreasonLabel(sr) {
  * sub-nodes holding class A/B evidence). E, AB_count and AB_pos count DISTINCT families across
  * the sub-nodes (es_tax_gifts and es_informality are shared by two sub-nodes each). The roll-up
  * carries its own reason, grouping the sub-nodes by tier, and the representative's sub-reason.
+ * `params` (engine 0.1.5) only sets the band of the cannot_tell lean.
  */
-export function rollupNode(def, subRecords) {
+export function rollupNode(def, subRecords, params = null) {
   const subs = subRecords.filter(Boolean);
   const key = (r) => [ordinal(r.tier), CANNOT_TELL_RANK[r.tier] ?? 0, isNum(r.E) ? r.E : -1, isNum(r.N) ? r.N : -Infinity];
   let best = null;
@@ -672,11 +716,13 @@ export function rollupNode(def, subRecords) {
   const reason = best
     ? `roll-up of ${subs.length} sub-nodes: ${grouped}. Representative: ${best.id} (${best.tier}${best.tier_subreason ? `: ${subreasonLabel(best.tier_subreason)}` : ''}). ${best.id}: ${best.tier_reason}`
     : 'roll-up: no scored sub-node';
+  const tier = best ? best.tier : 'cannot_tell_data_gap';
   return {
     id: def.id,
-    tier: best ? best.tier : 'cannot_tell_data_gap',
+    tier,
     tier_subreason: subreason,
     tier_reason: reason,
+    ...cannotTellInfo({ tier, tier_subreason: subreason, C: best ? best.C : 0, N: best ? best.N : null, tests: best ? best.tests : {} }, params),
     blockers: best ? best.blockers : { likely_binding: [], ruled_out: [] },
     N: best ? best.N : null,
     N_weights: best ? best.N_weights || null : null,
@@ -716,14 +762,14 @@ export function rankNodes(records, breadth = {}) {
 
 /**
  * Statements for the Desk, over top-level nodes in tree order (look_hard in ranking order).
- * N13 (desk_undiagnosable) is listed under cannot_tell.
+ * N13 (desk_undiagnosable) and N12 (elimination, engine 0.1.5) are listed under cannot_tell.
  */
 export function statements(records, ranking) {
   const stop = [];
   const cannot = [];
   for (const r of records) {
     if (r.tier === 'ruled_out' || r.tier === 'probably_not') stop.push(r.id);
-    else if (r.tier && (r.tier.startsWith('cannot_tell') || r.tier === 'desk_undiagnosable')) cannot.push(r.id);
+    else if (r.tier && (r.tier.startsWith('cannot_tell') || r.tier === 'desk_undiagnosable' || r.tier === 'elimination')) cannot.push(r.id);
   }
   return { stop_arguing: stop, look_hard: ranking.ordered.slice(), cannot_tell: cannot };
 }
@@ -791,7 +837,7 @@ export function bootstrapRanks({ nodeInputs, rollups, topLevelIds, params, snaps
       });
     }
     for (const [rid, r] of Object.entries(rollups || {})) {
-      evaluated[rid] = rollupNode(r.def, r.subIds.map((s) => evaluated[s]));
+      evaluated[rid] = rollupNode(r.def, r.subIds.map((s) => evaluated[s]), params);
     }
     const top = topLevelIds.map((id) => evaluated[id]).filter(Boolean);
     const { ordered } = rankNodes(top);

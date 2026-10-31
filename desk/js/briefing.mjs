@@ -123,7 +123,8 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
   w('- Who votes: on the price test and the camels test only class A and B families vote; class C and D families there only inform (marked "informs" in Part 5). On the changes and circumvention tests every class votes.');
   w('- Test score T: the weighted average of the voting families’ signals on that test, shrunk toward zero when there is little evidence. Area score N: the weighted average of the test scores, with the price test counted double.');
   w('- E is the number of voting families; C is the number of tests that point the same way as N with |T| of at least 0.5.');
-  w('- Ratings: worth a closer look needs N ≥ 0.5 with C ≥ 2, or N ≥ 1 on its own ("alternative rule"); probably not is the mirror (N ≤ −0.5 with C ≥ 2, or N ≤ −1). Likely binding and ruled out are much stricter (|N| ≥ 1, E ≥ 5, C ≥ 3, no dissenting class A/B family). Unclear comes in three kinds: data gap (E < 2, or no class A/B family from the last 8 years), evidence too weak (the bars above are not met), and conflicting (tests point strongly in opposite directions).');
+  w('- Ratings: worth a closer look needs N ≥ 0.5 with C ≥ 2, or N ≥ 1 on its own ("alternative rule"); probably not is the mirror (N ≤ −0.5 with C ≥ 2, or N ≤ −1). Likely binding and ruled out are much stricter (|N| ≥ 1, E ≥ 5, C ≥ 3, no dissenting class A/B family). Unclear comes with one of four reasons: not connected (the tool has no route to the evidence that could settle it, for any country), no recent data (this country lacks recent class A/B data: E < 2, or nothing from the last 8 years), one kind of evidence (only one test speaks with any strength; the lean is given), and mixed (tests point in opposite directions).');
+  w('- Two areas are not rated. Self-discovery (N12) is judged by elimination: its evidence is all quantities, so it can be a candidate only once the other causes of low returns are ruled out; Part 5 gives the lean of its evidence. Policy and political uncertainty (N11.policy) is context to describe, like geography: partly an outcome of the other constraints, so it is neither scored nor part of the micro-risk roll-up.');
   w('- The changes test is a sign test: across year pairs, did investment move the way the theory predicts when the constraint eased or tightened? Part 5 gives the count of agreeing year pairs and its p-value.');
   w();
 
@@ -140,11 +141,12 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
   w('For each scored area: the rating, the score N, the tests, and every evidence family with its indicators. "Votes" says whether the family counts in the rating or only informs.');
   w();
   for (const n of view.nodes) {
-    if (!n.scored || n.sub_nodes) continue;
+    if ((!n.scored && n.tier !== 'elimination') || n.sub_nodes) continue;
     w(`### ${n.id} ${label(n.id)} (rating: ${plainTier(n.tier).toLowerCase()})`);
     w();
     const tests = Object.entries(n.tests || {}).filter(([, t]) => t && t.T != null).map(([k, t]) => `${TEST_NAMES[k] || k} ${fmtSigned(t.T, 2)}`);
-    w(`N = ${n.N == null ? '—' : fmtSigned(n.N, 2)}; voting families E = ${n.E ?? 0}; tests: ${tests.length ? tests.join(', ') : 'none observed'}.${n.tier_reason ? ` Rule: ${n.tier_reason}` : ''}`);
+    const why = n.cannot_tell_reason ? ` Reason unclear: ${n.cannot_tell_reason.replace(/_/g, ' ')}${n.cannot_tell_detail && n.cannot_tell_detail.lean ? ` (leans ${n.cannot_tell_detail.lean.band === 'slight' ? 'slightly ' : ''}${n.cannot_tell_detail.lean.direction === 'toward' ? 'toward' : 'away from'} a problem)` : ''}.` : '';
+    w(`N = ${n.N == null ? '—' : fmtSigned(n.N, 2)}; voting families E = ${n.E ?? 0}; tests: ${tests.length ? tests.join(', ') : 'none observed'}.${why}${n.tier_reason ? ` Rule: ${n.tier_reason}` : ''}`);
     w();
     const fams = n.families || [];
     if (!fams.length) { w('No evidence family has data for this area.'); w(); continue; }

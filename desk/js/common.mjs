@@ -11,19 +11,20 @@ export const TIER_LABEL = {
   ruled_out: 'Ruled out',
   desk_undiagnosable: 'Not diagnosable from the desk',
   context_only: 'Context, not a constraint',
+  elimination: 'Judged by elimination',
 };
-export const TIER_ORD = { ruled_out: -2, probably_not: -1, cannot_tell_data_gap: 0, cannot_tell_conflicting: 0, cannot_tell_weak: 0, desk_undiagnosable: 0, context_only: 0, candidate: 1, likely_binding: 2 };
+export const TIER_ORD = { ruled_out: -2, probably_not: -1, cannot_tell_data_gap: 0, cannot_tell_conflicting: 0, cannot_tell_weak: 0, desk_undiagnosable: 0, context_only: 0, elimination: 0, candidate: 1, likely_binding: 2 };
 
 /** Where the Desk data lives. Override with ?data=/out/desk-data to view another output folder. */
 export function dataBase() {
   const p = new URLSearchParams(location.search).get('data');
   if (p && /^\/[A-Za-z0-9_\-./]*$/.test(p) && !p.includes('..')) return p.replace(/\/$/, '');
-  return '/constraint-check-site/desk/data';
+  return '/C:/Program Files/Git/constraint-check-site/desk/data';
 }
 /** Keep the data= switch on internal links. */
 export function withData(url) {
   const p = new URLSearchParams(location.search).get('data');
-  if (!p || dataBase() === '/constraint-check-site/desk/data') return url;
+  if (!p || dataBase() === '/C:/Program Files/Git/constraint-check-site/desk/data') return url;
   return `${url}${url.includes('?') ? '&' : '?'}data=${encodeURIComponent(p)}`;
 }
 
@@ -54,7 +55,7 @@ export const DATA_GAP_KINDS = {
   connector_not_built: { label: 'connector not built', resolves: 'a connector for the Workbook family (no economy can be scored here yet)' },
   no_ab_family: { label: 'no class A/B evidence in registry v0.1', resolves: 'a class A/B indicator in the registry (no economy can leave cannot tell here)' },
   no_ab_price_family: { label: 'no class A/B price in registry', resolves: 'a class A/B price indicator in the registry (the price is never observed here)' },
-  registry_coverage: { label: 'registry coverage: too few voting families', resolves: 'more class A/B evidence in the registry (it cannot supply three voting families for this node)' },
+  registry_coverage: { label: 'registry coverage: too few voting families', resolves: 'more high-quality (class A/B) evidence in the tool: today it cannot supply enough independent measures for this area' },
 };
 /** True when the sub-reason is a statement about the registry, not about this economy's data. */
 export const isRegistryGap = (sub) => sub === 'no_ab_family' || sub === 'no_ab_price_family' || sub === 'registry_coverage' || sub === 'connector_not_built';
@@ -71,23 +72,64 @@ export function subreasonLabel(sub) {
   return String(sub).replace(/_/g, ' ');
 }
 
+/**
+ * The four plain reasons behind "cannot tell" (front-door PRD W1). The engine (0.1.5) writes the code on
+ * every cannot_tell node as `cannot_tell_reason`; cannotTellCode falls back to the tier for older files
+ * and for ratings shown under another comparator set, where the engine's code describes the structural set.
+ */
+export const CANNOT_TELL_PLAIN = {
+  not_connected: { label: 'not connected yet', short: 'Not connected', gapInTool: true },
+  no_recent_data: { label: 'no recent data', short: 'No recent data', gapInTool: false },
+  one_kind: { label: 'one kind of evidence', short: 'One kind of evidence', gapInTool: false },
+  mixed: { label: 'evidence points both ways', short: 'Mixed', gapInTool: false },
+};
+export function cannotTellCode(n) {
+  if (!n || !isCannotTell(n.tier)) return null;
+  if (n.cannot_tell_reason && CANNOT_TELL_PLAIN[n.cannot_tell_reason]) return n.cannot_tell_reason;
+  const sub = n.tier_subreason || n.cannot_tell_subreason || null;
+  if (n.tier === 'cannot_tell_data_gap') return isRegistryGap(sub) ? 'not_connected' : 'no_recent_data';
+  if (n.tier === 'cannot_tell_conflicting') return 'mixed';
+  return (n.C ?? 0) >= 2 ? 'mixed' : 'one_kind';
+}
+/**
+ * The lean of an unclear area, for a mark that cannot be mistaken for a verdict: an arrow, never a fill.
+ * For "one kind of evidence" cells the engine's lean (sign of N, slight under 0.5); for N12 the
+ * elimination lean. Returns {direction: 'toward'|'away', band: 'slight'|'clear', mark, words} or null.
+ */
+export function leanOf(n) {
+  if (!n) return null;
+  let direction = null, band = 'slight';
+  if (n.tier === 'elimination' && n.elimination) {
+    if (n.elimination.direction === 'none') return null;
+    direction = n.elimination.direction;
+    band = Math.abs(n.elimination.weighted_mean ?? 0) >= 0.5 && (direction === 'toward' ? n.elimination.away === 0 : n.elimination.toward === 0) ? 'clear' : 'slight';
+  } else if (cannotTellCode(n) === 'one_kind') {
+    const l = n.cannot_tell_detail && n.cannot_tell_detail.lean;
+    if (l) { direction = l.direction; band = l.band; }
+    else if (n.N != null && n.N !== 0) { direction = n.N > 0 ? 'toward' : 'away'; band = Math.abs(n.N) >= 0.5 ? 'clear' : 'slight'; }
+  }
+  if (!direction) return null;
+  const mark = direction === 'toward' ? (band === 'clear' ? '↑' : '↗') : (band === 'clear' ? '↓' : '↘');
+  return { direction, band, mark, words: `${band === 'clear' ? 'leans' : 'leans slightly'} ${direction === 'toward' ? 'toward' : 'away from'} a problem` };
+}
+
 /** Short clause for why a node is "cannot tell" (works with engine `tier_subreason` and the older mock field). */
 export function reasonClause(n) {
   if (!n) return '';
-  const sub = n.tier_subreason || n.cannot_tell_subreason || null;
   if (n.tier === 'desk_undiagnosable') return 'sector work required';
   if (n.tier === 'context_only') return 'context, not a constraint';
-  if (n.tier === 'cannot_tell_data_gap') return DATA_GAP_KINDS[sub] ? DATA_GAP_KINDS[sub].label : 'data gap';
-  if (n.tier === 'cannot_tell_conflicting') return 'conflicting tests';
-  if (n.tier === 'cannot_tell_weak') return sub === 'composite_only' ? 'composite indices only' : 'weak evidence';
+  if (n.tier === 'elimination') return 'judged by elimination';
+  const code = cannotTellCode(n);
+  if (code) return CANNOT_TELL_PLAIN[code].label;
   return tierLabel(n.tier).toLowerCase();
 }
 /** The reason clause only when it says more than the tier badge already does. */
 export function reasonClauseExtra(n) {
   if (!n) return '';
-  if (n.tier === 'cannot_tell_data_gap') { const sub = n.tier_subreason || n.cannot_tell_subreason || null; return sub && sub !== 'data_gap' ? reasonClause(n) : ''; }
-  if (n.tier === 'cannot_tell_weak' && (n.tier_subreason === 'composite_only')) return reasonClause(n);
-  return '';
+  const code = cannotTellCode(n);
+  if (!code) return '';
+  const lean = leanOf(n);
+  return `${CANNOT_TELL_PLAIN[code].label}${lean ? `; ${lean.words}` : ''}`;
 }
 export const USER_TIERS = ['likely_binding', 'candidate', 'cannot_tell_conflicting', 'cannot_tell_weak', 'cannot_tell_data_gap', 'probably_not', 'ruled_out'];
 export const TEST_ORDER = ['price', 'changes', 'circumvention', 'camels'];
@@ -121,7 +163,7 @@ export async function getJSON(url, { optional = false } = {}) {
 
 export async function loadRegistry() {
   const [indicators, nodes, params] = await Promise.all([
-    getJSON('/constraint-check-site/registry/indicators.json'), getJSON('/constraint-check-site/registry/nodes.json'), getJSON('/constraint-check-site/registry/params.json'),
+    getJSON('/C:/Program Files/Git/constraint-check-site/registry/indicators.json'), getJSON('/C:/Program Files/Git/constraint-check-site/registry/nodes.json'), getJSON('/C:/Program Files/Git/constraint-check-site/registry/params.json'),
   ]);
   return {
     indicators, nodes, params,
