@@ -122,7 +122,7 @@ The scorecard reports each node's tier under all three comparator sets and its f
   - an independent statsmodels re-estimate of the residuals (largest gap 0.030 in t);
   - numpy reference tests for test 4;
   - adversarial reviews;
-  - the replication check, which reproduces all 1,192 outputs.
+  - the replication check, which reproduces all 1,193 outputs.
 
 ### Results on the current run
 

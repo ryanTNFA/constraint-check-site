@@ -54,6 +54,20 @@
     </div>
   </section>
 
+  <section class="panel" id="settings" aria-labelledby="settings-h">
+    <div class="panel-head"><div><span class="kicker">Evidence settings</span><h2 id="settings-h">Three readings: Cautious, Standard and Exploratory</h2></div></div>
+    <div class="prose methods-prose">
+      <p>Every country page can show three readings of the same evidence. They show how much a rating depends on judgment calls about how much evidence is enough.</p>
+      <ul>
+        <li><strong>Standard</strong> is the default, and the only reading to cite.</li>
+        <li><strong>Cautious</strong> needs more before it rates anything: three independent measures instead of two, and stronger scores either way.</li>
+        <li><strong>Exploratory</strong> makes it easier to flag an area for a closer look. It never makes it easier to say “probably not” or “ruled out”, because wrongly ruling out a real constraint costs more than taking an extra look.</li>
+      </ul>
+      <p>Because of that, a rating can move between “can’t tell” and a verdict as the reading changes, but never from “worth a closer look” to “probably not”. Every rating carries one mark: <strong>holds under every reading</strong>, <strong>depends on the reading</strong>, or <strong>depends on the comparison countries</strong>. Click or tap the mark to see the rating under each reading.</p>
+      <p>None of the three readings has been tested against expert diagnoses yet. When the retrospective reports, each will show how often it wrongly rules out a constraint the experts found binding, and how often it flags one they found.</p>
+    </div>
+  </section>
+
   <section class="panel" id="docs" aria-labelledby="docs-h">
     <div class="panel-head"><div><span class="kicker">Documents</span><h2 id="docs-h">The method in full</h2></div><p>Each document is versioned with the rubric. Choose one to read it here.</p></div>
     <ul class="doc-list" id="doc-list"></ul>

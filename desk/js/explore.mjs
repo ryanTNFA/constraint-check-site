@@ -2,7 +2,7 @@
 // economy by its rating for that area under the default comparison set, and a list groups the economies by rating,
 // alphabetically within each group. Never a ranking: no list sorts by score, and nothing is summed across areas.
 // No map library: an Equal Earth projection (Šavrič, Patterson and Jenny 2018) drawn straight into SVG.
-import { h, tierPaint, withData, getJSON } from './common.mjs';
+import { h, tierPaint, withData, getJSON, dataBase } from './common.mjs';
 import { PLAIN_TIER } from './card.mjs';
 
 const SVG = 'http://www.w3.org/2000/svg';
@@ -47,6 +47,9 @@ const fillOf = (tier) => tierPaint(tier).fill.replace('url(#hatch)', 'url(#ex-ha
 
 export async function mountExplorer(host, { index, registry }) {
   const geo = await getJSON('/constraint-check-site/desk/geo/world-110m.json', { optional: true });
+  // W4: the robustness marks that are not "holds" (engine 0.1.6); absent file or entry means holds
+  const rob = await getJSON(`${dataBase()}/robustness.json`, { optional: true });
+  const markOf = (iso, area) => (rob && rob.marks && rob.marks[iso] && rob.marks[iso][area]) || 'h';
   const byIso = Object.fromEntries(index.countries.map((c) => [c.iso3, c]));
   const label = (id) => (registry.nodeById[id] ? (id.startsWith('N11.') ? `${registry.nodeById[id].short} (micro risk)` : registry.nodeById[id].short) : id);
   const opt = (v, t) => h('option', { value: v }, t);
@@ -96,10 +99,19 @@ export async function mountExplorer(host, { index, registry }) {
       const members = index.countries.filter((c) => inScope(c) && c.tiers && g.tiers.includes(c.tiers[area])).sort((a, b) => a.name.localeCompare(b.name));
       const det = h('details', { class: `ex-group ex-${g.key}`, open: g.key === 'look' || g.key === 'not' ? true : null },
         h('summary', {}, h('span', { class: `swatch ${g.key === 'look' ? 't-candidate' : g.key === 'not' ? 't-probably_not' : `t-cannot_tell_${g.key === 'gap' ? 'data_gap' : g.key}`}`, 'aria-hidden': 'true' }), `${g.label} (${members.length})`),
-        members.length ? h('p', { class: 'ex-names' }, ...members.flatMap((c, i) => [i ? ', ' : '', h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${c.iso3}`) }, c.name)])) : h('p', { class: 'ex-names muted' }, 'None.'));
+        ...namesByMark(members, area, g.key === 'look' || g.key === 'not'));
       listHost.append(det);
     }
   };
+  // verdict groups split by how firm the rating is; the "can't tell" groups list names only
+  function namesByMark(members, area, split) {
+    const link = (c) => h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${c.iso3}`) }, c.name);
+    const para = (list, label) => h('p', { class: 'ex-names' }, label ? h('span', { class: 'ex-mark' }, label) : null, ...list.flatMap((c, i) => [i ? ', ' : '', link(c)]));
+    if (!members.length) return [h('p', { class: 'ex-names muted' }, 'None.')];
+    if (!split) return [para(members)];
+    const parts = [['h', 'Holds under every reading: '], ['s', 'Depends on the reading: '], ['c', 'Depends on the comparison countries: ']];
+    return parts.map(([k, label]) => [members.filter((c) => markOf(c.iso3, area) === k), label]).filter(([l]) => l.length).map(([l, label]) => para(l, label));
+  }
   keyHost.append(...GROUPS.map((g) => h('span', {}, h('span', { class: `swatch ${g.key === 'look' ? 't-candidate' : g.key === 'not' ? 't-probably_not' : `t-cannot_tell_${g.key === 'gap' ? 'data_gap' : g.key}`}`, 'aria-hidden': 'true' }), g.label)),
     h('span', {}, h('span', { class: 'swatch ex-swatch-none', 'aria-hidden': 'true' }), 'Not covered'));
   for (const s of [areaSel, regSel, incSel]) s.addEventListener('change', draw);

@@ -238,10 +238,37 @@ export function initTheme() {
   if (btn) btn.addEventListener('click', () => { const order = ['auto', 'light', 'dark']; apply(order[(order.indexOf(read()) + 1) % order.length]); });
 }
 
+// ---------- evidence settings (front-door PRD W4, rubric 0.1.8) ----------
+export const SETTINGS = ['cautious', 'standard', 'exploratory'];
+export const SETTING_LABEL = { cautious: 'Cautious', standard: 'Standard', exploratory: 'Exploratory' };
+export const SETTING_HINT = {
+  cautious: 'Harder to rate anything: three independent measures and stronger scores needed.',
+  standard: 'The default, and the only reading to cite.',
+  exploratory: 'Easier to flag an area for a closer look; never easier to rule one out.',
+};
+/** The evidence setting in the page link (#setting=); Standard when absent or unknown. */
+export function currentSetting() {
+  const s = new URLSearchParams(location.hash.replace(/^#/, '')).get('setting');
+  return SETTINGS.includes(s) ? s : 'standard';
+}
+/** Plain words for the engine's robustness mark (W4, Q7: one mark, detail on hover). */
+export const ROBUST_PLAIN = {
+  holds: 'Holds under every reading',
+  depends_on_setting: 'Depends on the reading',
+  depends_on_comparators: 'Depends on the comparison countries',
+};
+export function robustDetail(n, plain) {
+  if (!n || !n.robustness) return '';
+  const by = n.tier_by_setting || {};
+  const parts = SETTINGS.filter((s) => by[s]).map((s) => `${SETTING_LABEL[s]} reading → ${plain(by[s]).toLowerCase().replace(/^unclear: /, 'unclear (').replace(/^(unclear \(.*)$/, '$1)')}`);
+  const extra = n.robustness.comparators_differ ? ' The rating also changes with the choice of comparison countries.' : '';
+  return `${parts.join(' · ')}.${extra}`;
+}
+
 // ---------- URL hash state (reproducible links) ----------
 export function parseHash() {
   const p = new URLSearchParams(location.hash.replace(/^#/, ''));
-  const out = { set: p.get('set') || null, peers: null, overrides: {} };
+  const out = { set: p.get('set') || null, peers: null, overrides: {}, setting: SETTINGS.includes(p.get('setting')) ? p.get('setting') : 'standard' };
   const peers = p.get('peers');
   if (peers != null) out.peers = peers.split(',').map((s) => s.trim()).filter(Boolean);
   const o = p.get('o');
@@ -261,6 +288,9 @@ export function writeHash(state) {
   if (Array.isArray(state.peers)) p.set('peers', state.peers.join(','));
   const ov = Object.entries(state.overrides || {});
   if (ov.length) p.set('o', ov.map(([n, v]) => `${n}:${v.tier}:${encodeURIComponent(v.note || '')}`).join('|'));
+  // the evidence setting is chosen in the top bar (nav.mjs); keep it unless the caller sets it
+  const setting = state.setting || currentSetting();
+  if (setting !== 'standard') p.set('setting', setting);
   const s = p.toString();
   history.replaceState(null, '', location.pathname + location.search + (s ? `#${s}` : ''));
 }

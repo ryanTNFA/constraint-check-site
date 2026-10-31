@@ -4,7 +4,8 @@
 // the URL with the same `o=` encoding the Bottom line and Areas use for overrides, so the two pages and the memo share them.
 import { refreshNav } from './nav.mjs';
 import { nodeCode, getJSON, loadRegistry, initTheme, h, fmtSigned, qs, withData, dataBase, downloadText, tierLabel, tierClass, parseHash, writeHash, missingTestReason, USER_TIERS } from './common.mjs';
-import { plainTier, tierBySetLine, reasonTag } from './card.mjs';
+import { plainTier, tierBySetLine, reasonTag, robustChip } from './card.mjs';
+import { currentSetting, SETTING_LABEL } from './common.mjs';
 import { heatRow, TEST_ORDER } from './evidence_math.mjs';
 import { railModel, nodeScope, VIEWS } from './evidence_node.mjs';
 
@@ -68,7 +69,10 @@ function buildModel() {
       const hr = heatRow(sc, scope, state.set);
       const node = (sc.nodes || []).find((n) => n.id === it.id);
       // The rating under the comparison countries chosen above (the verdict layer computes one per set).
-      const tier = it.context ? 'context_only' : node ? ((node.tier_by_set && node.tier_by_set[state.set]) || node.tier) : null;
+      let tier = it.context ? 'context_only' : node ? ((node.tier_by_set && node.tier_by_set[state.set]) || node.tier) : null;
+      // W4: the evidence setting applies to the default comparison countries, for which the engine stores each reading
+      const setting = currentSetting();
+      if (setting !== 'standard' && state.set === 'structural' && node && node.tier_by_setting && node.tier_by_setting[setting]) tier = node.tier_by_setting[setting];
       const bySet = node && !it.context ? tierBySetLine(node, state.set) : '';
       // the engine's reason code describes the structural set; under another set the Desk derives it from the tier
       const tagNode = node && tier ? (tier === node.tier ? node : { ...node, tier, cannot_tell_reason: null, cannot_tell_detail: null }) : null;
@@ -120,7 +124,7 @@ function render() {
       h('th', { scope: 'row', class: 'sm-node' }, h('a', { href }, h('span', { class: 'sm-id' }, r.sub ? '' : nodeCode(r.id)), ' ', r.short)),
       valueCell(r.bench == null ? null : Math.max(-3, Math.min(3, r.bench)), r.benchEmpty, bt),
       ...TEST_ORDER.map((t) => valueCell(r.tests[t], r.empty[t], r.why[t] || `${TEST_HEAD[t]}: the verdict layer's test score, from −2 (evidence against) to +2 (for).`)),
-      h('td', { class: 'sm-tier' }, r.tier ? [h('span', { class: `tier-badge ${tierClass(r.tier)}`, title: r.bySet || null }, h('span', {}, plainTier(r.tier))), r.tagNode ? reasonTag(r.tagNode) : null] : '—'),
+      h('td', { class: 'sm-tier' }, r.tier ? [h('span', { class: `tier-badge ${tierClass(r.tier)}`, title: r.bySet || null }, h('span', {}, plainTier(r.tier))), r.tagNode ? reasonTag(r.tagNode) : null, r.tagNode ? robustChip(r.tagNode) : null] : '—'),
       ...conclusionCells(r)));
   }
   $('heat-wrap').replaceChildren(h('table', { class: 'sm-table', id: 'heat' }, h('caption', { class: 'visually-hidden' }, `Diagnostic heat map for ${nameOf(state.iso)}`), h('thead', {}, head), body));
@@ -166,13 +170,13 @@ function exportCSV() {
     const ov = state.overrides[r.id];
     lines.push([r.id, `"${r.short}"`, csvNum(r.bench, r.benchEmpty), r.nBench, ...TEST_ORDER.map((t) => csvNum(r.tests[t], r.empty[t])), r.tier || '', ov ? ov.tier : '', ov ? `"${(ov.note || '').replace(/"/g, '""')}"` : ''].join(','));
   }
-  lines.push('', `# ${nameOf(state.iso)} (${state.iso}). Snapshot ${state.scorecard.meta.snapshot_id}, rubric ${state.scorecard.meta.rubric_version}. Benchmarking: median binding-side sd; tests: verdict-layer T from -2 to +2.`);
+  lines.push('', `# ${nameOf(state.iso)} (${state.iso}). Reading: ${readingText()}. Snapshot ${state.scorecard.meta.snapshot_id}, rubric ${state.scorecard.meta.rubric_version}. Benchmarking: median binding-side sd; tests: verdict-layer T from -2 to +2.`);
   downloadText(`${fileBase()}.csv`, lines.join('\n'), 'text/csv');
 }
 
 function exportMD() {
   const row = (c) => `| ${c.map((x) => String(x ?? '').replace(/\|/g, '\\|')).join(' | ')} |`;
-  const out = [`# Diagnostic summary: ${nameOf(state.iso)} (${state.iso})`, '', `Snapshot ${state.scorecard.meta.snapshot_id} · rubric ${state.scorecard.meta.rubric_version}. Benchmarking is the median binding-side distance (sd) of the node's indicators; tests are the verdict layer's scores from −2 to +2.`, '',
+  const out = [`# Diagnostic summary: ${nameOf(state.iso)} (${state.iso})`, '', `Reading: ${readingText()} · Snapshot ${state.scorecard.meta.snapshot_id} · rubric ${state.scorecard.meta.rubric_version}. Benchmarking is the median binding-side distance (sd) of the node's indicators; tests are the verdict layer's scores from −2 to +2.`, '',
     row(['Node', 'Benchmarking', 'Price', 'Changes', 'Circumvention', 'Camels', 'Verdict layer', 'Analyst', 'Note']), row(Array(9).fill('---'))];
   for (const r of state.model) {
     if (r.group) { out.push(row([`**${r.group}**`, '', '', '', '', '', '', '', ''])); continue; }
@@ -183,6 +187,12 @@ function exportMD() {
 }
 
 /** The heat map as a standalone SVG, for slides. */
+/** Every export carries the evidence setting (W4); off Standard it says it is not the release. */
+function readingText() {
+  const s = currentSetting();
+  return s === 'standard' ? 'Standard (the reading to cite)' : `${SETTING_LABEL[s]}, not the one to cite`;
+}
+
 function heatSVG() {
   const surface = css('--bg', '#faf7f0'), text = css('--text', '#1c2e4a'), muted = css('--muted', '#4a5d7e'), rule = css('--rule', '#e6d9d0');
   const anyOv = Object.keys(state.overrides).length > 0;
@@ -264,6 +274,7 @@ async function main() {
       setTimeout(() => { $('copy-link').textContent = 'Copy link with your conclusions'; }, 1600);
     });
     window.addEventListener('hashchange', () => { const p = parseHash(); state.overrides = p.overrides || {}; render(); });
+    window.addEventListener('desk-setting', () => render());
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const repaint = () => setTimeout(render, 30);
     mq.addEventListener('change', repaint);

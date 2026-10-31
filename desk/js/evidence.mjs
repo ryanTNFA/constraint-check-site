@@ -57,6 +57,9 @@ function writeUrl(push = false) {
   if (state.test) q.set('test', state.test); else q.delete('test');
   const p = new URLSearchParams();
   if (state.set !== 'structural') p.set('set', state.set);
+  // keep the country pages' state (peers, overrides, evidence setting) so the top bar carries it on
+  const prev = new URLSearchParams(location.hash.replace(/^#/, ''));
+  for (const k of ['peers', 'o', 'setting']) if (prev.get(k) != null) p.set(k, prev.get(k));
   if (state.fit !== 'structure') p.set('fit', state.fit);
   if (state.asOf && state.asOf !== snapYear()) p.set('asof', String(state.asOf));
   if (state.added.length) p.set('add', state.added.join(','));
@@ -1450,6 +1453,7 @@ async function main() {
     }
     buildControls();
     await render();
+    window.addEventListener('desk-setting', () => render());
   } catch (e) { showError(`Could not load the evidence data: ${e.message}. Rerun the engine CLI to write desk/data/panel and desk/data/fits.json.`); console.error(e); }
 }
 main();

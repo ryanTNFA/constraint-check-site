@@ -2,9 +2,9 @@
 // and Areas (areas.html, the tree, the cards and the analyst panels). Each render function draws only when its
 // container is on the page, so both pages share one source of truth for the comparison set, peers and overrides.
 import { tabHref, refreshNav } from './nav.mjs';
-import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, fmtInt, fmtValue, tierClass, TIER_ORDER, parseHash, writeHash, qs, unitHint, shortName, sourceLink, sourceLabel, isStale, englishList, downloadText, dataBase, withData, gNorm, reasonClause, DATA_GAP_KINDS, isRegistryGap } from './common.mjs';
+import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, fmtInt, fmtValue, tierClass, TIER_ORDER, parseHash, writeHash, qs, unitHint, shortName, sourceLink, sourceLabel, isStale, englishList, downloadText, dataBase, withData, gNorm, reasonClause, DATA_GAP_KINDS, isRegistryGap, SETTING_LABEL } from './common.mjs';
 import { renderTree } from './tree.mjs';
-import { createCard, plainTier, PLAIN_TIER, bottomLine, fcsNote, refSpan } from './card.mjs';
+import { createCard, plainTier, PLAIN_TIER, bottomLine, fcsNote, refSpan, robustChip } from './card.mjs';
 import { renderComparators, SET_PLAIN } from './comparators.mjs';
 import { buildMemo, memoHTML } from './memo.mjs';
 import { buildBriefing } from './briefing.mjs';
@@ -17,7 +17,7 @@ const $ = (id) => document.getElementById(id);
 const state = {
   iso, registry: null, scorecard: null, countries: [], matrix: null, narrative: null, fcs: null, index: null,
   engine: null, engineStatus: { ok: false, message: '' },
-  activeSet: 'structural', peers: null, overrides: {}, view: null, lastRecompute: '',
+  activeSet: 'structural', peers: null, overrides: {}, view: null, viewBase: null, setting: 'standard', lastRecompute: '',
 };
 let card = null;
 const PAGE = document.body.dataset.page === 'areas' ? 'areas' : 'bottom';
@@ -56,7 +56,7 @@ async function main() {
 
   const hs = parseHash();
   state.activeSet = hs.set && state.scorecard.comparators[hs.set] ? hs.set : (state.scorecard.meta.active_comparator_set || 'structural');
-  state.peers = hs.peers; state.overrides = hs.overrides || {};
+  state.peers = hs.peers; state.overrides = hs.overrides || {}; state.setting = hs.setting;
   state.view = baseView();
   document.title = `${state.scorecard.country.name} · ${PAGE === 'areas' ? 'Areas' : 'Bottom line'} · Constraint Check`;
 
@@ -83,6 +83,8 @@ async function main() {
   const section = new URLSearchParams(location.search).get('section');
   if (section && on(section)) goTo(section);
   window.addEventListener('hashchange', () => { const p = parseHash(); state.overrides = p.overrides || {}; renderTreePanel(); renderStatements(); renderOverridesBox(); });
+  // the evidence setting is chosen in the top bar (nav.mjs, W4); the ratings on this page follow it
+  window.addEventListener('desk-setting', (e) => { state.setting = e.detail.setting; state.view = applySetting(state.viewBase); writeHash(state); renderAll(); });
 }
 
 // ---------------- section links: scroll without touching the state hash ----------------
@@ -102,7 +104,27 @@ function wireSectionLinks() {
 }
 
 // ---------------- comparators / recompute ----------------
+/**
+ * W4: the ratings under the chosen evidence setting. The engine stores each rated node's tier under every setting
+ * (tier_by_setting) for the comparison countries in use, so this only swaps tiers; Standard returns the view as is.
+ * A fallback view (no in-browser engine, non-default set) has settings computed for another set, so it stays Standard.
+ */
+function applySetting(view) {
+  if (!view || state.setting === 'standard' || view.fallback) return view;
+  const label = SETTING_LABEL[state.setting];
+  const nodes = view.nodes.map((n) => {
+    const t = n.tier_by_setting && n.tier_by_setting[state.setting];
+    if (!t || t === n.tier) return n;
+    return { ...n, tier: t, cannot_tell_reason: null, cannot_tell_detail: null, tier_reason: `${plainTier(t)} under the ${label} reading (Standard: ${plainTier(n.tier).toLowerCase()}). The rule text that follows is the Standard computation. ${n.tier_reason}` };
+  });
+  return { ...view, nodes, setting: state.setting };
+}
 async function applyComparators() {
+  await applyComparatorsRaw();
+  state.viewBase = state.view;
+  state.view = applySetting(state.viewBase);
+}
+async function applyComparatorsRaw() {
   const sc = state.scorecard; const base = baseView();
   const defaultMembers = sc.comparators[state.activeSet] ? sc.comparators[state.activeSet].members : [];
   const isDefault = state.activeSet === (sc.meta.active_comparator_set || 'structural') && !Array.isArray(state.peers);
@@ -127,15 +149,27 @@ async function applyComparators() {
 }
 function fallbackView(base) {
   const nodes = base.nodes.map((n) => (n.tier_by_set && n.tier_by_set[state.activeSet] ? { ...n, ...(n.tier_by_set[state.activeSet] === n.tier ? {} : { cannot_tell_reason: null, cannot_tell_detail: null }), tier: n.tier_by_set[state.activeSet], tier_reason: n.tier_by_set[state.activeSet] === n.tier ? n.tier_reason : `${plainTier(n.tier_by_set[state.activeSet])} under the ${state.activeSet} set (precomputed by the engine; the rule text below describes the structural-set computation). ${n.tier_reason}` } : n));
-  return { nodes, ranking: base.ranking, statements: base.statements, indicators: base.indicators, setKey: state.activeSet, note: 'Ranking and statements are shown for the default set; the engine module is not available for a browser recompute.' };
+  return { nodes, ranking: base.ranking, statements: base.statements, indicators: base.indicators, setKey: state.activeSet, fallback: true, note: 'Ranking and statements are shown for the default set; the engine module is not available for a browser recompute.' };
 }
 
 function renderAll() {
-  renderTreePanel(); renderStatements(); renderPeersLine(); renderOverridesBox(); renderHeaderMeta();
+  renderSettingNote(); renderTreePanel(); renderStatements(); renderPeersLine(); renderOverridesBox(); renderHeaderMeta();
   if (on('topsplit-body')) renderTopSplit();
   if (on('ranking-body')) renderRanking();
   if (on('comparators-body')) renderComparatorsPanel();
   if (card) card.refresh();
+}
+
+// W4: say plainly when the page is not showing the release
+function renderSettingNote() {
+  if (!on('setting-note')) return;
+  const el = $('setting-note');
+  if (state.setting === 'standard') { el.hidden = true; return; }
+  el.hidden = false;
+  el.replaceChildren(h('strong', {}, `${SETTING_LABEL[state.setting]} reading, not the one to cite.`),
+    state.viewBase && state.viewBase.fallback
+      ? ' This reading needs the in-browser engine for these comparison countries, so the page shows Standard.'
+      : ` ${state.setting === 'exploratory' ? 'It makes it easier to flag an area for a closer look, never easier to rule one out. The figures are the same under every reading; only the ratings change.' : 'It needs more and stronger evidence before rating anything.'} Standard is the only reading to cite. None of the three readings has been tested against expert diagnoses yet.`);
 }
 
 // ---------------- header ----------------
@@ -159,7 +193,7 @@ function renderHeaderMeta() {
   $('meta-list').replaceChildren(
     h('li', {}, `${c.region} · ${c.income_group}${c.landlocked ? ' · landlocked' : ''}`),
     h('li', {}, 'Public data as of ', h('strong', {}, m.snapshot_id || '—')),
-    h('li', { title: englishList(members.map(nameOf)) }, 'Compared with ', h('strong', {}, `${members.length} countries`), ` (${state.activeSet}${Array.isArray(state.peers) ? ', edited' : ''})`),
+    h('li', { title: englishList(members.map(nameOf)) }, 'Compared with ', h('strong', {}, `${members.length} ${Array.isArray(state.peers) ? 'countries you chose' : ({ structural: 'similar economies', regional: 'regional neighbours', aspirational: 'faster growers' }[state.activeSet] || 'countries')}`)),
   );
 }
 function renderPeersLine() {
@@ -179,7 +213,9 @@ function renderGrowth() {
   const stmt = String(g.statement || '');
   // lead with the question the statement ends on; the top-split reading moves to the analyst panel
   const qm = stmt.match(/The relevant question is therefore:\s*([^.?]*)[.?]/);
-  $('growth-question').textContent = qm ? `The question for ${c}: ${qm[1].trim()}?` : '';
+  // the Bottom line drops the analyst's qualifier ("when the growth record shows no dominant pattern"); Areas keeps it
+  const q = qm ? qm[1].trim() : '';
+  $('growth-question').textContent = q ? `The question for ${c}: ${PAGE === 'bottom' ? q.replace(/\s+when the growth record .*$/, '').replace(/ given income$/, ' for its income level') : q}?` : '';
   if (!on('growth-statement')) return; // the Bottom line shows the question only
   const cleaned = stmt.replace(/\s*Provisional top-split reading:[^()]*(\([^)]*\))?\.?/g, '').trim();
   $('growth-statement').textContent = cleaned || 'No growth problem statement in the file.';
@@ -328,9 +364,10 @@ function renderStatements() {
   const body = $('statements-body'); body.replaceChildren();
   const why = (id) => areaLink(id, 'Why?', 'bl-why');
   const ovMark = (id) => (state.overrides[id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTier(state.overrides[id].tier).toLowerCase()}`) : null);
-  const line = (id, name, text, grade) => h('li', {},
+  const line = (id, name, text, grade, node) => h('li', {},
     h('span', { class: 'bl-area' }, areaLink(id, cap(name))),
     grade ? h('span', { class: 'bl-grade' }, grade) : null,
+    robustChip(node),
     h('span', { class: 'bl-text' }, text), ' ', why(id), ovMark(id));
   const names = (items) => joinEls(items.map((x) => [areaLink(x.id, x.short), state.overrides[x.id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTier(state.overrides[x.id].tier).toLowerCase()}`) : ''].filter(Boolean)));
   const list = (cls, title, sub) => h('section', { class: `bl-list ${cls}` }, h('h2', {}, title), sub ? h('p', { class: 'bl-sub' }, sub) : null);
@@ -339,7 +376,7 @@ function renderStatements() {
   const s1 = list('bl-stop', 'What you can stop arguing about', null);
   const stops = [...bl.ruled.map((x) => ({ x, grade: 'Ruled out' })), ...bl.probNot.map((x) => ({ x, grade: 'Probably not' }))];
   if (stops.length) {
-    s1.append(h('ul', {}, stops.map(({ x, grade }) => line(x.id, x.short, `${x.away ? `${cap(x.away.text)}.` : 'Most measures point away from a problem.'}${x.counter ? ` But ${x.counter.text}.` : ''}`, grade))));
+    s1.append(h('ul', {}, stops.map(({ x, grade }) => line(x.id, x.short, `${x.away ? `${cap(x.away.text)}.` : 'Most measures point away from a problem.'}${x.counter ? ` But ${x.counter.text}.` : ''}`, grade, x.node))));
     if (bl.probNot.length) s1.append(h('p', { class: 'bl-note' }, '“Probably not” is weaker than “ruled out”: do not drop a program on it alone.'));
   } else {
     s1.append(h('p', { class: 'bl-none' }, h('strong', {}, `Nothing can be ruled out for ${c} yet.`), ` ${shareText()}`));
@@ -348,11 +385,13 @@ function renderStatements() {
   }
 
   // 2. what deserves a closer look, by lean
-  const s2 = list('bl-look', 'What deserves a closer look', 'Not established: confirm in-country before relying on any of these.');
-  const look = bl.look.slice().sort((a, b) => (b.node.N ?? 0) - (a.node.N ?? 0));
+  const s2 = list('bl-look', 'What deserves a closer look', 'Not established: confirm in-country before relying on any of these. The tag beside each area says whether it stays on this list under all three readings in the top bar (Cautious, Standard, Exploratory); tap it to see each.');
+  // robust lines first (W4), then by score
+  const firm = (x) => (x.node.robustness && x.node.robustness.mark === 'holds' ? 0 : 1);
+  const look = bl.look.slice().sort((a, b) => firm(a) - firm(b) || (b.node.N ?? 0) - (a.node.N ?? 0));
   if (look.length) {
-    s2.append(h('ul', {}, look.map((x) => line(x.id, x.ev !== x.node ? `${x.evShort} (${x.short.toLowerCase()})` : x.short,
-      x.facts.length ? `${cap(x.facts[0].text)}.` : 'See the evidence card.', x.node.tier === 'likely_binding' ? 'Likely' : null))));
+    s2.append(h('ul', {}, look.map((x) => line(x.id, x.ev !== x.node ? x.evShort : x.short,
+      x.facts.length ? `${cap(x.facts[0].text)}.` : 'See the evidence card.', x.node.tier === 'likely_binding' ? 'Likely' : null, x.node))));
   } else {
     s2.append(h('p', { class: 'bl-none' }, h('strong', {}, `No area stands out for ${c} yet.`)));
     const toward = bl.towardLeans.slice(0, 3);
@@ -367,16 +406,16 @@ function renderStatements() {
     const grp = (items, label, next) => (items.length ? h('li', {}, h('span', { class: 'bl-reason' }, `${label} (${items.length})`), h('span', { class: 'bl-text' }, ...names(items), '. '), h('span', { class: 'bl-next' }, next)) : null);
     const elim = g.elimination.map((x) => x.node.elimination && x.node.elimination.direction !== 'none' ? ` Today it leans ${x.node.elimination.direction === 'toward' ? 'toward' : 'away from'} a problem.` : '').join('');
     s3.append(h('ul', {},
-      grp(g.oneKind, 'Only one kind of evidence', `Next: a second kind of evidence (a price, a response to change, or firms working around it) would settle it.${bl.closest ? ` Closest to a call: ${bl.closest.short} (leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''}`),
+      grp(g.oneKind, 'Only one kind of evidence', `Next: a second kind of evidence (a price, a response to change, or firms working around it) would settle it.${bl.closest ? ` Of these, ${bl.closest.short} comes nearest to a rating (it leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''}`),
       grp(g.mixed, 'Evidence points both ways', 'Next: check whether it binds for some sectors or regions only.'),
       grp(g.dataGap, `Too little recent data for ${c}`, 'Next: a newer survey or data year would settle it.'),
       grp(g.toolGap, 'Not connected to the tool yet', `Next: a new measure in the tool; no data for ${c} changes it today.`),
       grp(g.sector, 'Needs a sector study', 'Next: sector work.'),
-      grp(g.elimination, 'Judged by elimination', `Next: rule out the other causes of low returns first.${elim}`)));
+      grp(g.elimination, 'Judged by elimination', `Self-discovery asks whether firms are held back from trying new products. Next: rule out the other causes of low returns first.${elim}`)));
     if (bl.firmsTop) {
       const r = bl.firmsTop.r; const m = String(r.name || '').match(/choosing (.+?) as their biggest obstacle/i);
       const what = m ? m[1] : shortName(r).toLowerCase();
-      s3.append(h('p', { class: 'bl-note' }, `Firms rank ${what} as their biggest obstacle (${fmt(r.value_ref, 0)}% name it first, ${refSpan(r)}); complaints alone cannot establish a constraint.`));
+      s3.append(h('p', { class: 'bl-note' }, `Firms rank ${what} as their biggest obstacle (${fmt(r.value_ref, 0)}% name it first, ${refSpan(r)}). Complaints alone cannot establish a constraint${bl.firmsTop.toolGap ? ', and the tool has no measure of its cost yet' : ''}, so it is not rated.`));
     }
   }
   body.append(s1, s2, s3);
@@ -514,7 +553,7 @@ function renderBriefingBox() {
   const ideaIn = h('textarea', { id: 'idea-text', placeholder: 'What it does, for whom and where; roughly how big; and how it is meant to raise private investment or growth. The more specific, the better the answer.' });
   const status = h('span', { class: 'small muted', 'aria-live': 'polite' }, '');
   const flash = (msg) => { status.textContent = msg; setTimeout(() => { status.textContent = ''; }, 4000); };
-  const make = () => buildBriefing({ idea: ideaIn.value, title: titleIn.value, memo: memoText(), view: state.view, scorecard: state.scorecard, registry: state.registry, activeSet: state.activeSet, pageUrl: location.href.split('#')[0] });
+  const make = () => buildBriefing({ idea: ideaIn.value, title: titleIn.value, memo: memoText(), view: state.view, scorecard: state.scorecard, registry: state.registry, activeSet: state.activeSet, setting: state.setting, pageUrl: location.href.split('#')[0] });
   const ready = () => { if (ideaIn.value.trim()) return true; flash('Describe the idea first.'); ideaIn.focus(); return false; };
   const words = (t) => t.split(/\s+/).filter(Boolean).length.toLocaleString('en-US');
   body.append(
@@ -539,12 +578,12 @@ function renderExport() {
   body.append(h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;align-items:center' },
     h('button', { class: 'btn primary', type: 'button', onclick: () => copyMemoRich().then(flash) }, 'Copy for email or Word'),
     h('button', { class: 'btn', type: 'button', onclick: () => flash(printMemo()) }, 'Print or save as PDF'),
-    h('button', { class: 'btn quiet', type: 'button', onclick: downloadMemo }, `Download ${iso}-memo.md`),
+    h('button', { class: 'btn quiet', type: 'button', onclick: downloadMemo, title: 'A plain-text file (Markdown) that opens in any text editor or in Word' }, `Download as text (${iso}-memo.md)`),
     h('button', { class: 'btn quiet', type: 'button', onclick: async () => { try { await navigator.clipboard.writeText(location.href); flash('Link copied.'); } catch { flash(location.href); } } }, 'Copy link to this view'),
     status));
   body.append(h('p', { class: 'small muted', style: 'margin-top:8px' }, 'The link encodes the comparison countries, edited peers and your overrides.'));
 }
-function memoText() { return buildMemo({ scorecard: state.scorecard, view: state.view, registry: state.registry, overrides: state.overrides, activeSet: state.activeSet, peers: state.peers, narrative: state.narrative, fcs: state.fcs, countries: state.countries, plain: plainCtx() }); }
+function memoText() { return buildMemo({ scorecard: state.scorecard, view: state.view, registry: state.registry, overrides: state.overrides, activeSet: state.activeSet, peers: state.peers, narrative: state.narrative, fcs: state.fcs, countries: state.countries, plain: plainCtx(), setting: state.setting }); }
 function downloadMemo() { downloadText(`${iso}-memo.md`, memoText()); }
 async function copyMemoRich() {
   const md = memoText(); const html = memoHTML(md, { title: `Constraint Check memo: ${state.scorecard.country.name}` });

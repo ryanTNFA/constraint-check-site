@@ -1,6 +1,6 @@
 // Node evidence card: a side drawer. Also the plain-language helpers that the statements,
 // the tree, Proposal Check and the memo share, so every surface says the same thing.
-import { nodeCode, h, fmt, fmtSigned, fmtSignal, fmtValue, tierLabel, tierClass, isCannotTell, unitHint, shortName, sourceLink, sourceLabel, missingTestReason, subreasonLabel, TEST_ORDER, TEST_NUM, USER_TIERS, isStale, withData, TIER_ORD, englishList, isRegistryGap, DATA_GAP_KINDS, cannotTellCode, leanOf, CANNOT_TELL_PLAIN } from './common.mjs';
+import { nodeCode, h, fmt, fmtSigned, fmtSignal, fmtValue, tierLabel, tierClass, isCannotTell, unitHint, shortName, sourceLink, sourceLabel, missingTestReason, subreasonLabel, TEST_ORDER, TEST_NUM, USER_TIERS, isStale, withData, TIER_ORD, englishList, isRegistryGap, DATA_GAP_KINDS, cannotTellCode, leanOf, CANNOT_TELL_PLAIN, ROBUST_PLAIN, robustDetail } from './common.mjs';
 
 const FOCUSABLE = 'button, [href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"])';
 
@@ -80,6 +80,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
     plainSec.append(h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
       h('span', { class: `tier-badge lg ${tierClass(node.tier)}` }, h('span', {}, plainTier(node.tier))),
       reasonTag(evidenceNode(node, view.nodes)),
+      robustChip(node),
       ov ? h('span', { class: 'small' }, '→ your override: ', h('span', { class: `tier-badge ${tierClass(ov.tier)}` }, h('span', {}, plainTier(ov.tier)))) : null,
       node.F ? h('span', { class: 'flag warn small' }, 'sensitive to the choice of comparison countries') : null,
       node.top_split_override ? h('span', { class: 'flag warn small' }, `first-decision cap applied${node.top_split_override_row ? ` (${node.top_split_override_row.replace(/_/g, ' ')})` : ''}`) : null));
@@ -349,7 +350,10 @@ export function plainArea(registry, id) {
   return r ? r.label.toLowerCase() : id;
 }
 /** Short lower-case name for lists ("finance or returns", "electricity"). */
+// Plain names where the tree's short label means nothing to a non-economist (AI reader test, 31 October)
+const PLAIN_SHORT = { N0: 'whether costly finance or low returns is the bigger problem' };
 export function plainShort(registry, id) {
+  if (PLAIN_SHORT[id]) return PLAIN_SHORT[id];
   const r = registry && registry.nodeById[id];
   return (r ? r.short : id).replace(/\?$/, '').toLowerCase();
 }
@@ -417,7 +421,8 @@ export function rankPhrase(r, setKey, country, fallbackSet) {
   if (k > (pg.n + 1) / 2) { k = pg.n + 1 - k; word = hiWorse ? 'lowest' : 'highest'; }
   const joint = !Number.isInteger(k) || pg.ties > 0;
   const kk = Math.max(1, Math.floor(k));
-  return `the ${joint ? 'joint ' : ''}${kk === 1 ? word : `${ordinal(kk)}-${word}`} of ${country} and its ${others} comparison countries`;
+  // "with data": a comparison country without a value for this measure drops out, so the count can be below the set's size
+  return `the ${joint ? 'joint ' : ''}${kk === 1 ? word : `${ordinal(kk)}-${word}`} of ${country} and the ${others} comparison countries with data`;
 }
 /** The reading itself, as a phrase: "33.2% of firms experiencing at least one bribe request". */
 export function readingText(r) {
@@ -429,6 +434,7 @@ export function readingText(r) {
   if (nm) return `${num} ${nm[1]}`;                                      // "2.72 electrical outages in a typical month" 
   const pm = String(r.name || '').match(/^(?:percent|proportion|share) of (.+?)(?:\s*\(%\))?$/i);
   if (pm) return `${num}% of ${pm[1]}`;                                  // "60.7% of firms owning or sharing a generator"
+  if (/^% of value/i.test(u)) return `${lowerFirst(name)} at ${num}${u}`;  // a cost as a share of value: the unit alone does not say what is measured
   if (/^% of /.test(u) && u.split(/\s+/).length >= 5) return `${num}${u}`;  // the unit already says what is measured
   if (u === 'count' || u === 'ratio' || u === 'index') return `${lowerFirst(name)}: ${num}`;
   if (u === '%') return `${lowerFirst(name)} at ${num}%`;
@@ -499,6 +505,17 @@ function whyNotRuledOut(n, P) {
   if ((n.informing_dissent || []).length) out.push(`a supporting measure points the other way (${n.informing_dissent.map(prettyFamily).join(', ')})`);
   if ((n.F ?? 0) > R.F_max) out.push('the rating changes with the choice of comparison countries');
   return out;
+}
+
+/** W4: one robustness mark per rated area, with the readings on hover (Q7). Null for unrated areas. */
+export function robustChip(n) {
+  if (!n || !n.robustness) return null;
+  const m = n.robustness.mark;
+  const detail = robustDetail(n, plainTier);
+  const note = h('span', { class: 'robust-detail', hidden: true }, detail);
+  const btn = h('button', { type: 'button', class: `robust robust-${m}`, title: detail, 'aria-expanded': 'false' }, ROBUST_PLAIN[m]);
+  btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); const open = note.hidden; note.hidden = !open; btn.setAttribute('aria-expanded', String(open)); });
+  return h('span', { class: 'robust-wrap' }, btn, note);
 }
 
 /** Reason and lean beside a grey badge: "one kind of evidence ↗". Null for any other tier. */

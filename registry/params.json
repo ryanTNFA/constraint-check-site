@@ -1,6 +1,6 @@
 {
   "_comment": "Rubric parameters v0.1.4 (Workbook Appendix B as corrected by docs/CHANGELOG-rubric.md). Every number here is a starting point to be calibrated in Phase 0. The engine must read all thresholds from this file; nothing numeric is hard-coded.",
-  "rubric_version": "0.1.7",
+  "rubric_version": "0.1.8",
   "snapshot_reference_window_years": 12,
   "icr": {
     "controls": [
@@ -190,6 +190,14 @@
     "growing_min_growth_pct": 3,
     "growing_alt_min_convergence_t": 1.0,
     "growing_alt_min_growth_pct": 2
+  },
+  "settings": {
+    "_comment": "Rubric 0.1.8 (front-door PRD W4, docs/calibration-review.md sections 4.4 and 4.5): three named readings of the same evidence. Each setting overrides params.tiers; standard overrides nothing and is the release, the default and the only citable reading. The asymmetry is enforced by the engine (aggregate.mjs paramsForSetting): no setting may loosen the bars for probably_not or ruled_out, or let a node leave cannot_tell with fewer voting families, below standard. None of the three is calibrated until the retrospective (W6) reports.",
+    "order": ["cautious", "standard", "exploratory"],
+    "default": "standard",
+    "cautious": { "label": "Cautious", "tiers": { "cannot_tell_data_gap": { "E_below": 3 }, "candidate": { "N_min": 0.75, "N_alt_min": 1.25 }, "probably_not": { "N_max": -0.75, "N_alt_max": -1.25 } } },
+    "standard": { "label": "Standard", "tiers": {} },
+    "exploratory": { "label": "Exploratory", "tiers": { "candidate": { "C_min": 1, "N_min": 0.3, "N_alt_min": 0.75 } } }
   },
   "candour": {
     "_comment": "v0.1.5: economies whose WGI voice and accountability estimate (latest in window) is at or below va_est_max are 'low voice'; indicators flagged regime_sensitive 'low_voice' (firm self-reports of bribery) are class C there. -1.0 is roughly the bottom fifth of economies. A judgment threshold for Phase 0 review.",

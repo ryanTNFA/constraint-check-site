@@ -16,11 +16,11 @@ import {
   comovement,
   buildFamilies,
 } from './signals.mjs';
-import { evaluateNode, rollupNode, rankNodes, statements, bootstrapRanks, applyTopSplitOverride } from './aggregate.mjs';
+import { evaluateNode, rollupNode, rankNodes, statements, bootstrapRanks, applyTopSplitOverride, paramsForSetting, robustnessMark } from './aggregate.mjs';
 import { topSplit, RATE_SOURCES } from './topsplit.mjs';
 import { growthUniverse, growthProblem } from './growth.mjs';
 
-export const ENGINE_VERSION = '0.1.5';
+export const ENGINE_VERSION = '0.1.6';
 export const DEFAULT_SETS = ['structural', 'regional', 'aspirational'];
 export const DESK_SERIES = ['NY.GDP.PCAP.KD', 'NY.GDP.PCAP.KD.ZG', 'NE.GDI.FTOT.ZS', 'FR.INR.RINR', 'FS.AST.PRVT.GD.ZS', 'FP.CPI.TOTL.ZG'];
 export const RATIONING_INDICATOR = 'IC.FRM.CRDC.FL.ZS';
@@ -458,7 +458,7 @@ function unscoredNode(def, tier, reason) {
  * member lists. Shared by the batch engine and recomputeWithPeers so that both paths are
  * identical by construction.
  */
-export function assembleVerdicts({ indicators, comovement: cm, setMembers, activeSet, registry, params, snapshotYear, topSplitRow = null, topSplit: topSplitObj = null, seed, bootstrap = true, excludeFromPool = [] }) {
+export function assembleVerdicts({ indicators, comovement: cm, setMembers, activeSet, registry, params, snapshotYear, topSplitRow = null, topSplit: topSplitObj = null, seed, bootstrap = true, excludeFromPool = [], settings = true, tiersOnly = false }) {
   const R = normalizeRegistry(registry);
   const setNames = Object.keys(setMembers);
   // Sets that enter the fragility check and the bootstrap pool: those with members, minus any
@@ -624,6 +624,25 @@ export function assembleVerdicts({ indicators, comovement: cm, setMembers, activ
     for (const f of r.load_bearing) {
       if (!lbMap.has(f)) lbMap.set(f, []);
       lbMap.get(f).push(r.id);
+    }
+  }
+  if (tiersOnly) return { nodes: records, statements: statements(topLevel, ranking) };
+  // Rubric 0.1.8 (W4): the tier of every node under each evidence setting, and one robustness mark per rated node.
+  // The other settings rerun the aggregation without the bootstrap or the threshold sensitivity; Standard is this run.
+  if (settings && params.settings) {
+    const S = params.settings;
+    const names = (S.order || []).filter((n) => S[n]);
+    const def = S.default || 'standard';
+    const alt = {};
+    for (const n of names) {
+      if (n === def) continue;
+      const v = assembleVerdicts({ indicators, comovement: cm, setMembers, activeSet, registry, params: paramsForSetting(params, n), snapshotYear, topSplitRow, topSplit: topSplitObj, seed, bootstrap: false, excludeFromPool, settings: false, tiersOnly: true });
+      alt[n] = Object.fromEntries(v.nodes.map((r) => [r.id, r.tier]));
+    }
+    for (const r of records) {
+      if (!r.scored) { r.tier_by_setting = null; r.robustness = null; continue; }
+      r.tier_by_setting = Object.fromEntries(names.map((n) => [n, n === def ? r.tier : alt[n][r.id]]));
+      r.robustness = robustnessMark(r.tier_by_setting, r.tier_by_set, r.fragility ? r.fragility.sets_compared : null);
     }
   }
   const pert = rk.threshold_perturbation;
@@ -809,6 +828,18 @@ export function deskIndexEntry(sc, params) {
     top3: sc.ranking.ordered.slice(0, params.ranking.top_k),
     e_total: eTotal,
   };
+}
+
+/**
+ * W4 (rubric 0.1.8): the marks that are not "holds", per economy, for the home-page map and the heat map without a
+ * recompute. Kept out of index.json, which every page loads, to hold the Evidence page's data budget. A node absent
+ * here holds at every setting and comparator set: 's' depends on the setting, 'c' on the comparison countries.
+ */
+export function deskRobustnessEntry(sc) {
+  const code = { depends_on_setting: 's', depends_on_comparators: 'c' };
+  const out = {};
+  for (const n of sc.nodes) if (n.robustness && code[n.robustness.mark]) out[n.id] = code[n.robustness.mark];
+  return out;
 }
 
 export function deskCountryFile(ctx, sc) {

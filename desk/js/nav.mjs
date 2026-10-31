@@ -5,7 +5,7 @@
 // State travels in the URL: every tab link carries the comparison set, edited peers and overrides
 // (#set=, #peers=, #o=) read at click time, because the pages rewrite their hash as the user works.
 // Import this module first on every page: it mounts synchronously, before initTheme looks for its button.
-import { h, withData, qs, getJSON, dataBase } from './common.mjs';
+import { h, withData, qs, getJSON, dataBase, SETTINGS, SETTING_LABEL, SETTING_HINT, currentSetting } from './common.mjs';
 
 const PAGE = document.body.dataset.page || '';
 export const TABS = [
@@ -23,7 +23,7 @@ const nameOf = (iso) => { const c = (countries || []).find((x) => x.iso3 === iso
 export function carriedHash() {
   const p = new URLSearchParams(location.hash.replace(/^#/, ''));
   const keep = new URLSearchParams();
-  for (const k of ['set', 'peers', 'o']) if (p.get(k) != null) keep.set(k, p.get(k));
+  for (const k of ['set', 'peers', 'o', 'setting']) if (p.get(k) != null) keep.set(k, p.get(k));
   const s = keep.toString();
   return s ? `#${s}` : '';
 }
@@ -61,11 +61,13 @@ function row2(iso) {
     const v = input.value.trim().toLowerCase(); if (!v || !countries) return;
     const hit = countries.find((c) => c.name.toLowerCase() === v || c.iso3.toLowerCase() === v) || countries.find((c) => c.name.toLowerCase().startsWith(v));
     if (!hit) return;
-    // peers and overrides belong to one country; the comparison-set choice carries over
-    const set = new URLSearchParams(location.hash.replace(/^#/, '')).get('set');
+    // peers and overrides belong to one country; the comparison-set choice and the evidence setting carry over
+    const cur = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const keep = new URLSearchParams();
+    for (const k of ['set', 'setting']) if (cur.get(k)) keep.set(k, cur.get(k));
     const path = location.pathname.replace(/\/$/, '/index.html');
     const page = TABS.some((t) => path.endsWith(t.path.split('/').pop())) ? location.pathname : '/constraint-check-site/desk/country.html';
-    location.href = withData(`${page}?iso=${hit.iso3}`) + (set ? `#set=${set}` : '');
+    location.href = withData(`${page}?iso=${hit.iso3}`) + (keep.toString() ? `#${keep}` : '');
   };
   input.addEventListener('change', go);
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
@@ -78,7 +80,31 @@ function row2(iso) {
       h('nav', { class: 'tabs', 'aria-label': 'Country views' },
         tab(TABS[0]), tab(TABS[1]),
         h('span', { class: 'tab-group' }, h('span', { class: 'tab-group-label' }, 'For analysts'), tab(TABS[2]), tab(TABS[3]))),
-      setNote));
+      h('div', { class: 'nav-meta' }, settingSwitch(), setNote)));
+}
+
+/**
+ * The evidence setting (front-door PRD W4): three named readings, never a slider. Standard is the default and the
+ * only citable reading. The choice lives in the link (#setting=) and pages redraw on the 'desk-setting' event.
+ */
+function settingSwitch() {
+  const cur = currentSetting();
+  const group = h('div', { class: 'setting-switch', role: 'group', 'aria-label': 'Evidence setting' },
+    h('span', { class: 'setting-label' }, 'Reading'),
+    ...SETTINGS.map((s) => h('button', { type: 'button', class: 'setting-btn', 'data-setting': s, 'aria-pressed': s === cur ? 'true' : 'false', title: SETTING_HINT[s] }, SETTING_LABEL[s])),
+    h('a', { class: 'setting-help small', href: withData('/constraint-check-site/desk/methods.html#settings'), title: 'What the three readings are' }, 'What’s this?'));
+  group.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-setting]'); if (!b) return;
+    const s = b.dataset.setting;
+    const p = new URLSearchParams(location.hash.replace(/^#/, ''));
+    if (s === 'standard') p.delete('setting'); else p.set('setting', s);
+    const hs = p.toString();
+    history.replaceState(null, '', location.pathname + location.search + (hs ? `#${hs}` : ''));
+    for (const x of group.querySelectorAll('button[data-setting]')) x.setAttribute('aria-pressed', x.dataset.setting === s ? 'true' : 'false');
+    window.dispatchEvent(new CustomEvent('desk-setting', { detail: { setting: s } }));
+    refreshNav();
+  });
+  return group;
 }
 
 /** Redraw the country line: name, the comparison set in use, and the tab links (pages call this when they switch country). */
@@ -89,8 +115,9 @@ export function refreshNav() {
   for (const a of document.querySelectorAll('.nav-country a.tab')) { const t = TABS.find((x) => x.label === a.textContent); if (t) a.href = tabHref(t.path, iso); }
   const p = new URLSearchParams(location.hash.replace(/^#/, ''));
   const set = p.get('peers') != null ? 'custom' : (p.get('set') || 'structural');
+  for (const b of document.querySelectorAll('.setting-btn')) b.setAttribute('aria-pressed', b.dataset.setting === currentSetting() ? 'true' : 'false');
   const note = document.getElementById('nav-set');
-  if (note) note.textContent = `Compared with ${SET_WORDS[set] || set}${p.get('peers') != null ? '' : ` (${set})`}`;
+  if (note) note.textContent = `Compared with ${SET_WORDS[set] || set}`;
 }
 
 function mount() {

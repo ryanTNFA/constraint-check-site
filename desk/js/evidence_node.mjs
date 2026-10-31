@@ -1,9 +1,9 @@
 // Evidence page, node views (evidence-viz-prd phase 2): the left rail in Mindbook order, the C9 evidence
 // strip for a node, the C4 growth record, the C7 firm obstacles and (phase 4) the C11 composition. evidence.mjs owns the state and the
 // indicator charts (C1 to C3); it passes what these views need in `ctx`.
-import { nodeCode, h, fmt, fmtSigned, shortName, sourceLabel, tierLabel, tierClass, withData } from './common.mjs';
+import { nodeCode, h, fmt, fmtSigned, shortName, sourceLabel, tierLabel, tierClass, withData, currentSetting, SETTING_LABEL } from './common.mjs';
 import { stripRows, familyRows, obstacleRows, indexSeries, exportShares, TEST_ORDER } from './evidence_math.mjs';
-import { plainTier, tierBySetLine, reasonTag } from './card.mjs';
+import { plainTier, tierBySetLine, reasonTag, robustChip } from './card.mjs';
 import { median, isNum } from '../../engine/src/stats.mjs';
 
 const TEST_LABEL = { price: 'Test 1 · Price', changes: 'Test 2 · Changes', circumvention: 'Test 3 · Circumvention', camels: 'Test 4 · Camels and hippos' };
@@ -211,7 +211,11 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
   if (n && !n.diagnosable && !sn) { verdictEl.append(h('span', {}, 'Context, not a constraint the desk tests.')); return; }
   if (!sn) return;
   // The rating under the comparison countries chosen above, in the Bottom line's plain words.
-  const tier = (sn.tier_by_set && sn.tier_by_set[set]) || sn.tier;
+  let tier = (sn.tier_by_set && sn.tier_by_set[set]) || sn.tier;
+  // W4: off Standard, the reading for the default comparison countries
+  const setting = currentSetting();
+  const offStandard = setting !== 'standard' && set === 'structural' && sn.tier_by_setting && sn.tier_by_setting[setting];
+  if (offStandard) tier = sn.tier_by_setting[setting];
   const T = (registry.params && registry.params.tiers) || {};
   const up = (T.candidate && T.candidate.N_min) ?? 0.5, down = (T.probably_not && T.probably_not.N_max) ?? -0.5;
   const N = sn.N;
@@ -223,6 +227,8 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
   verdictEl.append(...[
     h('span', {}, 'The tool’s rating: '), h('span', { class: `tier-badge ${tierClass(tier)}` }, h('span', {}, plainTier(tier))),
     ' ', reasonTag(tier === sn.tier ? sn : { ...sn, tier, cannot_tell_reason: null, cannot_tell_detail: null }),
+    offStandard ? h('span', { class: 'small muted' }, ` (${SETTING_LABEL[setting]} reading, not the one to cite)`) : null,
+    ' ', robustChip(sn),
     lean ? h('span', { class: 'small muted' }, ` ${lean}.`) : null,
     ' ', h('a', { href: withData(`/constraint-check-site/desk/areas.html?iso=${iso}&node=${encodeURIComponent(view)}`) + location.hash }, 'Open the rating card for the reasoning'),
     bySet ? h('span', { class: 'small muted ev-byset' }, ` ${bySet}`) : null,

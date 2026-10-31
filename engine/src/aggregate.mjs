@@ -460,6 +460,61 @@ export function cannotTellInfo(rec, params) {
   };
 }
 
+/**
+ * Rubric 0.1.8 (front-door PRD W4): the params for a named evidence setting, params.tiers deep-merged with
+ * params.settings[name].tiers. Enforces the asymmetry of docs/calibration-review.md section 4.5: a setting may
+ * raise any bar, and may lower the bar for candidate, but may never loosen probably_not, ruled_out or the number of
+ * voting families needed to leave cannot_tell. A setting that tries throws, so a bad params file cannot ship.
+ */
+export function paramsForSetting(params, name) {
+  const S = params.settings || {};
+  if (!name || name === (S.default || 'standard')) return params;
+  if (!S[name] || name.startsWith('_') || !S[name].tiers) throw new Error(`unknown evidence setting: ${name}`);
+  const merge = (t, s) => {
+    for (const [k, v] of Object.entries(s)) {
+      if (v && typeof v === 'object' && !Array.isArray(v)) merge((t[k] = t[k] && typeof t[k] === 'object' ? { ...t[k] } : {}), v);
+      else t[k] = v;
+    }
+    return t;
+  };
+  const tiers = merge(JSON.parse(JSON.stringify(params.tiers)), S[name].tiers);
+  const base = params.tiers;
+  const looser = [];
+  const atMost = (path, a, b) => { if (isNum(a) && isNum(b) && a > b) looser.push(path); };   // a must not exceed b
+  const atLeast = (path, a, b) => { if (isNum(a) && isNum(b) && a < b) looser.push(path); };
+  atMost('probably_not.N_max', tiers.probably_not.N_max, base.probably_not.N_max);
+  atMost('probably_not.N_alt_max', tiers.probably_not.N_alt_max, base.probably_not.N_alt_max);
+  atLeast('probably_not.C_min', tiers.probably_not.C_min, base.probably_not.C_min);
+  // ruled_out: a higher *_max, *_above or age limit is looser; a lower *_min is looser
+  for (const k of Object.keys(base.ruled_out)) {
+    if (/(_max|_above|_age)$/.test(k)) atMost(`ruled_out.${k}`, tiers.ruled_out[k], base.ruled_out[k]);
+    else if (/_min$/.test(k)) atLeast(`ruled_out.${k}`, tiers.ruled_out[k], base.ruled_out[k]);
+  }
+  atLeast('cannot_tell_data_gap.E_below', tiers.cannot_tell_data_gap.E_below, base.cannot_tell_data_gap.E_below);
+  if (looser.length) throw new Error(`evidence setting ${name} loosens the bar for ruling out (${looser.join(', ')}); the asymmetry forbids it`);
+  return { ...params, tiers };
+}
+
+/** The direction a tier gives a reader: 'look' (candidate, likely_binding), 'not' (probably_not, ruled_out), else 'cannot'. */
+export function tierDirection(tier) {
+  if (tier === 'candidate' || tier === 'likely_binding') return 'look';
+  if (tier === 'probably_not' || tier === 'ruled_out') return 'not';
+  return 'cannot';
+}
+
+/**
+ * One robustness mark per rated node (front-door PRD W4 and Q7): 'depends_on_setting' when the direction differs
+ * between the evidence settings, else 'depends_on_comparators' when it differs between the comparator sets with
+ * members (tier_by_set), else 'holds'. Both flags are kept for the hover detail.
+ */
+export function robustnessMark(tierBySetting, tierBySet, setsCompared = null) {
+  const dirs = new Set(Object.values(tierBySetting || {}).map(tierDirection));
+  const sets = Object.entries(tierBySet || {}).filter(([s]) => !setsCompared || setsCompared.includes(s)).map(([, t]) => tierDirection(t));
+  const bySetting = dirs.size > 1;
+  const byComparators = new Set(sets).size > 1;
+  return { mark: bySetting ? 'depends_on_setting' : byComparators ? 'depends_on_comparators' : 'holds', settings_differ: bySetting, comparators_differ: byComparators };
+}
+
 function withoutFamily(families, id) {
   return families.filter((f) => f.id !== id);
 }

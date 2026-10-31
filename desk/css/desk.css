@@ -579,7 +579,8 @@ details.rule-detail .stat-grid { margin-top: 8px; }
   .nav-country .wrap { display: grid; grid-template-columns: 1fr; gap: 6px; }
   .nav-country-id { justify-content: space-between; }
   #nav-country { width: 9rem; }
-  .tabs { overflow-x: auto; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+  .tabs { flex-wrap: wrap; row-gap: 2px; }
+  .tab-group { margin-left: 0; padding-left: 8px; }
   .nav-set { margin-left: 0; }
   .nav-global .topnav { gap: 12px; font-size: 0.875rem; flex-wrap: nowrap; }
   .nav-long { display: none; }
@@ -662,3 +663,29 @@ details.rule-detail .stat-grid { margin-top: 8px; }
   .bl-unclear { grid-column: 2; grid-row: 1 / span 2; border-left: 1px solid var(--rule); border-bottom: 0; }
   #statements-body > .note { grid-column: 1 / -1; }
 }
+
+/* ---------- evidence settings and robustness marks (front-door PRD W4) ---------- */
+.nav-meta { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; margin-left: auto; }
+.nav-meta .nav-set { margin-left: 0; }
+.setting-switch { display: inline-flex; align-items: center; gap: 0; font-size: 0.8125rem; }
+.setting-label { font-family: var(--mono); font-size: 0.68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.setting-btn { font: inherit; padding: 4px 9px; border: 1px solid var(--rule-strong); background: var(--surface); color: var(--text); cursor: pointer; margin-left: -1px; border-radius: 0; }
+.setting-btn:first-of-type { margin-left: 0; }
+.setting-btn[aria-pressed="true"] { background: var(--text); color: var(--surface); border-color: var(--text); }
+.setting-btn:not([aria-pressed="true"]):hover { background: var(--surface-2); }
+.setting-help { margin-left: 8px; color: var(--muted); }
+.setting-note { border-left: 4px solid var(--brand-amber); margin: 0 0 10px; }
+.robust { display: inline-block; font-size: 0.72rem; line-height: 1.3; padding: 0 6px; margin: 0 6px; border: 1px solid var(--rule-strong); color: var(--muted); white-space: nowrap; vertical-align: 1px; cursor: help; }
+.robust-holds { border-style: solid; color: var(--text); }
+.robust-depends_on_setting { border-style: dashed; }
+.robust-depends_on_comparators { border-style: dotted; }
+.ex-mark { font-weight: 600; color: var(--muted); margin-right: 2px; }
+@media (max-width: 760px) { .nav-meta { margin-left: 0; } .setting-switch { flex-wrap: wrap; } }
+
+/* the robustness mark is a button: a tap shows the rating under each reading (phones have no hover) */
+.robust-wrap { display: inline; }
+button.robust { font: inherit; font-size: 0.72rem; background: var(--surface); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
+button.robust::after { content: ' ▾'; font-size: 0.65rem; }
+button.robust[aria-expanded="true"]::after { content: ' ▴'; }
+.robust-detail { display: block; margin: 4px 0 2px; font-size: 0.8125rem; color: var(--muted); }
+.robust-detail[hidden] { display: none; }

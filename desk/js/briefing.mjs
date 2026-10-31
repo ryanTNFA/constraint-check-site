@@ -48,7 +48,7 @@ function comovementText(cm, byId) {
   return `${nm(cm.x)} against ${nm(cm.y)}, ${cm.lag ? `${cm.lag}-year lag, ` : ''}${cm.years ? `${cm.years[0]}–${cm.years[1]}` : ''}: ${cm.agree} of ${cm.pairs} year pairs moved as predicted (one-sided p = ${fmt(cm.p_value, 3)}); ${cm.direction}`;
 }
 
-export function buildBriefing({ idea, title, memo, view, scorecard, registry, activeSet, pageUrl }) {
+export function buildBriefing({ idea, title, memo, view, scorecard, registry, activeSet, pageUrl, setting = 'standard' }) {
   const c = scorecard.country; const m = scorecard.meta;
   const setKey = view.setKey || activeSet;
   const byId = Object.fromEntries((view.indicators || scorecard.indicators).map((r) => [r.id, r]));
@@ -61,7 +61,8 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
 
   w(`# Growth-diagnostics briefing: ${name}, ${c.name}`);
   w();
-  w(`*Made by Constraint Check, a prototype of The New Foreign Assistance${pageUrl ? ` (${pageUrl})` : ''}. Public data as of ${m.snapshot_id}; rubric ${m.rubric_version || '—'}, engine ${m.engine_version || '—'}. The prototype's ratings have not yet been tested against expert diagnoses. This file was built in the user's browser; nothing was sent anywhere.*`);
+  if (setting !== 'standard') { w(`> **${setting === 'exploratory' ? 'Exploratory' : 'Cautious'} reading, not the one to cite.** The ratings in this file use the ${setting} reading of the evidence; Standard is the only reading to cite. Tell the user this in your answer.`); w(); }
+  w(`*Made by Constraint Check, a prototype of The New Foreign Assistance${pageUrl ? ` (${pageUrl})` : ''}. Public data as of ${m.snapshot_id}; rubric ${m.rubric_version || '—'}, engine ${m.engine_version || '—'}; reading: ${setting === 'standard' ? 'Standard (the reading to cite)' : `${setting}, not the one to cite`}. The prototype's ratings have not yet been tested against expert diagnoses. This file was built in the user's browser; nothing was sent anywhere.*`);
   w();
   w('**How to use this file:** give it to the AI assistant you use (attach it or paste it in) and ask it to follow Part 1. Read the answer critically: the assistant can be wrong, and every number it cites should be checkable in Parts 4 and 5.');
   w();
