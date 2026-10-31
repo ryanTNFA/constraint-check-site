@@ -10,17 +10,8 @@
 <link rel="preload" href="/constraint-check-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/constraint-check-site/desk/css/desk.css">
 </head>
-<body>
+<body data-page="home">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="topbar">
-  <div class="wrap">
-    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>Desk · prototype</span></a>
-    <nav class="topnav" aria-label="Site">
-      <a href="/constraint-check-site/desk/" aria-current="page">Economies</a>
-      <button id="theme-toggle" class="btn quiet small" type="button">Theme: Auto</button>
-    </nav>
-  </div>
-</header>
 <div class="banner" role="note" aria-label="Prototype under validation">
   <div class="wrap">
     <span class="alert-mark" aria-hidden="true">!</span>
@@ -29,21 +20,32 @@
     <a href="#how-we-test" class="banner-link">How we test it →</a>
   </div>
 </div>
+<header class="topbar">
+  <div class="nav-row nav-global"><div class="wrap">
+    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>prototype</span></a>
+  </div></div>
+</header>
 <main id="main" class="wrap" tabindex="-1">
   <section class="picker-head">
     <span class="kicker">Constraint Check (prototype)</span>
-    <h1>Choose an economy</h1>
+    <h1>What holds back private investment?</h1>
     <p class="prose">See which of a dozen standard explanations for weak private investment the public data can rule out in a country, which deserve a closer look, and where the data cannot tell. It uses the growth-diagnostics method behind MCC's constraints analyses. It never recommends funding.</p>
-    <p class="idea-hint"><strong>Have a program idea?</strong> Pick a country, then use “Test a program idea with your AI assistant” on its page: the Desk packs the evidence into one file for the AI you already use.</p>
+    <p class="idea-hint"><strong>Have a program idea?</strong> Pick a country, then use “Test a program idea” on its Bottom line: the Desk packs the evidence into one file for the AI you already use.</p>
     <div class="howto" id="howto" hidden>
-      <div class="howto-head"><strong>How to read a country page (10 minutes)</strong><button class="btn quiet small" type="button" id="howto-hide">Hide</button></div>
+      <div class="howto-head"><strong>How to read a country page (five minutes)</strong><button class="btn quiet small" type="button" id="howto-hide">Hide</button></div>
       <ol>
-        <li><strong>Bottom line.</strong> What the public data can rule out, what is worth a closer look, and what is unclear, with the reason. “Probably not” is weaker than “ruled out”.</li>
-        <li><strong>Test a program idea.</strong> Describe it and download one file with the evidence and instructions; your own AI assistant does the assessment. The Desk runs no AI and never says “fund this”.</li>
-        <li><strong>Open any area.</strong> Its evidence, what would change the rating, and what to ask in two days in-country. Analyst detail sits behind “Rule detail”.</li>
+        <li><strong>Bottom line.</strong> Three lists: what you can stop arguing about, what deserves a closer look, and what the public data can’t settle, with what would. “Probably not” is weaker than “ruled out”. Each line has a “Why?” link.</li>
+        <li><strong>Areas.</strong> The decision tree and each area’s evidence card: what points each way, what would change the rating, and what to ask in two days in-country.</li>
+        <li><strong>Test a program idea</strong> (on the Bottom line). Describe it and download one file with the evidence and instructions; your own AI assistant does the assessment. The Desk runs no AI and never says “fund this”.</li>
+        <li><strong>For analysts:</strong> Charts and the Heat map hold every chart, test and number.</li>
       </ol>
     </div>
   </section>
+  <section class="explore" aria-labelledby="explore-h">
+    <h2 id="explore-h">Explore one area across countries</h2>
+    <div id="explore"><p class="small muted">Loading the map…</p></div>
+  </section>
+  <h2 class="econ-title">Choose an economy</h2>
   <section class="controls" aria-label="Find and sort economies">
     <div class="field">
       <label for="q">Search</label>
@@ -54,7 +56,6 @@
       <select id="sort">
         <option value="name">Name</option>
         <option value="region">Region</option>
-        <option value="binding">Most areas flagged</option>
       </select>
     </div>
     <div class="field"><span class="small muted" id="count" aria-live="polite"></span></div>

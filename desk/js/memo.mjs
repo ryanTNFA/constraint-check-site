@@ -151,7 +151,7 @@ export function buildMemo(ctx) {
   for (const r of used) { const k = sourceLabel(r); bySource[k] = (bySource[k] || 0) + 1; }
   const yearsUsed = used.map((r) => r.year_ref).filter((y) => Number.isFinite(y));
   const staleN = used.filter((r) => isStale(r.year_ref, snapshotYear, staleLimit)).length;
-  out.push(`${used.length} of ${indicators.length} registry indicators have a value for ${c.name} in the reference window (${yearsUsed.length ? `${Math.min(...yearsUsed)}–${Math.max(...yearsUsed)}` : '—'}); ${staleN} are older than ${staleLimit} years. Values are the mean of the latest three years where they exist. Sources: ${Object.entries(bySource).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} (${v})`).join(', ')}. The full table, with every value, year, source and flag, is under For analysts › Provenance on the Snapshot page. Snapshot ${m.snapshot_id}, rubric ${m.rubric_version}, engine ${m.engine_version}.`);
+  out.push(`${used.length} of ${indicators.length} registry indicators have a value for ${c.name} in the reference window (${yearsUsed.length ? `${Math.min(...yearsUsed)}–${Math.max(...yearsUsed)}` : '—'}); ${staleN} are older than ${staleLimit} years. Values are the mean of the latest three years where they exist. Sources: ${Object.entries(bySource).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} (${v})`).join(', ')}. The full table, with every value, year, source and flag, is under Areas › Comparison countries and every number › Provenance. Snapshot ${m.snapshot_id}, rubric ${m.rubric_version}, engine ${m.engine_version}.`);
   out.push('');
   out.push('---');
   const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);

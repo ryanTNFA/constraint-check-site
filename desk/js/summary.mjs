@@ -1,7 +1,8 @@
 // Diagnostic summary page (evidence-viz-prd C10): the MCC-style heat map. Nodes in Mindbook order as rows;
 // benchmarking (the median binding-side distance of the node's indicators, as in C9) and the verdict layer's four
 // test scores as columns; then the verdict layer's tier and the analyst's own conclusion. Conclusions are stored in
-// the URL with the same `o=` encoding the Snapshot uses for overrides, so the two pages and the memo share them.
+// the URL with the same `o=` encoding the Bottom line and Areas use for overrides, so the two pages and the memo share them.
+import { refreshNav } from './nav.mjs';
 import { nodeCode, getJSON, loadRegistry, initTheme, h, fmtSigned, qs, withData, dataBase, downloadText, tierLabel, tierClass, parseHash, writeHash, missingTestReason, USER_TIERS } from './common.mjs';
 import { plainTier, tierBySetLine, reasonTag } from './card.mjs';
 import { heatRow, TEST_ORDER } from './evidence_math.mjs';
@@ -146,11 +147,10 @@ function renderText() {
     ovs.length ? `You have set your own conclusion on ${ovs.length} node${ovs.length > 1 ? 's' : ''}.` : '',
   ].filter(Boolean).join(' ');
   const active = activeSet();
-  $('foot').textContent = `Benchmarking: the median, across the node's indicators with a value, of each one's distance from what income and structure predict, in standard deviations, turned so positive is the binding side (the C9 evidence strip's dots). Tests 1 to 4: the verdict layer's test scores (T), from −2 (evidence against the constraint binding) to +2 (for). Colour saturates at ±${LIM}. Comparators: benchmarking measures against every economy with data, not a comparator set; the test scores are computed with the verdict layer's ${active} comparators${state.set !== active ? `` : ''}. The rating column follows the comparators chosen above (the verdict layer computes a rating under each set; hover a rating to see where the sets disagree). "Not computed": the prototype has no specification or data connector for that test; "no data": it has one, but this economy has no usable value; "no indicator": nothing in the registry measures it. Hover a cell for details. Snapshot ${sc.meta ? sc.meta.snapshot_id : ''}, rubric ${sc.meta ? sc.meta.rubric_version : ''}. Your conclusions are yours, not the tool's; they live in this page's link, which the Snapshot and its memo read too.`;
+  $('foot').textContent = `Benchmarking: the median, across the node's indicators with a value, of each one's distance from what income and structure predict, in standard deviations, turned so positive is the binding side (the C9 evidence strip's dots). Tests 1 to 4: the verdict layer's test scores (T), from −2 (evidence against the constraint binding) to +2 (for). Colour saturates at ±${LIM}. Comparators: benchmarking measures against every economy with data, not a comparator set; the test scores are computed with the verdict layer's ${active} comparators${state.set !== active ? `` : ''}. The rating column follows the comparators chosen above (the verdict layer computes a rating under each set; hover a rating to see where the sets disagree). "Not computed": the prototype has no specification or data connector for that test; "no data": it has one, but this economy has no usable value; "no indicator": nothing in the registry measures it. Hover a cell for details. Snapshot ${sc.meta ? sc.meta.snapshot_id : ''}, rubric ${sc.meta ? sc.meta.rubric_version : ''}. Your conclusions are yours, not the tool's; they live in this page's link, which the Bottom line and its memo read too.`;
   const hash = location.hash;
   $('to-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
-  $('nav-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
-  $('nav-evidence').href = withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}`);
+  refreshNav();
 }
 
 function save() { writeHash({ set: state.set, overrides: state.overrides }); renderText(); }
@@ -232,7 +232,7 @@ async function loadCountry() {
   state.scorecard = await getJSON(`${DATA}/${state.iso}.json`);
   const name = nameOf(state.iso);
   $('page-title').textContent = `${name}: diagnostic summary`;
-  document.title = `${name} · Diagnostic summary`;
+  document.title = `${name} · Heat map · Constraint Check`;
   $('page-sub').textContent = 'Each row is a node of the tree. The colour shows which way the evidence leans; the verdict layer\'s tier and your own conclusion sit beside it. Click a node to see its evidence.';
 }
 
@@ -244,7 +244,6 @@ async function main() {
     const [registry, countries] = await Promise.all([loadRegistry(), getJSON(`${DATA}/countries.json`)]);
     Object.assign(state, { registry, countries });
     if (!countries.some((c) => c.iso3 === state.iso)) state.iso = 'KEN';
-    $('nav-all').href = withData('/constraint-check-site/desk/');
     const cs = $('c-country');
     for (const c of countries.slice().sort((a, b) => a.name.localeCompare(b.name))) cs.append(h('option', { value: c.iso3 }, c.name));
     cs.value = state.iso;

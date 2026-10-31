@@ -1,4 +1,7 @@
-// Snapshot page orchestrator.
+// Orchestrator for the two country pages (front-door PRD W3): the Bottom line (country.html, the front door)
+// and Areas (areas.html, the tree, the cards and the analyst panels). Each render function draws only when its
+// container is on the page, so both pages share one source of truth for the comparison set, peers and overrides.
+import { tabHref, refreshNav } from './nav.mjs';
 import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, fmtInt, fmtValue, tierClass, TIER_ORDER, parseHash, writeHash, qs, unitHint, shortName, sourceLink, sourceLabel, isStale, englishList, downloadText, dataBase, withData, gNorm, reasonClause, DATA_GAP_KINDS, isRegistryGap } from './common.mjs';
 import { renderTree } from './tree.mjs';
 import { createCard, plainTier, PLAIN_TIER, bottomLine, fcsNote, refSpan } from './card.mjs';
@@ -17,6 +20,8 @@ const state = {
   activeSet: 'structural', peers: null, overrides: {}, view: null, lastRecompute: '',
 };
 let card = null;
+const PAGE = document.body.dataset.page === 'areas' ? 'areas' : 'bottom';
+const on = (id) => !!document.getElementById(id);
 
 function showError(msg) { const e = $('page-error'); e.hidden = false; e.textContent = msg; $('country-name').textContent = 'Snapshot unavailable'; }
 const short = (id) => (state.registry && state.registry.nodeById[id] ? state.registry.nodeById[id].short : id);
@@ -38,12 +43,6 @@ function plainCtx() {
 
 async function main() {
   if (!iso) { showError('No economy selected. Open this page as country.html?iso=XXX or pick an economy from the list.'); return; }
-  document.querySelector('a.brand').href = withData('/constraint-check-site/desk/');
-  document.querySelector('.topnav a').href = withData('/constraint-check-site/desk/');
-  const snapLink = $('nav-snapshot'); if (snapLink) { snapLink.href = withData(`/constraint-check-site/desk/country.html?iso=${iso}`); snapLink.addEventListener('click', () => { snapLink.href = withData(`/constraint-check-site/desk/country.html?iso=${iso}${location.hash}`); }); }
-  const ev = $('nav-evidence'); if (ev) ev.href = withData(`/constraint-check-site/desk/evidence.html?iso=${iso}`);
-  // The summary page reads the same overrides (o=) from the link, so carry the current hash at click time.
-  const sm = $('nav-summary'); if (sm) sm.addEventListener('click', () => { sm.href = withData(`/constraint-check-site/desk/summary.html?iso=${iso}${location.hash}`); });
   try {
     const [registry, scorecard, countries, fcs, index] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/countries.json`, { optional: true }), getJSON('/constraint-check-site/registry/static_fcs.json', { optional: true }), getJSON(`${DATA}/index.json`, { optional: true })]);
     state.registry = registry; state.scorecard = scorecard; state.countries = countries || []; state.fcs = fcs; state.index = index;
@@ -59,26 +58,30 @@ async function main() {
   state.activeSet = hs.set && state.scorecard.comparators[hs.set] ? hs.set : (state.scorecard.meta.active_comparator_set || 'structural');
   state.peers = hs.peers; state.overrides = hs.overrides || {};
   state.view = baseView();
-  document.title = `${state.scorecard.country.name} · Snapshot · Constraint Check Desk`;
+  document.title = `${state.scorecard.country.name} · ${PAGE === 'areas' ? 'Areas' : 'Bottom line'} · Constraint Check`;
 
-  card = createCard({
-    drawer: $('drawer'), scrim: $('scrim'), registry: state.registry,
-    getState: () => state,
-    onOverride: (id, ov) => { if (ov) state.overrides[id] = ov; else delete state.overrides[id]; writeHash(state); renderTreePanel(); renderStatements(); renderOverridesBox(); },
-    onOpenNode: (id) => card.open(id),
-  });
+  if (on('drawer')) {
+    card = createCard({
+      drawer: $('drawer'), scrim: $('scrim'), registry: state.registry,
+      getState: () => state,
+      onOverride: (id, ov) => { if (ov) state.overrides[id] = ov; else delete state.overrides[id]; writeHash(state); renderTreePanel(); renderStatements(); renderOverridesBox(); refreshNav(); },
+      onOpenNode: (id) => card.open(id),
+    });
+  }
 
   renderHeader(); renderGrowth(); renderLegend();
   await applyComparators();
   renderAll();
-  renderProvenance();
-  renderBriefingBox();
-  renderExport();
+  if (on('provenance-body')) renderProvenance();
+  if (on('proposal-body')) renderBriefingBox();
+  if (on('export-body')) renderExport();
   wireSectionLinks();
-  // Links from the Evidence page open a node card directly: country.html?iso=KEN&node=N3.
+  refreshNav();
+  // Areas opens an area card directly from a link (areas.html?iso=KEN&node=N3; old country.html&node= links redirect here)
   const openId = new URLSearchParams(location.search).get('node');
-  if (openId && state.registry.nodeById[openId]) card.open(openId);
-  $('btn-memo-top').addEventListener('click', () => goTo('export'));
+  if (card && openId && state.registry.nodeById[openId]) card.open(openId);
+  const section = new URLSearchParams(location.search).get('section');
+  if (section && on(section)) goTo(section);
   window.addEventListener('hashchange', () => { const p = parseHash(); state.overrides = p.overrides || {}; renderTreePanel(); renderStatements(); renderOverridesBox(); });
 }
 
@@ -127,7 +130,13 @@ function fallbackView(base) {
   return { nodes, ranking: base.ranking, statements: base.statements, indicators: base.indicators, setKey: state.activeSet, note: 'Ranking and statements are shown for the default set; the engine module is not available for a browser recompute.' };
 }
 
-function renderAll() { renderTreePanel(); renderStatements(); renderPeersLine(); renderTopSplit(); renderRanking(); renderComparatorsPanel(); renderOverridesBox(); if (card) card.refresh(); renderHeaderMeta(); }
+function renderAll() {
+  renderTreePanel(); renderStatements(); renderPeersLine(); renderOverridesBox(); renderHeaderMeta();
+  if (on('topsplit-body')) renderTopSplit();
+  if (on('ranking-body')) renderRanking();
+  if (on('comparators-body')) renderComparatorsPanel();
+  if (card) card.refresh();
+}
 
 // ---------------- header ----------------
 function renderHeader() {
@@ -150,13 +159,18 @@ function renderHeaderMeta() {
   $('meta-list').replaceChildren(
     h('li', {}, `${c.region} · ${c.income_group}${c.landlocked ? ' · landlocked' : ''}`),
     h('li', {}, 'Public data as of ', h('strong', {}, m.snapshot_id || '—')),
-    h('li', {}, 'Compared with ', h('strong', {}, `${members.length} countries`), ` (${state.activeSet}${Array.isArray(state.peers) ? ', edited' : ''})`),
+    h('li', { title: englishList(members.map(nameOf)) }, 'Compared with ', h('strong', {}, `${members.length} countries`), ` (${state.activeSet}${Array.isArray(state.peers) ? ', edited' : ''})`),
   );
 }
 function renderPeersLine() {
+  if (!on('peers-line')) return;
   const members = activeMembers(); const c = state.scorecard.country.name;
   const how = SET_PLAIN[state.activeSet] ? SET_PLAIN[state.activeSet](c) : `the ${state.activeSet} set`;
-  $('peers-line').textContent = `Compared with ${members.length} countries: ${how}${Array.isArray(state.peers) ? ', edited by you' : ''}. ${members.length ? `${englishList(members.map(nameOf))}.` : ''} Change them under For analysts.`;
+  // the Bottom line keeps this to one line; Areas explains how each set is built
+  const kind = Array.isArray(state.peers) ? 'countries you chose' : ({ structural: 'similar economies', regional: 'regional neighbours', aspirational: 'faster growers that were once as rich' }[state.activeSet] || 'countries');
+  $('peers-line').textContent = PAGE === 'bottom'
+    ? `Compared with ${members.length} ${kind}; the list is under Areas.`
+    : `Compared with ${members.length} countries: ${how}${Array.isArray(state.peers) ? ', edited by you' : ''}. ${members.length ? `${englishList(members.map(nameOf))}.` : ''}`;
 }
 
 // ---------------- growth problem ----------------
@@ -166,6 +180,7 @@ function renderGrowth() {
   // lead with the question the statement ends on; the top-split reading moves to the analyst panel
   const qm = stmt.match(/The relevant question is therefore:\s*([^.?]*)[.?]/);
   $('growth-question').textContent = qm ? `The question for ${c}: ${qm[1].trim()}?` : '';
+  if (!on('growth-statement')) return; // the Bottom line shows the question only
   const cleaned = stmt.replace(/\s*Provisional top-split reading:[^()]*(\([^)]*\))?\.?/g, '').trim();
   $('growth-statement').textContent = cleaned || 'No growth problem statement in the file.';
   $('growth-class').textContent = g.classification ? `Growth pattern: ${g.classification.replace(/_/g, ' ')}` : '';
@@ -276,12 +291,14 @@ const isCannotTellTier = (t) => typeof t === 'string' && (t.startsWith('cannot_t
 
 // ---------------- tree ----------------
 function renderLegend() {
+  if (!on('tree-legend')) return;
   const el = $('tree-legend'); el.replaceChildren();
   for (const t of TIER_ORDER) { if (t === 'desk_undiagnosable') continue; el.append(h('span', {}, h('span', { class: `swatch ${tierClass(t)}`, 'aria-hidden': 'true' }), PLAIN_TIER[t])); }
   el.append(h('span', {}, h('span', { class: 'swatch t-context', 'aria-hidden': 'true' }), 'Context, or needs sector study'));
   el.append(h('span', {}, h('span', { class: 'swatch', 'aria-hidden': 'true', style: 'border:2px dashed var(--accent)' }), 'Your override'));
 }
 function renderTreePanel() {
+  if (!on('tree-wrap')) return;
   renderTree($('tree-wrap'), { registry: state.registry, nodes: state.view.nodes, overrides: state.overrides, onOpen: (id) => card.open(id), tooltipEl: $('tooltip'), plainCtx: plainCtx() });
   const tip = $('tooltip'); if (tip.parentElement !== document.body) document.body.append(tip);
 }
@@ -292,81 +309,78 @@ function joinEls(parts) {
   parts.forEach((p, i) => { if (i) out.push(i === parts.length - 1 ? (parts.length > 2 ? ', and ' : ' and ') : ', '); out.push(...[p].flat()); });
   return out;
 }
+/** A link to an area's card at the Areas level, carrying the comparison set, peers and overrides. */
+function areaLink(id, label, cls = '') {
+  const a = h('a', { href: tabHref('/constraint-check-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`), class: cls || null }, label);
+  a.addEventListener('click', () => { a.href = tabHref('/constraint-check-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`); });
+  return a;
+}
+/**
+ * The Bottom line (front-door PRD W3, section 3.3): three lists generated by bottomLine(), the same logic as the
+ * memo, so the page and the memo never disagree. Each line: the area in plain words, one reason from its top
+ * evidence, and "Why?" to its card at the Areas level. Robustness marks arrive with the evidence settings (W4).
+ */
 function renderStatements() {
+  if (!on('statements-body')) return;
   const ctx = plainCtx();
   const bl = bottomLine(ctx);
   const c = state.scorecard.country.name;
   const body = $('statements-body'); body.replaceChildren();
-  const btn = (id, label) => h('button', { class: 'linklike', type: 'button', onclick: () => card.open(id) }, label);
-  const ovMark = (id) => (state.overrides[id] ? h('span', { class: 'muted small' }, ` (your override: ${plainTier(state.overrides[id].tier).toLowerCase()})`) : null);
-  const names = (items) => joinEls(items.map((x) => [btn(x.id, x.short), ovMark(x.id)].filter(Boolean)));
-  const counterLines = (items) => h('ul', {}, items.map((x) => h('li', {},
-    h('span', { class: 'n' }, btn(x.id, cap(x.short))), ': ',
-    x.away ? `${cap(x.away.text)}.` : 'Most measures point away from a problem.',
-    x.counter ? ` But ${x.counter.text}.` : ' No scored measure points the other way.',
-    x.years ? ` Evidence ${x.years}.` : '')));
+  const why = (id) => areaLink(id, 'Why?', 'bl-why');
+  const ovMark = (id) => (state.overrides[id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTier(state.overrides[id].tier).toLowerCase()}`) : null);
+  const line = (id, name, text, grade) => h('li', {},
+    h('span', { class: 'bl-area' }, areaLink(id, cap(name))),
+    grade ? h('span', { class: 'bl-grade' }, grade) : null,
+    h('span', { class: 'bl-text' }, text), ' ', why(id), ovMark(id));
+  const names = (items) => joinEls(items.map((x) => [areaLink(x.id, x.short), state.overrides[x.id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTier(state.overrides[x.id].tier).toLowerCase()}`) : ''].filter(Boolean)));
+  const list = (cls, title, sub) => h('section', { class: `bl-list ${cls}` }, h('h2', {}, title), sub ? h('p', { class: 'bl-sub' }, sub) : null);
 
-  // 1. what can stop: ruled out, then probably not (a separate, weaker heading)
-  const b1 = h('div', { class: 'statement' });
-  if (bl.ruled.length || bl.probNot.length) {
-    b1.append(h('span', { class: 'kicker' }, bl.ruled.length ? 'Ruled out' : 'Probably not'));
-    if (bl.ruled.length) { b1.append(h('p', {}, 'You can stop arguing about ', ...names(bl.ruled), '.'), counterLines(bl.ruled)); }
-    if (bl.probNot.length) {
-      b1.append(h('p', { class: bl.ruled.length ? 'stmt-second' : '' }, h('strong', {}, 'Probably not the main constraint'), ' (moderate confidence): ', ...names(bl.probNot), '.'), counterLines(bl.probNot));
-      b1.append(h('p', { class: 'small muted', style: 'margin-top:8px' }, 'This is about what holds back private investment, not about household needs. ‘Probably not’ is not a rule-out: do not drop a program on it alone.'));
-    }
+  // 1. what you can stop arguing about
+  const s1 = list('bl-stop', 'What you can stop arguing about', null);
+  const stops = [...bl.ruled.map((x) => ({ x, grade: 'Ruled out' })), ...bl.probNot.map((x) => ({ x, grade: 'Probably not' }))];
+  if (stops.length) {
+    s1.append(h('ul', {}, stops.map(({ x, grade }) => line(x.id, x.short, `${x.away ? `${cap(x.away.text)}.` : 'Most measures point away from a problem.'}${x.counter ? ` But ${x.counter.text}.` : ''}`, grade))));
+    if (bl.probNot.length) s1.append(h('p', { class: 'bl-note' }, '“Probably not” is weaker than “ruled out”: do not drop a program on it alone.'));
   } else {
-    b1.append(h('span', { class: 'kicker' }, 'Nothing ruled out yet'));
-    b1.append(h('p', {}, h('strong', {}, `Nothing can be ruled out for ${c} yet.`)));
-    b1.append(h('p', { class: 'small', style: 'margin-top:8px' }, `For ${bl.nUnclear} of ${bl.nAreas} areas the public data are too thin, point both ways, or need a sector study. ${shareText()}You can still check a specific program idea (below), see what leans one way without meeting the bar, and open any area to see which data would settle it.`));
-    b1.append(leansBlock(bl, btn));
+    s1.append(h('p', { class: 'bl-none' }, h('strong', {}, `Nothing can be ruled out for ${c} yet.`), ` ${shareText()}`));
+    const away = bl.awayLeans.slice(0, 3);
+    if (away.length) s1.append(h('p', { class: 'bl-note' }, 'Leaning away, below the bar (not a verdict): ', ...joinEls(away.map((x) => [areaLink(x.id, x.short)])), '.'));
   }
-  // 2. worth a closer look
-  const b2 = h('div', { class: 'statement' }, h('span', { class: 'kicker' }, 'Worth a closer look'));
-  if (bl.look.length) {
-    b2.append(h('p', {}, h('strong', {}, 'Worth a closer look'), ' (not established): ', ...joinEls(bl.look.map((x) => (x.ev !== x.node ? [btn(x.id, x.evShort), `, part of ‘${x.short}’`, ovMark(x.id)] : [btn(x.id, x.short), ovMark(x.id)]).filter(Boolean))), '.'));
-    b2.append(h('ul', {}, bl.look.map((x) => h('li', {}, h('span', { class: 'n' }, btn(x.id, cap(x.ev !== x.node ? x.evShort : x.short))), ': ', x.facts.length ? `${cap(x.facts.map((f) => f.text).join('; and '))}.` : 'See the evidence card.', x.node.tier === 'likely_binding' ? ' Still to be confirmed in-country.' : ' Not established: confirm in-country before relying on it.'))));
+
+  // 2. what deserves a closer look, by lean
+  const s2 = list('bl-look', 'What deserves a closer look', 'Not established: confirm in-country before relying on any of these.');
+  const look = bl.look.slice().sort((a, b) => (b.node.N ?? 0) - (a.node.N ?? 0));
+  if (look.length) {
+    s2.append(h('ul', {}, look.map((x) => line(x.id, x.ev !== x.node ? `${x.evShort} (${x.short.toLowerCase()})` : x.short,
+      x.facts.length ? `${cap(x.facts[0].text)}.` : 'See the evidence card.', x.node.tier === 'likely_binding' ? 'Likely' : null))));
   } else {
-    b2.append(h('p', {}, h('strong', {}, `No area stands out for ${c} yet.`)));
-    b2.append(h('p', { class: 'small', style: 'margin-top:8px' }, 'No area reaches ‘worth a closer look’ under the current comparison countries.'));
-    if (bl.ruled.length || bl.probNot.length) b2.append(leansBlock(bl, btn, { towardOnly: true }));
+    s2.append(h('p', { class: 'bl-none' }, h('strong', {}, `No area stands out for ${c} yet.`)));
+    const toward = bl.towardLeans.slice(0, 3);
+    if (toward.length) s2.append(h('p', { class: 'bl-note' }, 'Leaning toward a problem, below the bar (not a verdict): ', ...joinEls(toward.map((x) => [areaLink(x.id, x.short)])), '.'));
   }
-  // 3. unclear, grouped by why (the why sets the next step)
-  const b3 = h('div', { class: 'statement' }, h('span', { class: 'kicker' }, 'Unclear'));
-  if (!bl.nUnclear) b3.append(h('p', {}, h('strong', {}, 'Nothing.'), ' Every area has a rating.'));
+
+  // 3. what the public data can't settle, grouped by reason, each with its next step
+  const s3 = list('bl-unclear', 'What the public data can’t settle, and what would', null);
+  if (!bl.nUnclear) s3.append(h('p', { class: 'bl-none' }, 'Nothing: every area has a rating.'));
   else {
     const g = bl.groups;
-    b3.append(h('p', {}, `We cannot tell about ${bl.nUnclear} area${bl.nUnclear === 1 ? '' : 's'}, for different reasons:`));
-    const ul = h('ul', { class: 'reasons' });
-    if (g.oneKind.length) ul.append(h('li', {}, h('strong', {}, `Only one kind of evidence speaks (${g.oneKind.length}): `), ...names(g.oneKind), '. A second kind (a price, a response to change, or firms working around it) would settle it either way.', bl.closest ? ` Closest to a call: ${bl.closest.short} (leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''));
-    if (g.mixed.length) ul.append(h('li', {}, h('strong', {}, `The evidence points both ways (${g.mixed.length}): `), ...names(g.mixed), '. Possibly a problem for some sectors or regions only.'));
-    if (g.toolGap.length) ul.append(h('li', {}, h('strong', {}, `The tool has no adequate measure yet (${g.toolGap.length}): `), ...names(g.toolGap), `. This is a gap in the tool, not in ${c}'s data; ask an economist.`));
-    if (g.dataGap.length) ul.append(h('li', {}, h('strong', {}, `Too little recent data for ${c} (${g.dataGap.length}): `), ...names(g.dataGap), '. New data would settle it.'));
-    if (g.sector.length) ul.append(h('li', {}, h('strong', {}, `Needs a sector study (${g.sector.length}): `), ...names(g.sector), '.'));
-    if (g.elimination.length) ul.append(h('li', {}, h('strong', {}, `Judged by elimination (${g.elimination.length}): `), ...names(g.elimination), '. It can be called only once the other causes of low returns are ruled out.', ...g.elimination.map((x) => (x.node.elimination && x.node.elimination.direction !== 'none' ? ` Today the evidence leans ${x.node.elimination.direction === 'toward' ? 'toward' : 'away from'} a problem.` : ''))));
-    b3.append(ul);
+    const grp = (items, label, next) => (items.length ? h('li', {}, h('span', { class: 'bl-reason' }, `${label} (${items.length})`), h('span', { class: 'bl-text' }, ...names(items), '. '), h('span', { class: 'bl-next' }, next)) : null);
+    const elim = g.elimination.map((x) => x.node.elimination && x.node.elimination.direction !== 'none' ? ` Today it leans ${x.node.elimination.direction === 'toward' ? 'toward' : 'away from'} a problem.` : '').join('');
+    s3.append(h('ul', {},
+      grp(g.oneKind, 'Only one kind of evidence', `Next: a second kind of evidence (a price, a response to change, or firms working around it) would settle it.${bl.closest ? ` Closest to a call: ${bl.closest.short} (leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''}`),
+      grp(g.mixed, 'Evidence points both ways', 'Next: check whether it binds for some sectors or regions only.'),
+      grp(g.dataGap, `Too little recent data for ${c}`, 'Next: a newer survey or data year would settle it.'),
+      grp(g.toolGap, 'Not connected to the tool yet', `Next: a new measure in the tool; no data for ${c} changes it today.`),
+      grp(g.sector, 'Needs a sector study', 'Next: sector work.'),
+      grp(g.elimination, 'Judged by elimination', `Next: rule out the other causes of low returns first.${elim}`)));
     if (bl.firmsTop) {
       const r = bl.firmsTop.r; const m = String(r.name || '').match(/choosing (.+?) as their biggest obstacle/i);
       const what = m ? m[1] : shortName(r).toLowerCase();
-      b3.append(h('p', { class: 'small', style: 'margin-top:8px' }, `Firms rank ${what} as their biggest obstacle (${fmt(r.value_ref, 0)}% name it first, Enterprise Surveys ${refSpan(r)}), but complaints alone cannot establish a constraint${bl.firmsTop.toolGap ? ', and the tool has no measure of its cost yet' : ''}.`));
+      s3.append(h('p', { class: 'bl-note' }, `Firms rank ${what} as their biggest obstacle (${fmt(r.value_ref, 0)}% name it first, ${refSpan(r)}); complaints alone cannot establish a constraint.`));
     }
   }
-  body.append(b1, b2, b3);
-  if (state.view.note) body.append(h('p', { class: 'note', style: 'grid-column:1/-1' }, state.view.note));
-}
-function leansBlock(bl, btn, { towardOnly = false } = {}) {
-  const wrap = h('div', { class: 'leans' }, h('h3', { class: 'stmt-sub' }, 'Leans, below the bar (not a verdict)'));
-  const ul = h('ul');
-  const line = (label, items) => {
-    if (!items.length) return null;
-    const first = items[0];
-    return h('li', {}, `${label}: `, ...joinEls(items.slice(0, 3).map((x) => [btn(x.id, x.short)])), '.', first.fact ? ` ${cap(first.short)}: ${first.fact.text}.` : '');
-  };
-  const a = line('Leans toward a problem', bl.towardLeans); const b = towardOnly ? null : line('Leans away', bl.awayLeans);
-  if (a) ul.append(a); if (b) ul.append(b);
-  if (!ul.children.length) ul.append(h('li', {}, 'Nothing leans clearly either way.'));
-  wrap.append(ul);
-  return wrap;
+  body.append(s1, s2, s3);
+  if (state.view.note) body.append(h('p', { class: 'note' }, state.view.note));
 }
 function shareText() {
   const ix = state.index; if (!ix || !Array.isArray(ix.countries) || !ix.countries.length) return '';
@@ -375,11 +389,12 @@ function shareText() {
   return k >= 3 ? `This is common: about ${k} in 10 countries have no rule-out. ` : '';
 }
 function renderOverridesBox() {
+  if (!on('overrides-box')) return;
   const box = $('overrides-box'); box.replaceChildren();
   const ovs = Object.entries(state.overrides);
-  if (!ovs.length) return;
+  if (!ovs.length) { if (PAGE === 'areas') box.append(h('p', { class: 'small muted' }, 'None yet. Open an area and use “Your override” at the end of its card.')); return; }
   const ul = h('ul', { class: 'diff-list' });
-  for (const [id, v] of ovs) { const n = nodeOf(id); ul.append(h('li', {}, h('strong', {}, `${nodeCode(id)} ${short(id)}`), h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, `tool: ${plainTier(n && n.tier)}`)), h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(v.tier)}` }, h('span', {}, `you: ${plainTier(v.tier)}`)), h('span', { class: 'muted' }, v.note), h('button', { class: 'btn quiet small', type: 'button', onclick: () => card.open(id) }, 'Edit'), h('button', { class: 'btn quiet small', type: 'button', onclick: () => { delete state.overrides[id]; writeHash(state); renderTreePanel(); renderStatements(); renderOverridesBox(); } }, 'Remove'))); }
+  for (const [id, v] of ovs) { const n = nodeOf(id); ul.append(h('li', {}, h('strong', {}, `${nodeCode(id)} ${short(id)}`), h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, `tool: ${plainTier(n && n.tier)}`)), h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(v.tier)}` }, h('span', {}, `you: ${plainTier(v.tier)}`)), h('span', { class: 'muted' }, v.note), card ? h('button', { class: 'btn quiet small', type: 'button', onclick: () => card.open(id) }, 'Edit') : areaLink(id, 'Edit', 'btn quiet small'), h('button', { class: 'btn quiet small', type: 'button', onclick: () => { delete state.overrides[id]; writeHash(state); renderTreePanel(); renderStatements(); renderOverridesBox(); refreshNav(); } }, 'Remove'))); }
   box.append(h('div', { class: 'note alert', style: 'margin-top:16px' }, h('strong', {}, 'Your overrides'), ' (your judgment, shown next to the tool\'s; encoded in this page\'s URL so the link reproduces them)', ul));
 }
 

@@ -1,6 +1,7 @@
 // Evidence page (evidence-viz-prd): a node rail with the C9 evidence strip, C4 growth record, C7 firm obstacles and C11
 // composition (views in evidence_node.mjs); under a node, its tests C5, C6 and C8 (evidence_tests.mjs); then C1 income-trend
 // scatter, C2 peer comparison and C3 over time for one indicator; the year player (player.mjs) animates C1 and C2.
+import { refreshNav } from './nav.mjs';
 import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, qs, unitHint, shortName, sourceLink, sourceLabel, dataBase, withData, downloadText, tierLabel, tierClass } from './common.mjs';
 import { INCOME_ID, refSpan, scatterRows, structureFit, linearFit, lowessFit, lineAndBand, peerRank, residualPercentile, backTransform, referenceTable, viableYears, peerSummary, seriesRows, coverage, changeSinceStart, peerBand, slope, endpoints, stripRows, playerFrames, playerDomains, raceFrames } from './evidence_math.mjs';
 import { createControls, bubbleChart, barRace, reducedMotion } from './player.mjs';
@@ -300,8 +301,7 @@ async function loadCountry() {
     getJSON(`${DATA}/${state.iso}.json`, { optional: true }),
     getJSON(`${DATA}/coverage/${state.iso}.json`, { optional: true }),
   ]);
-  $('nav-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}`);
-  $('nav-summary').href = withData(`/constraint-check-site/desk/summary.html?iso=${state.iso}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
+  refreshNav();
 }
 
 // ---------- compute ----------
@@ -573,13 +573,13 @@ function renderText(c) {
   const ind = c.ind;
   const country = nameOf(state.iso);
   $('page-title').textContent = `${country}: the evidence, node by node`;
-  document.querySelectorAll('a[data-keep-iso]').forEach((a) => { a.href = `country.html?iso=${encodeURIComponent(state.iso)}`; });
+  document.querySelectorAll('a[data-keep-iso]').forEach((a) => { a.href = withData(`/constraint-check-site/desk/country.html?iso=${encodeURIComponent(state.iso)}`); });
   $('ev-title').textContent = `${shortName(ind)}: is it high or low for an economy at ${country}'s income level?`;
   const cls = ind.class || 'X', wt = (state.registry.params.class_weights || {})[cls];
   $('ev-sub').replaceChildren(`${ind.name}. Class ${cls}: ${CLASS_LONG[cls] || 'other'}${wt ? `, weight ${wt.toFixed(1)} in the verdict` : ''} (`, h('a', { href: '#class-key' }, 'what the classes mean'), `). Nodes ${(ind.nodes || []).join(', ') || 'context'}. Each point is an economy; the line is what income predicts.`);
   syncBack(c);
   $('tb-summary').textContent = `${country} · ${shortName(ind)} · ${state.set === 'custom' ? `${c.added.length} chosen comparators` : `${SET_LABEL[state.set]} comparators${c.added.length ? ` + ${c.added.length} added` : ''}`}${c.asOf !== snapYear() ? ` · as of ${c.asOf}` : ''}`;
-  document.title = `${country} · ${shortName(ind)} · Evidence`;
+  document.title = `${country} · Charts · ${shortName(ind)} · Constraint Check`;
   const unit = unitHint(ind);
   const parts = [];
   if (!c.target) {
@@ -632,7 +632,7 @@ function renderVerdict(c) {
     box.append(h('span', { class: `chip ${tierClass(n.tier)}` }, `${nodeCode(n.id)} ${state.registry.nodeById[n.id] ? state.registry.nodeById[n.id].short : ''}: ${tierLabel(n.tier)}`));
     if (i < items.length - 1) box.append(' · ');
   });
-  box.append(h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${state.iso}`) }, 'Open the Snapshot'));
+  box.append(h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${state.iso}`) }, 'Open the Bottom line'));
 }
 
 function renderTable(c) {
@@ -1443,7 +1443,6 @@ async function main() {
     Object.assign(state, { registry, countries, fits, index });
     state.byIso = Object.fromEntries(countries.map((c) => [c.iso3, c]));
     if (!state.byIso[state.iso]) state.iso = 'KEN';
-    $('nav-all').href = withData('/constraint-check-site/desk/');
     await loadCountry();
     if (!state.node || !(VIEWS.includes(state.node) || registry.nodeById[state.node])) {
       const ind = state.ind && registry.indicatorById[state.ind];

@@ -12,20 +12,8 @@
 <link rel="stylesheet" href="/constraint-check-site/desk/css/summary.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 </head>
-<body>
+<body data-page="heat">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="topbar">
-  <div class="wrap">
-    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>Summary · prototype</span></a>
-    <nav class="topnav" aria-label="Site">
-      <a href="/constraint-check-site/desk/" id="nav-all">All economies</a>
-      <a href="#" id="nav-snapshot">Snapshot</a>
-      <a href="#" id="nav-evidence">Charts (analysts)</a>
-      <a href="#" aria-current="page">Heat map (analysts)</a>
-      <button id="theme-toggle" class="btn quiet small" type="button">Theme: Auto</button>
-    </nav>
-  </div>
-</header>
 <div class="banner" role="note" aria-label="Prototype under validation">
   <div class="wrap">
     <span class="alert-mark" aria-hidden="true">!</span>
@@ -34,6 +22,11 @@
     <a href="/constraint-check-site/desk/#how-we-test" class="banner-link">How we test it →</a>
   </div>
 </div>
+<header class="topbar">
+  <div class="nav-row nav-global"><div class="wrap">
+    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>prototype</span></a>
+  </div></div>
+</header>
 
 <main id="main" class="wrap sm" tabindex="-1">
   <header class="sm-head">
@@ -63,7 +56,7 @@
       <button class="btn small" id="x-csv" type="button">CSV</button>
       <button class="btn small" id="x-md" type="button">Markdown table</button>
       <button class="btn quiet small" id="copy-link" type="button">Copy link with your conclusions</button>
-      <a class="btn quiet small" id="to-snapshot" href="#">Open the Snapshot with your conclusions</a>
+      <a class="btn quiet small" id="to-snapshot" href="#">Open the Bottom line with your conclusions</a>
     </div>
   </section>
 </main>

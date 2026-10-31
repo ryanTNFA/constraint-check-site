@@ -1,6 +1,8 @@
 // Country picker.
-import { getJSON, loadRegistry, initTheme, h, TIER_ORDER, TIER_ORD, tierClass, isCannotTell, dataBase, withData } from './common.mjs';
+import './nav.mjs';
+import { getJSON, initTheme, h, TIER_ORDER, TIER_ORD, tierClass, isCannotTell, dataBase, withData } from './common.mjs';
 import { PLAIN_TIER, fcsStatus } from './card.mjs';
+import { mountExplorer } from './explore.mjs';
 
 initTheme();
 
@@ -61,13 +63,8 @@ function render() {
   const term = q.value.trim().toLowerCase();
   let list = index.countries.filter((c) => !term || [c.name, c.iso3, c.region, c.income_group].some((s) => String(s).toLowerCase().includes(term)));
   const by = sortSel.value;
-  // "Most areas flagged" counts areas worth a closer look or likely; it is not a ranking of countries
-  const flagged = (c) => Object.entries(c.tiers || {}).filter(([id, t]) => !id.startsWith('N11.') && (t === 'likely_binding' || t === 'candidate')).length;
-  list = list.slice().sort((a, b) => {
-    if (by === 'region') return a.region.localeCompare(b.region) || a.name.localeCompare(b.name);
-    if (by === 'binding') return (flagged(b) - flagged(a)) || a.name.localeCompare(b.name);
-    return a.name.localeCompare(b.name);
-  });
+  // name or region only: the home page never ranks countries (front-door PRD, non-goals)
+  list = list.slice().sort((a, b) => (by === 'region' ? a.region.localeCompare(b.region) : 0) || a.name.localeCompare(b.name));
   grid.replaceChildren(...list.map(card));
   countEl.textContent = `${list.length} of ${index.countries.length} economies`;
   status.hidden = list.length > 0;
@@ -85,7 +82,10 @@ function howTo() {
 async function main() {
   howTo();
   try {
-    [index, registry, fcs] = await Promise.all([getJSON(`${dataBase()}/index.json`), loadRegistry(), getJSON('/constraint-check-site/registry/static_fcs.json', { optional: true })]);
+    // the home page needs only the tree's area names, not the indicator registry
+    let nodes;
+    [index, nodes, fcs] = await Promise.all([getJSON(`${dataBase()}/index.json`), getJSON('/constraint-check-site/registry/nodes.json'), getJSON('/constraint-check-site/registry/static_fcs.json', { optional: true })]);
+    registry = { nodes, nodeById: Object.fromEntries(nodes.nodes.map((n) => [n.id, n])) };
   } catch (e) {
     status.hidden = false; status.textContent = `Could not load the desk index: ${e.message}. Run desk/dev/mock.mjs or the engine CLI to produce ${dataBase()}/index.json.`;
     return;
@@ -98,5 +98,6 @@ async function main() {
   q.addEventListener('input', render);
   sortSel.addEventListener('change', render);
   render();
+  mountExplorer(document.getElementById('explore'), { index, registry }).catch((e) => { console.error(e); document.getElementById('explore').textContent = `The map could not load: ${e.message}`; });
 }
 main();

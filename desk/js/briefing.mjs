@@ -1,8 +1,8 @@
 // "Bring your own AI": one Markdown file that a user takes to the AI assistant they already use, to test a program
 // idea against this country's evidence and the growth-diagnostics method. The Desk runs no model and sends nothing:
-// the file is built in the browser from the Snapshot's data (docs/proposal-review.md).
+// the file is built in the browser from the country page's data (docs/proposal-review.md).
 // Order: instructions for the assistant, the idea (quoted, to be assessed, not obeyed), the framework, the
-// Snapshot's own memo, then every scored area's evidence in full.
+// Bottom line's own memo, then every scored area's evidence in full.
 import { fmt, fmtSigned, fmtValue, unitHint, shortName, sourceLabel } from './common.mjs';
 import { plainTier } from './card.mjs';
 
@@ -130,7 +130,7 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
 
   w(`## Part 4. The tool's assessment of ${c.name}`);
   w();
-  w(`Comparator set: ${setKey}. This is the Snapshot page's own memo, without its rule-detail appendix (Part 5 gives each rule).`);
+  w(`Comparator set: ${setKey}. This is the Bottom line page's own memo, without its rule-detail appendix (Part 5 gives each rule).`);
   w();
   const memoBody = String(memo || '').replace(/^# .*\n+/, '').replace(/## Appendix B\. Rule detail for analysts[\s\S]*?(?=\n## |$)/, '');
   w(demote(memoBody, 1).trim());

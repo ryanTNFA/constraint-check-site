@@ -3,29 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Snapshot · Constraint Check Desk</title>
+<title>Bottom line · Constraint Check</title>
 <meta name="description" content="Constraint Check Snapshot: what the public data can rule out as a constraint on private investment, what deserves a closer look, and where they cannot tell.">
 <script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <link rel="preload" href="/constraint-check-site/desk/fonts/newsreader-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/constraint-check-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
+<script>(function(){var q=new URLSearchParams(location.search);if(q.get('node')){location.replace(location.pathname.replace(/country\.html$/,'areas.html')+location.search+location.hash);}})();</script>
 <link rel="stylesheet" href="/constraint-check-site/desk/css/desk.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 </head>
-<body>
+<body data-page="bottom">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="topbar">
-  <div class="wrap">
-    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>Desk · prototype</span></a>
-    <nav class="topnav" aria-label="Site">
-      <a href="/constraint-check-site/desk/">All economies</a>
-      <a href="#" aria-current="page" id="nav-snapshot">Snapshot</a>
-      <a href="/constraint-check-site/desk/evidence.html" id="nav-evidence">Charts (analysts)</a>
-      <a href="/constraint-check-site/desk/summary.html" id="nav-summary">Heat map (analysts)</a>
-      <button id="btn-memo-top" class="btn small" type="button">Get memo</button>
-      <button id="theme-toggle" class="btn quiet small" type="button">Theme: Auto</button>
-    </nav>
-  </div>
-</header>
 <div class="banner" role="note" aria-label="Prototype under validation">
   <div class="wrap">
     <span class="alert-mark" aria-hidden="true">!</span>
@@ -34,88 +21,39 @@
     <a href="#how-we-test" class="banner-link">How we test it →</a>
   </div>
 </div>
+<header class="topbar">
+  <div class="nav-row nav-global"><div class="wrap">
+    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>prototype</span></a>
+  </div></div>
+</header>
 
-<main id="main" class="wrap" tabindex="-1">
-  <header class="country-head" id="head">
-    <span class="kicker">Snapshot</span>
+<main id="main" class="wrap bl" tabindex="-1">
+  <header class="country-head bl-head" id="head">
+    <span class="kicker">Bottom line</span>
     <div class="title-row"><h1 id="country-name">Loading…</h1><span class="iso" id="country-iso"></span></div>
     <ul class="meta-list" id="meta-list"></ul>
     <p id="fcs-note" class="note alert fcs-note" role="note" hidden></p>
-    <nav class="subnav" aria-label="Sections">
-      <a href="#statements">Bottom line</a><a href="#proposal">Test an idea</a><a href="#tree">Tree</a><a href="#growth">Growth</a><a href="#analysts">For analysts</a><a href="#export">Memo</a>
-    </nav>
+    <p class="lede-question" id="growth-question"></p>
   </header>
 
   <p id="page-error" class="note alert" hidden></p>
 
-  <section class="panel" id="statements" aria-labelledby="statements-h">
-    <div class="panel-head"><div><span class="kicker">In plain language</span><h2 id="statements-h">Bottom line</h2></div><p>What the public data can rule out, what deserves a closer look, and where they cannot tell. This is about what holds back private investment, not about household needs.</p></div>
-    <p class="small muted" id="peers-line"></p>
-    <div class="statements" id="statements-body"></div>
+  <section class="bl-lists" id="statements" aria-label="Bottom line">
+    <p class="small muted bl-scope">What holds back private investment here, judged from public data against other economies. Not a ranking of countries, and not about household needs. <span id="peers-line"></span></p>
+    <div id="statements-body"></div>
     <div id="overrides-box"></div>
   </section>
 
   <section class="panel" id="proposal" aria-labelledby="proposal-h">
-    <div class="panel-head"><div><span class="kicker">Bring your own AI</span><h2 id="proposal-h">Test a program idea with your AI assistant</h2></div><p>Paste your idea and download one file: this country's evidence, the growth-diagnostics method, and instructions for an AI. Give the file to the AI assistant you already use, and it will assess whether the idea targets a constraint that holds back growth here. The Desk runs no AI and sends nothing anywhere.</p></div>
+    <div class="panel-head"><div><span class="kicker">Bring your own AI</span><h2 id="proposal-h">Test a program idea</h2></div><p>Describe your idea and download one file: this country's evidence, the growth-diagnostics method, and instructions for an AI. Give the file to the AI assistant you already use. The Desk runs no AI and sends nothing anywhere.</p></div>
     <div id="proposal-body"></div>
   </section>
 
-  <section class="panel" id="tree" aria-labelledby="tree-h">
-    <div class="panel-head"><div><span class="kicker">The tree</span><h2 id="tree-h">Where the evidence points</h2></div><p id="tree-sub">The finance branch is at the top, low returns below. Hover an area for a plain reading; click or press Enter to open its evidence. Tab moves between areas.</p></div>
-    <div class="legend" id="tree-legend"></div>
-    <div class="tree-wrap" id="tree-wrap"></div>
-    <div class="tooltip" id="tooltip" role="tooltip"></div>
-    <p class="small muted" style="margin-top:8px">Under each area: the number of independent sources that count toward its rating (quantities and opinions inform but do not count) and the span of years they cover. Grey labels such as Finance and Social returns are branches, not ratings.</p>
-  </section>
-
-  <section class="panel" id="growth" aria-labelledby="growth-h">
-    <div class="panel-head"><div><span class="kicker">The growth problem</span><h2 id="growth-h">The question</h2></div><p id="growth-class"></p></div>
-    <p class="lede-question" id="growth-question"></p>
-    <div class="grid-2">
-      <p class="prose" id="growth-statement"></p>
-      <figure class="spark-wrap" id="spark-fig"><div id="spark"></div><figcaption id="spark-cap"></figcaption></figure>
-    </div>
-    <details class="rule-detail" style="margin-top:14px">
-      <summary>Growth statistics G1 to G7 (for analysts)</summary>
-      <div class="stat-grid" id="g-grid" role="group" aria-label="Growth statistics G1 to G7"></div>
-      <p class="small muted" id="g-context" style="margin-top:10px"></p>
-    </details>
-  </section>
-
-  <section class="panel" id="analysts" aria-labelledby="analysts-h">
-    <details class="analyst-group" id="analyst-details">
-      <summary><span class="kicker">For analysts</span><span class="analyst-title" id="analysts-h">How the tool starts, how stable the ordering is, the comparison countries, and every number</span></summary>
-
-      <section class="subpanel" id="topsplit" aria-labelledby="topsplit-h">
-        <div class="panel-head"><div><span class="kicker">How the tool starts</span><h2 id="topsplit-h">Finance or low returns?</h2></div><p>Three quick statistics read before the tree is walked. A pattern, not a verdict.</p></div>
-        <div id="topsplit-body"></div>
-      </section>
-
-      <section class="subpanel" id="ranking" aria-labelledby="ranking-h">
-        <div class="panel-head"><div><span class="kicker">Areas worth a closer look</span><h2 id="ranking-h">How stable is this ordering?</h2></div><p id="ranking-sub"></p></div>
-        <div id="ranking-body"></div>
-      </section>
-
-      <section class="subpanel" id="comparators" aria-labelledby="comparators-h">
-        <div class="panel-head"><div><span class="kicker">Comparison countries</span><h2 id="comparators-h">Who the country is compared with</h2></div><p>Three sets are always computed. The active set drives the peer comparisons; ratings are recomputed in the browser when you change it.</p></div>
-        <div id="comparators-body"></div>
-      </section>
-
-      <section class="subpanel" id="provenance" aria-labelledby="provenance-h">
-        <div class="panel-head"><div><span class="kicker">Every number</span><h2 id="provenance-h">Provenance</h2></div><p id="provenance-sub"></p></div>
-        <div id="provenance-body"></div>
-      </section>
-    </details>
-  </section>
-
   <section class="panel" id="export" aria-labelledby="export-h">
-    <div class="panel-head"><div><span class="kicker">Hand-off</span><h2 id="export-h">Memo</h2></div><p>Built from what is on screen: the bottom line, any program ideas you checked, a short evidence box per rated area, caveats, and an appendix. Your overrides are labelled as yours.</p></div>
+    <div class="panel-head"><div><span class="kicker">Hand-off</span><h2 id="export-h">Download the memo</h2></div><p>The bottom line, a short evidence box per rated area, caveats and an appendix, with your overrides labelled as yours.</p></div>
     <div id="export-body"></div>
   </section>
 </main>
-
-<div class="scrim" id="scrim"></div>
-<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true" tabindex="-1"></aside>
 
 <footer class="foot"><div class="wrap">
   <p id="how-we-test"><strong>How we test it.</strong> The plan has three parts: a retrospective against published constraints analyses using only the data available at the time, a pre-registered head-to-head against diagnostics now in progress, and a panel of economists given the same information. None has been run yet, so the tool has no track record; treat every rating as a starting point.</p>

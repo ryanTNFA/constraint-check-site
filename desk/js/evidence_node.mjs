@@ -210,7 +210,7 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
   const sn = all.find((x) => x.id === view);
   if (n && !n.diagnosable && !sn) { verdictEl.append(h('span', {}, 'Context, not a constraint the desk tests.')); return; }
   if (!sn) return;
-  // The rating under the comparison countries chosen above, in the Snapshot's plain words.
+  // The rating under the comparison countries chosen above, in the Bottom line's plain words.
   const tier = (sn.tier_by_set && sn.tier_by_set[set]) || sn.tier;
   const T = (registry.params && registry.params.tiers) || {};
   const up = (T.candidate && T.candidate.N_min) ?? 0.5, down = (T.probably_not && T.probably_not.N_max) ?? -0.5;
@@ -224,7 +224,7 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
     h('span', {}, 'The tool’s rating: '), h('span', { class: `tier-badge ${tierClass(tier)}` }, h('span', {}, plainTier(tier))),
     ' ', reasonTag(tier === sn.tier ? sn : { ...sn, tier, cannot_tell_reason: null, cannot_tell_detail: null }),
     lean ? h('span', { class: 'small muted' }, ` ${lean}.`) : null,
-    ' ', h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${iso}&node=${encodeURIComponent(view)}`) }, 'Open the rating card for the reasoning'),
+    ' ', h('a', { href: withData(`/constraint-check-site/desk/areas.html?iso=${iso}&node=${encodeURIComponent(view)}`) + location.hash }, 'Open the rating card for the reasoning'),
     bySet ? h('span', { class: 'small muted ev-byset' }, ` ${bySet}`) : null,
   ].filter(Boolean));
   const np = sn.tier === 'elimination' ? null : noPriceNote(scorecard, view, countryName);
