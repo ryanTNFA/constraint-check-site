@@ -38,21 +38,21 @@ function plainCtx() {
 
 async function main() {
   if (!iso) { showError('No economy selected. Open this page as country.html?iso=XXX or pick an economy from the list.'); return; }
-  document.querySelector('a.brand').href = withData('/C:/Program Files/Git/constraint-check-site/desk/');
-  document.querySelector('.topnav a').href = withData('/C:/Program Files/Git/constraint-check-site/desk/');
-  const snapLink = $('nav-snapshot'); if (snapLink) { snapLink.href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${iso}`); snapLink.addEventListener('click', () => { snapLink.href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${iso}${location.hash}`); }); }
-  const ev = $('nav-evidence'); if (ev) ev.href = withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${iso}`);
+  document.querySelector('a.brand').href = withData('/constraint-check-site/desk/');
+  document.querySelector('.topnav a').href = withData('/constraint-check-site/desk/');
+  const snapLink = $('nav-snapshot'); if (snapLink) { snapLink.href = withData(`/constraint-check-site/desk/country.html?iso=${iso}`); snapLink.addEventListener('click', () => { snapLink.href = withData(`/constraint-check-site/desk/country.html?iso=${iso}${location.hash}`); }); }
+  const ev = $('nav-evidence'); if (ev) ev.href = withData(`/constraint-check-site/desk/evidence.html?iso=${iso}`);
   // The summary page reads the same overrides (o=) from the link, so carry the current hash at click time.
-  const sm = $('nav-summary'); if (sm) sm.addEventListener('click', () => { sm.href = withData(`/C:/Program Files/Git/constraint-check-site/desk/summary.html?iso=${iso}${location.hash}`); });
+  const sm = $('nav-summary'); if (sm) sm.addEventListener('click', () => { sm.href = withData(`/constraint-check-site/desk/summary.html?iso=${iso}${location.hash}`); });
   try {
-    const [registry, scorecard, countries, fcs, index] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/countries.json`, { optional: true }), getJSON('/C:/Program Files/Git/constraint-check-site/registry/static_fcs.json', { optional: true }), getJSON(`${DATA}/index.json`, { optional: true })]);
+    const [registry, scorecard, countries, fcs, index] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/countries.json`, { optional: true }), getJSON('/constraint-check-site/registry/static_fcs.json', { optional: true }), getJSON(`${DATA}/index.json`, { optional: true })]);
     state.registry = registry; state.scorecard = scorecard; state.countries = countries || []; state.fcs = fcs; state.index = index;
   } catch (e) { showError(`Could not load the snapshot for ${iso}: ${e.message}. The engine CLI (or desk/dev/mock.mjs) must write ${DATA}/${iso}.json first.`); return; }
-  state.narrative = await getJSON(`/C:/Program Files/Git/constraint-check-site/synth/narratives/${iso}.json`, { optional: true });
+  state.narrative = await getJSON(`/constraint-check-site/synth/narratives/${iso}.json`, { optional: true });
   try {
-    const mod = await import('/C:/Program Files/Git/constraint-check-site/engine/src/scorecard.mjs');
+    const mod = await import('/constraint-check-site/engine/src/scorecard.mjs');
     if (typeof mod.recomputeWithPeers === 'function') { state.engine = mod; state.engineStatus = { ok: true, message: '' }; }
-    else state.engineStatus = { ok: false, message: '/C:/Program Files/Git/constraint-check-site/engine/src/scorecard.mjs loaded but does not export recomputeWithPeers().' };
+    else state.engineStatus = { ok: false, message: '/constraint-check-site/engine/src/scorecard.mjs loaded but does not export recomputeWithPeers().' };
   } catch (e) { state.engineStatus = { ok: false, message: `the engine module /engine/src/scorecard.mjs could not be imported (${e.message}).` }; }
 
   const hs = parseHash();
@@ -133,7 +133,7 @@ function renderAll() { renderTreePanel(); renderStatements(); renderPeersLine();
 function renderHeader() {
   const sc = state.scorecard; const c = sc.country; const m = sc.meta;
   $('country-name').textContent = c.name; $('country-iso').textContent = c.iso3;
-  $('banner-text').textContent = `Constraint Check has not yet been tested against expert growth diagnoses. Its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/C:/Program Files/Git/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
+  $('banner-text').textContent = `Constraint Check has not yet been tested against expert growth diagnoses. Its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
   const note = fcsNote(state.fcs, c.iso3, c.name);
   const el = $('fcs-note');
   if (note) { el.hidden = false; el.textContent = note; } else el.hidden = true;

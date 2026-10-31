@@ -4,12 +4,12 @@
    The dark theme is a tool-only extension derived from the same tokens; the website has none.
    --chart-* and --tier-* are the TNFA data palette (validated for colour-vision deficiency and contrast). */
 
-@font-face { font-family: "Newsreader"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/newsreader-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "Newsreader"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/newsreader-italic-400600.woff2") format("woff2"); font-weight: 400 600; font-style: italic; font-display: swap; }
-@font-face { font-family: "Libertinus Serif Display"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/libertinus-serif-display-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "Inter"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/inter-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "IBM Plex Mono"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/ibm-plex-mono-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "IBM Plex Mono"; src: url("/C:/Program Files/Git/constraint-check-site/desk/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-italic-400600.woff2") format("woff2"); font-weight: 400 600; font-style: italic; font-display: swap; }
+@font-face { font-family: "Libertinus Serif Display"; src: url("/constraint-check-site/desk/fonts/libertinus-serif-display-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("/constraint-check-site/desk/fonts/inter-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
 
 :root {
   /* surfaces and text (TNFA: bg-soft, white, bone, ink, ink-muted, toc-rail) */

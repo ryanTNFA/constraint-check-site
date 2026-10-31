@@ -67,7 +67,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
         h('h2', { id: 'drawer-title' }, reg ? reg.short : nodeId),
         h('div', { class: 'small muted' }, reg ? reg.label : ''),
         reg && reg.question ? h('p', { class: 'q' }, reg.question) : null,
-        h('a', { class: 'small', href: withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) }, 'Charts for this area (analyst view) →')),
+        h('a', { class: 'small', href: withData(`/constraint-check-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) }, 'Charts for this area (analyst view) →')),
       h('button', { class: 'btn quiet small drawer-close', type: 'button', 'aria-label': 'Close evidence card', onclick: close }, 'Close')));
 
     if (!node) { drawer.append(h('p', { class: 'note' }, 'This area is not scored in the snapshot.')); return; }

@@ -224,7 +224,7 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
     h('span', {}, 'The tool’s rating: '), h('span', { class: `tier-badge ${tierClass(tier)}` }, h('span', {}, plainTier(tier))),
     ' ', reasonTag(tier === sn.tier ? sn : { ...sn, tier, cannot_tell_reason: null, cannot_tell_detail: null }),
     lean ? h('span', { class: 'small muted' }, ` ${lean}.`) : null,
-    ' ', h('a', { href: withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${iso}&node=${encodeURIComponent(view)}`) }, 'Open the rating card for the reasoning'),
+    ' ', h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${iso}&node=${encodeURIComponent(view)}`) }, 'Open the rating card for the reasoning'),
     bySet ? h('span', { class: 'small muted ev-byset' }, ` ${bySet}`) : null,
   ].filter(Boolean));
   const np = sn.tier === 'elimination' ? null : noPriceNote(scorecard, view, countryName);

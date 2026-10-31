@@ -19,12 +19,12 @@ export const TIER_ORD = { ruled_out: -2, probably_not: -1, cannot_tell_data_gap:
 export function dataBase() {
   const p = new URLSearchParams(location.search).get('data');
   if (p && /^\/[A-Za-z0-9_\-./]*$/.test(p) && !p.includes('..')) return p.replace(/\/$/, '');
-  return '/C:/Program Files/Git/constraint-check-site/desk/data';
+  return '/constraint-check-site/desk/data';
 }
 /** Keep the data= switch on internal links. */
 export function withData(url) {
   const p = new URLSearchParams(location.search).get('data');
-  if (!p || dataBase() === '/C:/Program Files/Git/constraint-check-site/desk/data') return url;
+  if (!p || dataBase() === '/constraint-check-site/desk/data') return url;
   return `${url}${url.includes('?') ? '&' : '?'}data=${encodeURIComponent(p)}`;
 }
 
@@ -163,7 +163,7 @@ export async function getJSON(url, { optional = false } = {}) {
 
 export async function loadRegistry() {
   const [indicators, nodes, params] = await Promise.all([
-    getJSON('/C:/Program Files/Git/constraint-check-site/registry/indicators.json'), getJSON('/C:/Program Files/Git/constraint-check-site/registry/nodes.json'), getJSON('/C:/Program Files/Git/constraint-check-site/registry/params.json'),
+    getJSON('/constraint-check-site/registry/indicators.json'), getJSON('/constraint-check-site/registry/nodes.json'), getJSON('/constraint-check-site/registry/params.json'),
   ]);
   return {
     indicators, nodes, params,

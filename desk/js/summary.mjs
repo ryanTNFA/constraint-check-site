@@ -113,7 +113,7 @@ function render() {
   const body = h('tbody', {});
   for (const r of state.model) {
     if (r.group) { body.append(h('tr', { class: 'sm-group' }, h('th', { colspan: '9', scope: 'colgroup' }, r.group))); continue; }
-    const href = withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(r.id)}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
+    const href = withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(r.id)}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
     const bt = r.bench != null ? `${r.nBench} indicators with data: ${r.toward} at least 0.75 sd toward binding, ${r.away} at least 0.75 sd away. Median of their binding-side distances from what income and structure predict.` : 'No indicator of this node has a value in the window.';
     body.append(h('tr', { class: `${r.sub ? 'sm-sub' : ''}${r.context ? ' sm-context' : ''}${state.overrides[r.id] ? ' sm-overridden' : ''}` },
       h('th', { scope: 'row', class: 'sm-node' }, h('a', { href }, h('span', { class: 'sm-id' }, r.sub ? '' : nodeCode(r.id)), ' ', r.short)),
@@ -148,9 +148,9 @@ function renderText() {
   const active = activeSet();
   $('foot').textContent = `Benchmarking: the median, across the node's indicators with a value, of each one's distance from what income and structure predict, in standard deviations, turned so positive is the binding side (the C9 evidence strip's dots). Tests 1 to 4: the verdict layer's test scores (T), from −2 (evidence against the constraint binding) to +2 (for). Colour saturates at ±${LIM}. Comparators: benchmarking measures against every economy with data, not a comparator set; the test scores are computed with the verdict layer's ${active} comparators${state.set !== active ? `` : ''}. The rating column follows the comparators chosen above (the verdict layer computes a rating under each set; hover a rating to see where the sets disagree). "Not computed": the prototype has no specification or data connector for that test; "no data": it has one, but this economy has no usable value; "no indicator": nothing in the registry measures it. Hover a cell for details. Snapshot ${sc.meta ? sc.meta.snapshot_id : ''}, rubric ${sc.meta ? sc.meta.rubric_version : ''}. Your conclusions are yours, not the tool's; they live in this page's link, which the Snapshot and its memo read too.`;
   const hash = location.hash;
-  $('to-snapshot').href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
-  $('nav-snapshot').href = withData(`/C:/Program Files/Git/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
-  $('nav-evidence').href = withData(`/C:/Program Files/Git/constraint-check-site/desk/evidence.html?iso=${state.iso}`);
+  $('to-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
+  $('nav-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
+  $('nav-evidence').href = withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}`);
 }
 
 function save() { writeHash({ set: state.set, overrides: state.overrides }); renderText(); }
@@ -244,7 +244,7 @@ async function main() {
     const [registry, countries] = await Promise.all([loadRegistry(), getJSON(`${DATA}/countries.json`)]);
     Object.assign(state, { registry, countries });
     if (!countries.some((c) => c.iso3 === state.iso)) state.iso = 'KEN';
-    $('nav-all').href = withData('/C:/Program Files/Git/constraint-check-site/desk/');
+    $('nav-all').href = withData('/constraint-check-site/desk/');
     const cs = $('c-country');
     for (const c of countries.slice().sort((a, b) => a.name.localeCompare(b.name))) cs.append(h('option', { value: c.iso3 }, c.name));
     cs.value = state.iso;
