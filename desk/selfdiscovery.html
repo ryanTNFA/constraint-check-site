@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self-discovery · Constraint Check</title>
+<meta name="description" content="Self-discovery for one economy: why the first firm to try a new product can stop growth, what the public data show, how it is judged by elimination, and how far the jumps to nearby products are.">
+<script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<link rel="preload" href="/constraint-check-site/desk/fonts/newsreader-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/constraint-check-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/constraint-check-site/desk/css/desk.css">
+</head>
+<body data-page="areas">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="banner" role="note" aria-label="Prototype under validation">
+  <div class="wrap">
+    <span class="alert-mark" aria-hidden="true">!</span>
+    <strong>Prototype under validation</strong>
+    <span class="alert-text">Constraint Check has not yet been tested against expert growth diagnoses. Its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.</span>
+    <a href="/constraint-check-site/desk/methods.html#testing" class="banner-link">How we test it →</a>
+  </div>
+</div>
+<header class="topbar">
+  <div class="nav-row nav-global"><div class="wrap">
+    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>prototype</span></a>
+  </div></div>
+</header>
+
+<main id="main" class="wrap sd" tabindex="-1">
+  <header class="country-head">
+    <span class="kicker"><a href="/constraint-check-site/desk/areas.html" id="back-areas">Areas</a> · Self-discovery</span>
+    <div class="title-row"><h1 id="sd-title">Self-discovery</h1></div>
+    <p class="lede-question" id="sd-question">Are firms held back from trying new products?</p>
+  </header>
+  <p id="page-error" class="note alert" hidden></p>
+
+  <section class="panel" id="logic" aria-labelledby="logic-h">
+    <div class="panel-head"><div><span class="kicker">The idea, from the research</span><h2 id="logic-h">How a missing first try can hold growth back</h2></div></div>
+    <div class="prose sd-prose">
+      <p><strong>Growing means making new things.</strong> Rich countries don’t just make more of the same; they make different products. For a poorer country the task is rarely to invent something. It is to find out which of the products the world already makes its own firms can make at low enough cost to sell. Hausmann and Rodrik call this <em>self-discovery</em>: finding out an economy’s own cost structure.</p>
+      <p><strong>The first firm pays; the others copy.</strong> Finding out is costly. If the first firm to try fails, it bears the whole loss. If it succeeds, others see that it works and follow, and the first firm keeps little of the gain. So firms try too few new things, even when trying would pay off for the country as a whole.</p>
+      <p><strong>New products need inputs nobody supplies yet.</strong> A new export may need its own standards, certification, cold storage, a port procedure or trained workers. These differ from one product to the next and are hard to know in advance, so a government can’t supply them all. It has to choose.</p>
+      <p><strong>A related idea: distance.</strong> Later work on the “product space” adds a second reason. Products that use similar know-how sit close together. A country that already makes many products near a new one has a short jump; a country far from everything has a long one, and the missing know-how and suppliers may need several firms to move at once. That is a coordination problem, which this tool treats as a separate area (coordination failures).</p>
+      <p class="small muted">Sources: Hausmann and Rodrik, “Economic Development as Self-Discovery” (2003) and “Doomed to Choose: Industrial Policy as Predicament” (2006); Hidalgo, Klinger, Barabási and Hausmann, “The Product Space Conditions the Development of Nations” (2007).</p>
+    </div>
+  </section>
+
+  <section class="panel" id="evidence" aria-labelledby="evidence-h">
+    <div class="panel-head"><div><span class="kicker">What the public data show</span><h2 id="evidence-h">The measures</h2></div><p id="evidence-sub"></p></div>
+    <p class="plain" id="sd-lean"></p>
+    <ul class="sd-list" id="sd-measures"></ul>
+    <p class="small muted" id="sd-measures-note">None of these measures can show on its own that self-discovery holds growth back. A country with few new products may simply be held back by something else, such as power or roads, which is why the next section matters. The firm surveys count products new to the firm, not new to the country, so they are only a rough guide.</p>
+  </section>
+
+  <section class="panel" id="elimination" aria-labelledby="elim-h">
+    <div class="panel-head"><div><span class="kicker">Judged by elimination</span><h2 id="elim-h">Have the other causes of low returns been ruled out?</h2></div><p>Self-discovery becomes worth a closer look only when the other reasons firms find investment unrewarding have been ruled out (“set aside”). Here is where they stand for this country, under the reading chosen in the top bar.</p></div>
+    <div class="table-wrap"><table class="data sd-elim" id="sd-elim"></table></div>
+    <p class="plain" id="sd-elim-verdict"></p>
+    <p class="small muted">The limits of this test: several problems can hold growth back at once; a self-discovery problem can look like a missing road or cold store for one product; and where data are thin, “unclear” rarely turns into “ruled out”, so the test may seldom fire. It is a first screen, not a verdict.</p>
+  </section>
+
+  <section class="panel" id="nearby" aria-labelledby="nearby-h">
+    <div class="panel-head"><div><span class="kicker">How far are the jumps?</span><h2 id="nearby-h">Nearby products</h2></div><p>Products this country does not yet export competitively, whose neighbours in the product space it already exports. This is information about distance, <strong>not a list of sectors to back</strong>: a near product is not always a better one, and a product that is near may still be uncompetitive for reasons of cost, scale or trade policy. Lists are in alphabetical order, not ranked.</p></div>
+    <div id="sd-nearby"></div>
+    <details class="rule-detail" style="margin-top:12px"><summary>How this list is made, and the check it must pass</summary><div class="small" id="sd-nearby-method"></div></details>
+  </section>
+
+  <section class="panel" id="settle" aria-labelledby="settle-h">
+    <div class="panel-head"><div><span class="kicker">What would settle it</span><h2 id="settle-h">Evidence national statistics can’t give: suggestions</h2></div></div>
+    <ul class="sd-list">
+      <li><strong>Talk to the first movers.</strong> Firms that tried a new product or market in the last five years: what stopped them, and did others copy them before they recovered their costs?</li>
+      <li><strong>Map the missing inputs.</strong> For two or three nearby products, which specific public inputs are missing: standards, certification, logistics, regulation, skills?</li>
+      <li><strong>Go further with the research tools.</strong> The Harvard Growth Lab’s Atlas of Economic Complexity covers the product space in far more depth than this page.</li>
+    </ul>
+  </section>
+
+  <aside class="tnfa-view" aria-labelledby="sd-tnfa-h">
+    <span class="kicker">The New Foreign Assistance’s view · not part of any rating</span>
+    <h2 id="sd-tnfa-h">Why this matters for U.S. assistance</h2>
+    <p>If self-discovery is what holds growth back, the most useful help is narrow and temporary: share the risk of the first serious try at a new product, tie that support to results and withdraw it when the try fails, and fix the specific public inputs the product needs so that others can follow. Hausmann and Rodrik stress that discipline: support without it invites waste. This is very different from subsidizing whole sectors indefinitely. It is also why diagnosis comes first: backing first movers makes sense only once the more common problems have been ruled out.</p>
+  </aside>
+</main>
+
+<footer class="foot"><div class="wrap">
+  <p id="versions"></p>
+  <p>Constraint Check, a prototype by The New Foreign Assistance. This tool never recommends funding; it states what the public evidence can and cannot support.</p>
+</div></footer>
+<script type="module" src="/constraint-check-site/desk/js/selfdiscovery.mjs"></script>
+</body>
+</html>

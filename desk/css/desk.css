@@ -689,3 +689,31 @@ button.robust::after { content: ' ▾'; font-size: 0.65rem; }
 button.robust[aria-expanded="true"]::after { content: ' ▴'; }
 .robust-detail { display: block; margin: 4px 0 2px; font-size: 0.8125rem; color: var(--muted); }
 .robust-detail[hidden] { display: none; }
+
+/* ---------- The New Foreign Assistance's voice (front-door PRD W8): visibly apart from the tool's ratings ---------- */
+.tnfa-view { margin: 20px 0 0; padding: 14px 18px 16px; background: var(--accent-soft); border-left: 4px solid var(--brand-amber); display: grid; gap: 6px; }
+.tnfa-view:empty { display: none; }
+.tnfa-view h2 { font-family: var(--serif); font-weight: 500; font-size: 1.3rem; margin: 0; }
+.tnfa-view ul { margin: 4px 0 0; padding-left: 1.1em; display: grid; gap: 6px; max-width: 70ch; }
+.tnfa-view p { margin: 0; }
+.tnfa-view .small a { margin-right: 14px; }
+.why { margin: 22px 0 6px; padding: 14px 18px 16px; background: var(--accent-soft); border-left: 4px solid var(--brand-amber); }
+.why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 28px; margin: 8px 0 10px; }
+.why-grid h3 { font-family: var(--serif); font-weight: 500; font-size: 1.15rem; margin: 0 0 4px; text-wrap: balance; }
+.why-grid p { margin: 0; font-size: 0.9375rem; color: var(--muted); max-width: 46ch; }
+.why .small a { margin-right: 14px; }
+.tnfa-panel { border-left: 4px solid var(--brand-amber); padding-left: 16px; }
+/* self-discovery page */
+.sd-prose { max-width: 46rem; display: grid; gap: 10px; }
+.sd-prose p { margin: 0; }
+.sd-list { margin: 8px 0; padding-left: 1.2em; display: grid; gap: 6px; max-width: 70ch; }
+.sd-way { color: var(--muted); }
+ol.sd-nearby { margin: 6px 0 8px; padding-left: 1.6em; display: grid; gap: 4px; columns: 2; column-gap: 28px; }
+@media (max-width: 700px) { ol.sd-nearby { columns: 1; } }
+.sd-elim td, .sd-elim th { white-space: normal; }
+.sd .tnfa-view { margin-top: 28px; }
+.sd-link { display: block; margin: 4px 0; }
+
+.sd-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 28px; }
+.sd-two h3 { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; margin: 0 0 2px; }
+ul.sd-nearby { margin: 6px 0 8px; padding-left: 1.1em; display: grid; gap: 3px; }

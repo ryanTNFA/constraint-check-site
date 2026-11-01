@@ -67,6 +67,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
         h('h2', { id: 'drawer-title' }, reg ? reg.short : nodeId),
         h('div', { class: 'small muted' }, reg ? reg.label : ''),
         reg && reg.question ? h('p', { class: 'q' }, reg.question) : null,
+        nodeId === 'N12' ? h('a', { class: 'small sd-link', href: withData(`/constraint-check-site/desk/selfdiscovery.html?iso=${new URLSearchParams(location.search).get('iso') || ''}`) + location.hash }, 'Self-discovery explained, with nearby products →') : null,
         h('a', { class: 'small', href: withData(`/constraint-check-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) }, 'Charts for this area (analyst view) →')),
       h('button', { class: 'btn quiet small drawer-close', type: 'button', 'aria-label': 'Close evidence card', onclick: close }, 'Close')));
 
@@ -591,7 +592,7 @@ function speakingTests(n) {
 export function eliminationSentence(n) {
   const l = n.elimination || {};
   const lean = l.direction === 'toward' ? 'leans toward a self-discovery problem' : l.direction === 'away' ? 'leans away from a self-discovery problem' : 'leans neither way';
-  const counts = l.families ? ` (${l.toward} of ${plural(l.families, 'measure', 'measures')} toward, ${l.away} away)` : '';
+  const counts = l.families ? ` (across ${plural(l.families, 'group of measures', 'groups of measures')}: ${l.toward} toward, ${l.away} away, ${l.neutral} neither)` : '';
   return `Not settled by public data alone. The pattern of new products and diversification ${lean}${counts}. It becomes a candidate only if the other low-return areas are ruled out.`;
 }
 function leanSentence(n, P) {

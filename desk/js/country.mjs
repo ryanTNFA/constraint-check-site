@@ -411,7 +411,9 @@ function renderStatements() {
       grp(g.dataGap, `Too little recent data for ${c}`, 'Next: a newer survey or data year would settle it.'),
       grp(g.toolGap, 'Not connected to the tool yet', `Next: a new measure in the tool; no data for ${c} changes it today.`),
       grp(g.sector, 'Needs a sector study', 'Next: sector work.'),
-      grp(g.elimination, 'Judged by elimination', `Self-discovery asks whether firms are held back from trying new products. Next: rule out the other causes of low returns first.${elim}`)));
+      g.elimination.length ? h('li', {}, h('span', { class: 'bl-reason' }, `Judged by elimination (${g.elimination.length})`), h('span', { class: 'bl-text' }, ...names(g.elimination), '. '),
+        h('span', { class: 'bl-next' }, `Self-discovery asks whether firms are held back from trying new products. Next: rule out the other causes of low returns first.${elim} `),
+        sdLink()) : null));
     if (bl.firmsTop) {
       const r = bl.firmsTop.r; const m = String(r.name || '').match(/choosing (.+?) as their biggest obstacle/i);
       const what = m ? m[1] : shortName(r).toLowerCase();
@@ -419,7 +421,43 @@ function renderStatements() {
     }
   }
   body.append(s1, s2, s3);
+  renderAssistanceBox(bl);
   if (state.view.note) body.append(h('p', { class: 'note' }, state.view.note));
+}
+function sdLink() {
+  const a = h('a', { href: tabHref('/constraint-check-site/desk/selfdiscovery.html', iso) }, 'Read more →');
+  a.addEventListener('click', () => { a.href = tabHref('/constraint-check-site/desk/selfdiscovery.html', iso); });
+  return a;
+}
+/**
+ * Front-door PRD W8: "What this means for U.S. assistance", in The New Foreign Assistance's voice and labelled as such,
+ * after the three lists. It translates each list into the decision it informs and never says "fund this". It argues for a
+ * way of choosing, not for a country, sector or program (W8.4).
+ */
+function renderAssistanceBox(bl) {
+  if (!on('assistance-box')) return;
+  const c = state.scorecard.country.name;
+  // U.S. assistance does not go to high-income economies; the exit line fits countries that still receive aid
+  const income = state.scorecard.country.income_group || '';
+  if (income === 'High income') { $('assistance-box').replaceChildren(); return; }
+  const aidRecipient = income === 'Low income' || income === 'Lower middle income';
+  const list = (items) => englishList(items.map((x) => x.short));
+  const stops = [...bl.ruled, ...bl.probNot];
+  const g = bl.groups;
+  const firstGap = g.dataGap.length ? 'measure what is missing for this country first' : g.oneKind.length ? `find a second kind of evidence on ${list(g.oneKind.slice(0, 2))}` : 'start with a field visit';
+  $('assistance-box').replaceChildren(
+    h('span', { class: 'kicker' }, 'The New Foreign Assistance’s view · not part of any rating'),
+    h('h2', {}, 'What this means for U.S. assistance'),
+    h('ul', {},
+      h('li', {}, h('strong', {}, 'Choose before spending. '), stops.length
+        ? `Programs aimed at ${list(stops)} need new evidence first: the public data argue against ${stops.length === 1 ? 'it' : 'them'} as what holds investment back here.`
+        : `Nothing can be ruled out for ${c} yet, so no area should be assumed not to matter.`),
+      h('li', {}, h('strong', {}, 'Look first where the evidence points. '), bl.look.length
+        ? `The public data point first to ${list(bl.look.map((x) => (x.ev !== x.node ? { short: x.evShort } : x)))}, which is not established. Check it with ${c}’s government, firms and researchers before anything is designed.`
+        : `No area stands out, so the first step is to ${firstGap}.`),
+      h('li', {}, h('strong', {}, 'Measure what can’t be settled. '), 'The cheapest next step is often to collect the missing evidence. Each “can’t settle” line above says what that is.'),
+      aidRecipient ? h('li', {}, h('strong', {}, 'Aim for the exit. '), `The goal is growth that lets ${c} rely on trade and investment instead of aid. Fixing what truly holds growth back is how that happens; spending on what doesn’t changes little.`) : null),
+    h('p', { class: 'small' }, h('a', { href: withData('/constraint-check-site/desk/methods.html#mcc') }, 'Why this way of choosing →'), ' ', h('a', { href: 'https://thenewforeignassistance.org', target: '_blank', rel: 'noopener' }, 'About The New Foreign Assistance →')));
 }
 function shareText() {
   const ix = state.index; if (!ix || !Array.isArray(ix.countries) || !ix.countries.length) return '';
