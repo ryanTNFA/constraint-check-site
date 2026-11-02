@@ -2,10 +2,14 @@
 // Layout: one row per leaf, in registry order, so every branch owns its own vertical band and no
 // edge passes under another branch's box (finance's areas all sit above the low-returns areas).
 // Micro risk's six sub-areas are stacked under its box, which keeps the tree to five columns.
+// The first decision (N0, finance or returns?) is the question asked at the root's fork, as in HRV (2005) Figure 1,
+// not a third branch: its box sits at the root and the finance and low-returns branches leave its right edge.
+// The registry keeps N0 under ROOT (the engine reads that parent); only the drawing moves it.
 import { nodeCode, tierPaint, tierClass, h, cannotTellCode, leanOf, CANNOT_TELL_PLAIN } from './common.mjs';
 import { plainTier, plainSummary, evidenceYears, yearsText } from './card.mjs';
 
-const NODE_W = 138, NODE_H = 30, DX = 48, DY = 156;
+const NODE_W = 138, NODE_H = 30, DX = 48, DY = 156, FORK_GAP = 60;
+const FORK = 'N0';
 const SUB_W = 122, SUB_H = 22, SUB_DX = 27, SUB_INDENT = 16, SUB_TOP = 46;
 const STRUCT = new Set(['ROOT', 'FIN', 'RET', 'SOC', 'APP', 'GOV', 'MKT']);
 
@@ -35,6 +39,14 @@ function caption(n) {
   return `${n.E} source${n.E === 1 ? '' : 's'}${yr ? ` · ${yr}` : n.R ? ` · data to ${n.R}` : ''}`;
 }
 
+/** Which branch the first decision points to, or null when it is unclear (the colour alone cannot say which side). */
+function forkSide(n) {
+  if (!n) return null;
+  if (n.tier === 'candidate' || n.tier === 'likely_binding') return 'leans to finance';
+  if (n.tier === 'probably_not' || n.tier === 'ruled_out') return 'points to low returns';
+  return null;
+}
+
 /**
  * renderTree(container, opts)
  * opts: { registry, nodes (scorecard nodes array), overrides, onOpen(id), tooltipEl, plainCtx }
@@ -46,12 +58,13 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
   const d3 = window.d3;
   if (!d3 || !d3.stratify) { container.append(fallbackList(regNodes, byId, overrides, onOpen)); return; }
 
-  const root = d3.stratify().id((d) => d.id).parentId((d) => d.parent)(regNodes);
+  const forkReg = regNodes.find((n) => n.id === FORK);
+  const root = d3.stratify().id((d) => d.id).parentId((d) => d.parent)(regNodes.filter((n) => n.id !== FORK));
   const stacked = (d) => !!(d.parent && /^N11\./.test(d.id));
   // rows: leaves in order; a parent sits at the middle of its first and last child
   let row = 0;
   const place = (d) => {
-    d.y = d.depth * DY;
+    d.y = d.depth * DY + (d.depth ? FORK_GAP : 0);
     const kids = (d.children || []).filter((k) => !stacked(k));
     if (!kids.length) {
       d.x = row * DX; row += 1;
@@ -64,20 +77,23 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
     d.x = (kids[0].x + kids[kids.length - 1].x) / 2;
   };
   place(root);
+  // the first decision's box stands at the root, where the tree forks
+  const fork = forkReg ? { id: FORK, data: forkReg, x: root.x, y: root.y } : null;
   let x0 = Infinity, x1 = -Infinity, yMax = 0;
   root.each((d) => { x0 = Math.min(x0, d.x); x1 = Math.max(x1, d.x); if (!d.isStacked) yMax = Math.max(yMax, d.y); });
   const margin = { top: 40, right: 24, bottom: 30, left: 18 };
   const width = yMax + NODE_W + margin.left + margin.right;
   const height = (x1 - x0) + NODE_H + margin.top + margin.bottom + 10;
 
-  const svg = d3.create('svg').attr('viewBox', [0, 0, width, height]).attr('role', 'group').attr('aria-label', 'Growth diagnostics tree: the finance branch at the top, low returns below; each area coloured by its rating').attr('focusable', 'false').attr('style', `max-width:${Math.round(width * 1.2)}px`);
+  const svg = d3.create('svg').attr('viewBox', [0, 0, width, height]).attr('role', 'group').attr('aria-label', 'Growth diagnostics tree: from the symptom, the first decision (finance or low returns), then the finance branch at the top and low returns below; each area coloured by its rating').attr('focusable', 'false').attr('style', `max-width:${Math.round(width * 1.2)}px`);
   const defs = svg.append('defs');
   addPattern(defs, 'hatch', 'var(--tier-cannot-hatch)', 1.2, 6);
   addPattern(defs, 'crosshatch', 'var(--tier-cannot-hatch)', 1, 6, true);
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top - x0})`);
 
   const isStruct = (d) => STRUCT.has(d.id);
-  const srcX = (d) => (isStruct(d) ? d.y + 5 : d.y + NODE_W);
+  const atFork = (d) => !!fork && d.id === 'ROOT';
+  const srcX = (d) => (atFork(d) || !isStruct(d) ? d.y + NODE_W : d.y + 5);
   const link = d3.linkHorizontal().x((p) => p.y).y((p) => p.x);
   const links = root.links().filter((l) => !l.target.isStacked);
   g.append('g').selectAll('path').data(links).join('path')
@@ -93,21 +109,21 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
     for (const k of subs) g.append('path').attr('class', 'link').attr('d', `M${bx},${k.x} H${k.y}`);
   });
 
-  // structural nodes: dot + label
+  // structural nodes: dot + label (the root's label sits above the first decision's box instead)
   const sNodes = g.append('g').selectAll('g').data(root.descendants().filter(isStruct)).join('g').attr('transform', (d) => `translate(${d.y},${d.x})`);
-  sNodes.append('circle').attr('r', 3.5).attr('class', 'struct-dot');
+  sNodes.filter((d) => !atFork(d)).append('circle').attr('r', 3.5).attr('class', 'struct-dot');
   sNodes.each(function (d) {
     const el = d3.select(this);
     const lines = wrapWords(d.data.short || d.data.label, 22);
     const sub = d.id === 'ROOT' ? wrapWords(d.data.label, 26) : [];
     const total = lines.length + sub.length;
-    const yStart = -8 - (total - 1) * 13;
+    const yStart = (atFork(d) ? -NODE_H / 2 - 8 : -8) - (total - 1) * 13;
     lines.forEach((ln, i) => el.append('text').attr('class', 'struct-label').attr('x', -2).attr('y', yStart + i * 13).text(ln));
     sub.forEach((ln, i) => el.append('text').attr('class', 'struct-sub').attr('x', -2).attr('y', yStart + (lines.length + i) * 13).text(ln));
   });
 
   // diagnosable nodes: boxes (stacked sub-areas are smaller and carry no caption; the hover has it)
-  const boxes = root.descendants().filter((d) => !isStruct(d));
+  const boxes = [...(fork ? [fork] : []), ...root.descendants().filter((d) => !isStruct(d))];
   const W = (d) => (d.isStacked ? SUB_W : NODE_W), Hh = (d) => (d.isStacked ? SUB_H : NODE_H);
   const nodeG = g.append('g').selectAll('g').data(boxes).join('g')
     .attr('class', (d) => `node${d.data.context_only || d.data.desk_undiagnosable ? ' muted' : ''}${d.isStacked ? ' stacked' : ''}`)
@@ -127,8 +143,12 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
     .text((d) => {
       if (d.data.context_only) return 'context, not a constraint';
       if (d.data.desk_undiagnosable) return 'needs sector study';
+      if (d.id === FORK && forkSide(byId[d.id])) return forkSide(byId[d.id]);
       return caption(byId[d.id]);
     });
+  // the first decision leads with the branch it points to; its sources go on a second line, clear of the fork's curves
+  nodeG.filter((d) => d.id === FORK && !!forkSide(byId[d.id])).append('text').attr('class', 'node-sub').attr('x', 1).attr('y', NODE_H + 24)
+    .text((d) => caption(byId[d.id]));
   // the lean of an unclear area: an arrow at the box's right edge, never a fill
   nodeG.filter((d) => !d.data.context_only && leanOf(byId[d.id])).append('text')
     .attr('class', (d) => `lean-mark ${leanOf(byId[d.id]).band}`)
@@ -194,14 +214,19 @@ function ariaLabel(d, byId, overrides) {
   if (d.data.context_only) return `${d.data.short}: context, not a removable constraint. Press Enter to see the measures.`;
   const n = byId[d.id];
   const lean = leanOf(n);
-  const base = `${d.data.short}: ${plainTier(n ? n.tier : null)}${n && n.E != null ? `, ${caption(n)}` : ''}${lean ? `, ${lean.words}` : ''}`;
+  const side = d.id === FORK ? forkSide(n) : null;
+  const base = `${d.data.short}: ${plainTier(n ? n.tier : null)}${side ? `, ${side}` : ''}${n && n.E != null ? `, ${caption(n)}` : ''}${lean ? `, ${lean.words}` : ''}`;
   const ov = overrides[d.id];
   return `${base}${ov ? `. Your override: ${plainTier(ov.tier)}` : ''}. Press Enter to open the evidence.`;
 }
 
 function fallbackList(regNodes, byId, overrides, onOpen) {
   const wrap = h('div', { class: 'tree-fallback' }, h('p', { class: 'note' }, 'D3 could not be loaded (offline?). Showing the tree as a nested list.'));
-  const children = (pid) => regNodes.filter((n) => n.parent === pid);
+  // the first decision heads the symptom's two branches, as in the drawn tree
+  const hasFork = regNodes.some((n) => n.id === FORK);
+  const children = (pid) => (hasFork && pid === 'ROOT' ? regNodes.filter((n) => n.id === FORK)
+    : hasFork && pid === FORK ? regNodes.filter((n) => n.parent === 'ROOT' && n.id !== FORK)
+      : regNodes.filter((n) => n.parent === pid));
   const build = (pid) => {
     const ul = h('ul');
     for (const n of children(pid)) {
