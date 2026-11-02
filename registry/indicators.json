@@ -1,6 +1,6 @@
 {
   "_comment": "Constraint Check indicator registry v0.1.2 (prototype; changes from v0.1 and v0.1.1 in docs/CHANGELOG-rubric.md). Fields: id (source code), name, source (worldbank_wdi | worldbank_zip | weo | eci | derived | static), nodes (list of node ids or [] for context), test (price | changes | circumvention | camels | context), class (A|B|C|D|X where X = context, no signal), direction (+1 = higher value means MORE binding, -1 = higher value means LESS binding, 0 = context), transform (none | log1p | log | logit), family (evidence family id; signals within a family are deduplicated to one), slow (true if slow-moving stock: recency decay relaxed), years (first year to ingest), notes. Optional: source_code (World Bank API indicator code when it differs from the id) and source_id (World Bank source/database id) for the bulk-zip fetch; hidden_until_fixed (true = the engine treats the indicator as unavailable: not displayed, not counted); regime_sensitive (\"monetary\": downgraded to class C for economies in registry/static_monetary_regimes.json, v0.1.2); fallback_for (indicator id: this indicator carries no signal for an economy where that indicator is available in the window, v0.1.2); caveat (one sentence the Desk prints under the indicator).",
-  "rubric_version": "0.1.8",
+  "rubric_version": "0.2.0",
   "indicators": [
     {
       "id": "NY.GDP.PCAP.PP.KD",
@@ -556,7 +556,7 @@
     },
     {
       "id": "IC.FRM.OUTG.ZS",
-      "name": "Value lost due to electrical outages (% of sales, affected firms)",
+      "name": "Value lost due to electrical outages (% of sales, median firm)",
       "source": "worldbank_wdi",
       "nodes": [
         "N5"
@@ -3099,6 +3099,24 @@
       "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Recovery rate for secured creditors: the realized value of creditor rights. Higher = stronger property/creditor rights = less likely binding (direction -1). Also relevant to N3 (collateral value)."
     },
     {
+      "id": "DB.TAX_TOTAL",
+      "name": "Paying taxes: total tax and contribution rate (% of profit)",
+      "source": "extra",
+      "extra_group": "doingbiz",
+      "source_code": "PAY.TAX.TOT.TAX.RT.ZS",
+      "nodes": [
+        "N11.taxes"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "db_tax_rate",
+      "slow": false,
+      "years": 2005,
+      "notes": "Class A: Doing Business days and cost are the time price and money price of a public service, i.e. rationing and prices (as instructed for this connector). Caveat: these are de jure expert estimates for a standardized case in the largest business city, not firm experience. Series discontinued: last data year 2019 (DB2020), so recency weights decay; slow=false. Workbook N11 taxes, price column: the total tax and contribution rate a standardized medium-sized firm pays, as a share of commercial profit (front-door PRD W5). The money price of taxation; frozen at data year 2019, so its weight fades under the recency rule."
+    },
+    {
       "id": "DB.EXP_TIME_HRS",
       "name": "Time to export: border plus documentary compliance (hours, DB16-20)",
       "source": "extra",
@@ -3438,6 +3456,42 @@
       "slow": false,
       "years": 2000,
       "notes": "Cluster-robust standard error of CH.TIME; the engine sets the camels signal to zero when |theta| < 2 SE."
+    },
+    {
+      "id": "ITU.FBB_GNI",
+      "name": "Fixed-broadband basket, 5 GB (% of monthly GNI per capita)",
+      "source": "extra",
+      "extra_group": "itu",
+      "source_code": "i154_FBB5_GNI",
+      "nodes": [
+        "N7"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "itu_fixed_broadband",
+      "slow": false,
+      "years": 2018,
+      "notes": "Class A: the price of a public-infrastructure service (Workbook N7, ICT: price of connectivity). A high price relative to income is the shadow-price signal for ICT; it is a posted retail price, not a firm-reported cost. Fixed and mobile broadband are separate markets with separate networks and regulation, so they are separate families (inclusion check: |rho| < 0.9). Monthly price of the cheapest fixed-broadband plan with at least 5 GB, as a share of monthly GNI per capita (ITU affordability measure). "
+    },
+    {
+      "id": "ITU.MBB_GNI",
+      "name": "Data-only mobile-broadband basket, 2 GB (% of monthly GNI per capita)",
+      "source": "extra",
+      "extra_group": "itu",
+      "source_code": "i271mb_2GB_GNI",
+      "nodes": [
+        "N7"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "itu_mobile_broadband",
+      "slow": false,
+      "years": 2021,
+      "notes": "Class A: the price of a public-infrastructure service (Workbook N7, ICT: price of connectivity). A high price relative to income is the shadow-price signal for ICT; it is a posted retail price, not a firm-reported cost. Fixed and mobile broadband are separate markets with separate networks and regulation, so they are separate families (inclusion check: |rho| < 0.9). Monthly price of the cheapest data-only mobile-broadband plan with at least 2 GB, as a share of monthly GNI per capita. "
     }
   ],
   "comovement_specs": [

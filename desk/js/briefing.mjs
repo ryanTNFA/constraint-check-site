@@ -48,10 +48,21 @@ function comovementText(cm, byId) {
   return `${nm(cm.x)} against ${nm(cm.y)}, ${cm.lag ? `${cm.lag}-year lag, ` : ''}${cm.years ? `${cm.years[0]}–${cm.years[1]}` : ''}: ${cm.agree} of ${cm.pairs} year pairs moved as predicted (one-sided p = ${fmt(cm.p_value, 3)}); ${cm.direction}`;
 }
 
+// A family is dated by its newest indicator (that sets its recency weight); the table shows the span, so a family mixing
+// 2014 and 2019 indicators reads "2014–2019", not "2019" (W5 data fix 3)
+function yearSpan(f) {
+  const ys = (f.indicators || []).map((id) => YEAR_OF.get(id)).filter((y) => y != null);
+  if (!ys.length) return f.year ?? '—';
+  const lo = Math.min(...ys), hi = Math.max(...ys);
+  return lo === hi ? String(hi) : `${lo}–${hi}`;
+}
+let YEAR_OF = new Map();
+
 export function buildBriefing({ idea, title, memo, view, scorecard, registry, activeSet, pageUrl, setting = 'standard' }) {
   const c = scorecard.country; const m = scorecard.meta;
   const setKey = view.setKey || activeSet;
   const byId = Object.fromEntries((view.indicators || scorecard.indicators).map((r) => [r.id, r]));
+  YEAR_OF = new Map(Object.values(byId).map((r) => [r.id, r.year_ref ?? r.stale_year ?? null]));
   const short = (id) => (registry.nodeById[id] ? registry.nodeById[id].short : id);
   const cmById = Object.fromEntries((scorecard.comovement || []).map((x) => [x.id, x]));
   const label = (id) => (registry.nodeById[id] ? registry.nodeById[id].label : id);
@@ -152,7 +163,7 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
     const fams = n.families || [];
     if (!fams.length) { w('No evidence family has data for this area.'); w(); continue; }
     w(table(['Family', 'Test', 'Class', 'Votes', 'Signal', 'Year', 'Indicators'],
-      fams.map((f) => [f.id, TEST_NAMES[f.test] || f.test, f.class, f.votes ? 'yes' : 'informs', f.signal == null ? '—' : fmtSigned(f.signal, 1), f.year ?? '—',
+      fams.map((f) => [f.id, TEST_NAMES[f.test] || f.test, f.class, f.votes ? 'yes' : 'informs', f.signal == null ? '—' : fmtSigned(f.signal, 1), yearSpan(f),
         cmById[f.id] ? comovementText(cmById[f.id], byId) : (f.indicators || []).map((id) => indicatorText(byId[id], setKey) || id).join(' / ')])));
     w();
   }

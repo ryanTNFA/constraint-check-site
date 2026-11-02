@@ -311,6 +311,7 @@ export function unitHint(ind) {
 }
 export function shortName(ind) { return String(ind.name || ind.id).replace(/\s*\([^()]*\)\s*$/, ''); }
 export const SOURCE_LABEL = { worldbank_wdi: 'World Bank WDI', worldbank_zip: 'World Bank (bulk CSV)', weo: 'IMF WEO', eci: 'Growth Lab Atlas', derived: 'Derived', static: 'Static' };
+const ES_VIA_WDI = /^IC\.(FRM|TAX\.GIFT|ELC\.(OUTG|DURS))/;
 export const EXTRA_GROUPS = {
   es360: { label: 'World Bank Enterprise Surveys (Data360)', url: 'https://www.enterprisesurveys.org/en/data' },
   imf: { label: 'IMF (SDMX)', url: 'https://data.imf.org' },
@@ -321,6 +322,7 @@ export const EXTRA_GROUPS = {
   gfdd: { label: 'World Bank GFDD', url: 'https://www.worldbank.org/en/publication/gfdr/data/global-financial-development-database' },
   doingbiz: { label: 'World Bank Doing Business (historical)', url: 'https://archive.doingbusiness.org/' },
   atlas: { label: 'Growth Lab Atlas trade data', url: 'https://atlas.hks.harvard.edu/' },
+  itu: { label: 'ITU ICT Price Baskets', url: 'https://www.itu.int/en/ITU-D/Statistics/Pages/ICTprices/default.aspx' },
   camels: { label: 'Growth Lab HS92 trade with industry intensity vectors (Rajan-Zingales, Ciccone-Papaioannou, Hummels-Schaur)', url: 'https://atlas.hks.harvard.edu/' },
 };
 export function sourceLink(ind) {
@@ -342,6 +344,8 @@ export function sourceLabel(ind) {
   if (ind.source === 'worldbank_zip' && /\.EST$/.test(ind.id)) return 'World Bank WGI';
   if (ind.source === 'worldbank_zip' && /^HD\.HCI/.test(ind.id)) return 'World Bank HCI';
   if (ind.source === 'extra') return (EXTRA_GROUPS[ind.extra_group] || {}).label || ind.extra_group || 'extra';
+  // Enterprise Surveys series published through WDI: name the survey, so the same data never shows two sources (W5)
+  if (ind.source === 'worldbank_wdi' && ES_VIA_WDI.test(ind.id)) return 'World Bank Enterprise Surveys, via WDI';
   return SOURCE_LABEL[ind.source] || ind.source;
 }
 
