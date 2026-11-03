@@ -33,17 +33,9 @@ function pathOf(geom) {
   return d;
 }
 const el = (tag, attrs = {}) => { const e = document.createElementNS(SVG, tag); for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v); return e; };
-function patterns(svg) {
-  const defs = el('defs');
-  for (const [id, cross] of [['ex-hatch', false], ['ex-crosshatch', true]]) {
-    const p = el('pattern', { id, patternUnits: 'userSpaceOnUse', width: 5, height: 5, patternTransform: 'rotate(45)' });
-    p.append(el('rect', { width: 5, height: 5, style: 'fill:var(--tier-cannot)' }), el('line', { x1: 0, y1: 0, x2: 0, y2: 5, style: 'stroke:var(--tier-cannot-hatch);stroke-width:1' }));
-    if (cross) p.append(el('line', { x1: 0, y1: 0, x2: 5, y2: 0, style: 'stroke:var(--tier-cannot-hatch);stroke-width:1' }));
-    defs.append(p);
-  }
-  svg.append(defs);
-}
-const fillOf = (tier) => tierPaint(tier).fill.replace('url(#hatch)', 'url(#ex-hatch)').replace('url(#crosshatch)', 'url(#ex-crosshatch)');
+// On the map every "can't tell" is one quiet tint (visual-upgrade PRD V1, decision V-D1); a data gap gets an outline
+// (class ex-gap). The three kinds keep their hatches in the list and its swatches, where a reader is close enough to see them.
+const fillOf = (tier) => (tier && tier.startsWith('cannot_tell') ? 'var(--tier-cannot-tint)' : tierPaint(tier).fill);
 
 export async function mountExplorer(host, { index, registry }) {
   const geo = await getJSON('/constraint-check-site/desk/geo/world-110m.json', { optional: true });
@@ -60,7 +52,6 @@ export async function mountExplorer(host, { index, registry }) {
   const regSel = h('select', { id: 'ex-region' }, opt('', 'All regions'), regions.map((r) => opt(r, r)));
   const incSel = h('select', { id: 'ex-income' }, opt('', 'All income groups'), incomes.map((r) => opt(r, r)));
   const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, class: 'ex-map', role: 'img' });
-  patterns(svg);
   const shapes = {};
   const dots = [];
   if (geo) for (const f of geo.features) {
@@ -112,7 +103,12 @@ export async function mountExplorer(host, { index, registry }) {
     const parts = [['h', 'Holds under every reading: '], ['s', 'Depends on the reading: '], ['c', 'Depends on the comparison countries: ']];
     return parts.map(([k, label]) => [members.filter((c) => markOf(c.iso3, area) === k), label]).filter(([l]) => l.length).map(([l, label]) => para(l, label));
   }
-  keyHost.append(...GROUPS.map((g) => h('span', {}, h('span', { class: `swatch ${g.key === 'look' ? 't-candidate' : g.key === 'not' ? 't-probably_not' : `t-cannot_tell_${g.key === 'gap' ? 'data_gap' : g.key}`}`, 'aria-hidden': 'true' }), g.label)),
+  // the map's key: the two verdicts, one tint for "can't tell" (outlined for a data gap), and the uncovered dash
+  keyHost.append(
+    h('span', {}, h('span', { class: 'swatch t-candidate', 'aria-hidden': 'true' }), 'Worth a closer look'),
+    h('span', {}, h('span', { class: 'swatch t-probably_not', 'aria-hidden': 'true' }), 'Probably not the main constraint'),
+    h('span', {}, h('span', { class: 'swatch ex-swatch-tint', 'aria-hidden': 'true' }), 'Can’t tell (the list says why)'),
+    h('span', {}, h('span', { class: 'swatch ex-swatch-gap', 'aria-hidden': 'true' }), 'Can’t tell: data gap'),
     h('span', {}, h('span', { class: 'swatch ex-swatch-none', 'aria-hidden': 'true' }), 'Not covered'));
   for (const s of [areaSel, regSel, incSel]) s.addEventListener('change', draw);
   host.replaceChildren(

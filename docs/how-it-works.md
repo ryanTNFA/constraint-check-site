@@ -2,7 +2,7 @@
 
 *A plain-language guide for program officers, Hill staff and managers. Companion to the Constraint Check Methodology Note, v0.1 (rubric 0.1.7, engine 0.1.5, data snapshot 2026-10-24). The New Foreign Assistance (TNFA), 29 October 2026; updated 31 October.*
 
-**Constraint Check is a prototype.** Its ratings have not yet been tested against expert diagnoses. Use it to sharpen questions, not to settle them.
+**Constraint Check is a prototype.** In a first test against 35 published expert diagnoses (2 November 2026) its ratings rarely dismissed a binding constraint (6 of 100) but said “cannot tell” most of the time; the final test has not run. Use it to sharpen questions, not to settle them.
 
 ## 1. What question it answers
 
