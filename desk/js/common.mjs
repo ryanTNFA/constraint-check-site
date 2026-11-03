@@ -347,6 +347,7 @@ export const SOURCE_LABEL = { worldbank_wdi: 'World Bank WDI', worldbank_zip: 'W
 const ES_VIA_WDI = /^IC\.(FRM|TAX\.GIFT|ELC\.(OUTG|DURS))/;
 export const EXTRA_GROUPS = {
   es360: { label: 'World Bank Enterprise Surveys (Data360)', url: 'https://www.enterprisesurveys.org/en/data' },
+  es_micro: { label: 'World Bank Enterprise Surveys (microdata, economy aggregates)', url: 'https://www.enterprisesurveys.org/en/data' },
   imf: { label: 'IMF (SDMX)', url: 'https://data.imf.org' },
   escap: { label: 'ESCAP-World Bank Trade Cost Database', url: 'https://www.unescap.org/resources/escap-world-bank-trade-cost-database' },
   prindex: { label: 'Prindex', url: 'https://www.prindex.net/data/' },

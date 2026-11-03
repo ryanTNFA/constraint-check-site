@@ -420,7 +420,7 @@ export function valueText(r, v = r && r.value_ref) {
 }
 export function plainSource(r) {
   if (!r) return '';
-  if (/^IC\./.test(r.id) || (r.source === 'extra' && r.extra_group === 'es360')) return 'Enterprise Surveys';
+  if (/^IC\./.test(r.id) || (r.source === 'extra' && (r.extra_group === 'es360' || r.extra_group === 'es_micro'))) return 'Enterprise Surveys';
   return sourceLabel(r).replace(/\s*\([^)]*\)/g, '');
 }
 /** "the highest of Kenya and its 10 comparison countries", from the peer rank on the binding side. */
