@@ -9,7 +9,7 @@
 ### Motivation
 
 - **Why was it built?** To give a growth diagnostic a common evidence base: for every economy, the public indicators that the Hausmann-Rodrik-Velasco method reads, at one date, in one format. The aim is that a diagnosis can be checked and repeated rather than assembled by hand.
-- **Who built it?** The New Foreign Assistance (TNFA). *To complete before release: who funded the work.*
+- **Who built it?** The New Foreign Assistance (TNFA), from its own resources; no outside funder, grant or contract paid for the work, and no data provider or diagnostic publisher was consulted on the design.
 
 ### Composition
 
@@ -52,7 +52,7 @@
 
 - In the Constraint Check repository: the snapshot, the extra connectors' observations and the silver trade table.
 - The raw cache (698 MB) is to be archived with each release, except the openICPSR package.
-- Licences differ by source and are listed per source in `REPLICATION.md`. Several are marked "to confirm" and must be checked before deposit. TNFA's own licence for code and documents is not yet decided.
+- Licences differ by source and are listed per source in `REPLICATION.md`, checked 3 November 2026 (one pending: ITU's permission for derived values). TNFA's own licence: Apache 2.0 for code, CC BY 4.0 for documents and derived data (`LICENSE`, `docs/LICENSE.md`).
 
 ### Maintenance
 

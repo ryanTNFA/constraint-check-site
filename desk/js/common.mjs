@@ -89,6 +89,8 @@ export function cannotTellCode(n) {
   const sub = n.tier_subreason || n.cannot_tell_subreason || null;
   if (n.tier === 'cannot_tell_data_gap') return isRegistryGap(sub) ? 'not_connected' : 'no_recent_data';
   if (n.tier === 'cannot_tell_conflicting') return 'mixed';
+  const sp = Object.values(n.tests || {}).filter((t) => t && typeof t.T === 'number' && Math.abs(t.T) >= 0.5).map((t) => t.T);
+  if (sp.some((T) => T > 0) && sp.some((T) => T < 0)) return 'mixed'; // engine 0.1.7: speaking tests on both sides
   return (n.C ?? 0) >= 2 ? 'mixed' : 'one_kind';
 }
 /**

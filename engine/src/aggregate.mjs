@@ -427,8 +427,8 @@ export const CANNOT_TELL_REASONS = ['not_connected', 'no_recent_data', 'one_kind
  * parse rule strings. Display only: no tier depends on it.
  *   not_connected   structural data gap (connector_not_built, no_ab_family, no_ab_price_family, registry_coverage)
  *   no_recent_data  economy-specific data gap (data_gap, stale)
- *   one_kind        weak with C ≤ 1: only one test speaks with any strength
- *   mixed           conflicting, or weak with C ≥ 2
+ *   one_kind        weak with C ≤ 1 and no disagreement: only one test speaks with any strength
+ *   mixed           conflicting, or weak with C ≥ 2, or (engine 0.1.7) speaking tests on both sides
  * Returns {cannot_tell_reason, cannot_tell_detail: {subreason, speaking_tests, scored_tests, missing_tests, lean}},
  * both null for any other tier. speaking_tests are those with |T| ≥ concordance_abs_T_min (the ones C counts
  * when they agree with N); scored_tests have any T; missing_tests have none. The lean is sign(N) with band 'clear' from
@@ -437,13 +437,17 @@ export const CANNOT_TELL_REASONS = ['not_connected', 'no_recent_data', 'one_kind
 export function cannotTellInfo(rec, params) {
   if (typeof rec.tier !== 'string' || !rec.tier.startsWith('cannot_tell')) return { cannot_tell_reason: null, cannot_tell_detail: null };
   const sub = rec.tier_subreason;
-  let reason;
-  if (rec.tier === 'cannot_tell_data_gap') reason = STRUCTURAL_GAP_SUBREASONS.has(sub) ? 'not_connected' : 'no_recent_data';
-  else if (rec.tier === 'cannot_tell_conflicting') reason = 'mixed';
-  else reason = (rec.C ?? 0) >= 2 ? 'mixed' : 'one_kind';
   const tests = rec.tests || {};
   const scored = TEST_ORDER.filter((k) => tests[k] && isNum(tests[k].T)).map((k) => ({ test: k, T: tests[k].T }));
   const cmin = params && params.tiers && isNum(params.tiers.concordance_abs_T_min) ? params.tiers.concordance_abs_T_min : 0;
+  const speaking = scored.filter((s) => Math.abs(s.T) >= cmin);
+  // engine 0.1.7: two tests that speak in opposite directions are "mixed" even when C counts only one of them
+  // (C counts the tests agreeing with N's sign, so a disagreement used to read as "one kind of evidence")
+  const disagree = speaking.some((s) => s.T > 0) && speaking.some((s) => s.T < 0);
+  let reason;
+  if (rec.tier === 'cannot_tell_data_gap') reason = STRUCTURAL_GAP_SUBREASONS.has(sub) ? 'not_connected' : 'no_recent_data';
+  else if (rec.tier === 'cannot_tell_conflicting') reason = 'mixed';
+  else reason = (rec.C ?? 0) >= 2 || disagree ? 'mixed' : 'one_kind';
   const clear = params && params.tiers && isNum(params.tiers.cannot_tell_lean_clear_abs_N) ? params.tiers.cannot_tell_lean_clear_abs_N : null;
   const lean = isNum(rec.N) && rec.N !== 0
     ? { direction: rec.N > 0 ? 'toward' : 'away', band: clear !== null && Math.abs(rec.N) >= clear ? 'clear' : 'slight', N: rec.N }
@@ -452,7 +456,7 @@ export function cannotTellInfo(rec, params) {
     cannot_tell_reason: reason,
     cannot_tell_detail: {
       subreason: sub || null,
-      speaking_tests: scored.filter((s) => Math.abs(s.T) >= cmin),
+      speaking_tests: speaking,
       scored_tests: scored,
       missing_tests: TEST_ORDER.filter((k) => !scored.some((s) => s.test === k)),
       lean,

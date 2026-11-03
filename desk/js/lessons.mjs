@@ -49,7 +49,7 @@ export const LESSONS = [
   },
   {
     n: 7, page: '/constraint-check-site/desk/country.html?iso=KEN', title: 'Where "can’t tell" sends you',
-    task: 'On the Bottom line, group Kenya’s twelve unsettled areas by reason (only one kind of evidence; not connected; needs a sector study; judged by elimination) and write the next step for three of them. Then follow "Read more" to self-discovery and read why it leans away yet stays unrated, and why coordination needs sector work.',
+    task: 'On the Bottom line, group Kenya’s twelve unsettled areas by reason (only one kind of evidence; mixed; not connected; needs a sector study; judged by elimination) and write the next step for three of them. Then follow "Read more" to self-discovery and read why it leans away yet stays unrated, and why coordination needs sector work.',
     check: 'Self-discovery leans away from a problem for Kenya. Why does the tool still not rate it?',
     answer: 'Its measures are all quantities of a kind that can’t carry a price test, so it is judged by elimination: it becomes a candidate only once the other low-return areas are set aside (probably not or ruled out). For Kenya none is, so the lean is shown and no tier is given.',
     mindbook: 'Mindbook, self-discovery and coordination failures (Hausmann and Rodrik).',
