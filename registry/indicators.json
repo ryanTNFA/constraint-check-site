@@ -3458,6 +3458,109 @@
       "notes": "Cluster-robust standard error of CH.TIME; the engine sets the camels signal to zero when |theta| < 2 SE."
     },
     {
+      "id": "CH.CONTRACT",
+      "name": "Export tilt toward contract-intensive products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": -1,
+      "transform": "none",
+      "family": "camels_contract",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "CH.CONTRACT.SE",
+      "notes": "Camels and hippos (test 4): theta on contract intensity (Nunn 2007: share of inputs needing relationship-specific investment), estimated jointly with asset intangibility (one minus Braun 2003 tangibility: how little an industry can pledge as collateral). Workbook 4.5 Rajan-Zingales test on HS92 4-digit exports, RCA within the scored products. Negative theta: the economy exports fewer factor-heavy products than its income predicts (more camels), so the factor is more likely binding. Placebo kill criterion (99 industry-permuted vectors, 95th percentile, five-year stability and agreement with export shares): failed, so class X (shown, does not vote). Caveats: intensity assumed constant across countries; location is endogenous; exports only, not output."
+    },
+    {
+      "id": "CH.CONTRACT.SE",
+      "name": "Standard error of the export tilt toward contract-intensive products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "camels_contract_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of CH.CONTRACT; the engine sets the camels signal to zero when |theta| < 2 SE."
+    },
+    {
+      "id": "CH.INTANG",
+      "name": "Export tilt toward collateral-poor products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": -1,
+      "transform": "none",
+      "family": "camels_intangibility",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "CH.INTANG.SE",
+      "notes": "Camels and hippos (test 4): theta on asset intangibility (one minus Braun 2003 tangibility: how little an industry can pledge as collateral), estimated jointly with contract intensity (Nunn 2007: share of inputs needing relationship-specific investment). Workbook 4.5 Rajan-Zingales test on HS92 4-digit exports, RCA within the scored products. Negative theta: the economy exports fewer factor-heavy products than its income predicts (more camels), so the factor is more likely binding. Placebo kill criterion (99 industry-permuted vectors, 95th percentile, five-year stability and agreement with export shares): failed, so class X (shown, does not vote). Caveats: intensity assumed constant across countries; location is endogenous; exports only, not output."
+    },
+    {
+      "id": "CH.INTANG.SE",
+      "name": "Standard error of the export tilt toward collateral-poor products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "camels_intangibility_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of CH.INTANG; the engine sets the camels signal to zero when |theta| < 2 SE."
+    },
+    {
+      "id": "CH.ELEC",
+      "name": "Export tilt toward electricity-intensive products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [
+        "N5"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": -1,
+      "transform": "none",
+      "family": "camels_electricity",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "CH.ELEC.SE",
+      "notes": "Camels and hippos (test 4): theta on electricity cost share of output (BEA 2017 input-output, via NAICS, ISIC Rev. 4 and Rev. 3). Workbook 4.5 Rajan-Zingales test on HS92 4-digit exports, RCA within the scored products. Negative theta: the economy exports fewer factor-heavy products than its income predicts (more camels), so the factor is more likely binding. Placebo kill criterion (99 industry-permuted vectors, 95th percentile, five-year stability and agreement with export shares): failed, so class X (shown, does not vote). Caveats: intensity assumed constant across countries; location is endogenous; exports only, not output."
+    },
+    {
+      "id": "CH.ELEC.SE",
+      "name": "Standard error of the export tilt toward electricity-intensive products (theta)",
+      "source": "extra",
+      "extra_group": "camels",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "camels_electricity_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of CH.ELEC; the engine sets the camels signal to zero when |theta| < 2 SE."
+    },
+    {
       "id": "ITU.FBB_GNI",
       "name": "Fixed-broadband basket, 5 GB (% of monthly GNI per capita)",
       "source": "extra",
@@ -3623,7 +3726,7 @@
           "N6",
           "N11.property"
         ],
-        "source": "Intensity vectors not yet built: electricity cost shares (BEA input-output), contract intensity (Nunn); N6 has only the class C air-freight proxy",
+        "source": "No voting camels vector yet: the electricity cost-share (BEA input-output, N5) and contract-intensity (Nunn, N11.property) vectors were built on 3 November 2026 and failed the placebo gate, so they are shown and do not vote (class X), like the finance and transport-time vectors; N6 has only the class X air-freight proxy",
         "class": "B"
       },
       {

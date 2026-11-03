@@ -7,9 +7,9 @@
 - **Retrospective, development set** (35 published diagnoses, rubric 0.2.0, Standard, pooled): false rule-out 6.0% (6 of 100; Wilson 2.8–12.5%); hit 4.0% (4 of 100; Wilson 1.6–9.8%); false alarm 5.1% (12 of 237; Wilson 2.9–8.6%); cannot tell 87.5% (295 of 337; Wilson 83.6–90.6%). Verdict: split. See section 5.
 - **Retrospective, holdout set** (22 published diagnoses, rubric 0.2.0, Standard, pooled): false rule-out 4.0% (3 of 75; Wilson 1.4–11.1%); hit 12.0% (9 of 75; Wilson 6.4–21.3%); false alarm 5.3% (7 of 131; Wilson 2.6–10.6%); cannot tell 86.4% (178 of 206; Wilson 81.1–90.4%). Verdict: inconclusive (12 BINDING pairs in rule-out or flag; the protocol needs 20). See section 5.
 - **The protocol is complete.** No rubric parameter was tuned to these labels (the one round of fixes was forgone, amendment 4). The ratings are neither validated nor killed: the test was too small to pass or fail its own primary bar, so they stay uncalibrated.
-- **Internal checks pass:** 109 of 110 engine tests; the statsmodels re-estimate of the residuals agrees (largest gap in t 0.030); 1441 of 1441 outputs reproduce from the release.
+- **Internal checks pass:** 110 of 110 engine tests; the statsmodels re-estimate of the residuals agrees (largest gap in t 0.030); 1456 of 1456 outputs reproduce from the release.
 - **Verdicts:** of 3,472 scored node rows (217 economies), 2,935 (85 percent) are a "cannot tell"; 0 reach an extreme tier.
-- **Test 4 kill criterion:** 1 of 3 vectors pass (CH.SKILL); CH.FIN, CH.TIME fail and are shown but not counted.
+- **Test 4 kill criterion:** 1 of 6 vectors pass (CH.SKILL); CH.FIN, CH.TIME, CH.CONTRACT, CH.INTANG, CH.ELEC fail and are shown but not counted.
 
 ## 1. Tier distribution
 
@@ -51,9 +51,9 @@ By node:
 
 | Check | Result | Where |
 |---|---|---|
-| Engine unit and integration tests | 109 passed, 1 failed, of 110 | `engine/test/` |
+| Engine unit and integration tests | 110 passed, 0 failed, of 110 | `engine/test/` |
 | statsmodels re-estimate of the income-conditional residuals (RLM, HuberT, MAD scale) | 10 indicators, 48 economy-indicator pairs; largest gap in t 0.030 (SLE, FP.CPI.TOTL.ZG); coefficients on log income within 5.8 percent | `engine/xcheck/icr_xcheck.py`, `tests/test_engine_parity.py` |
-| Replication | 1441 of 1441 outputs identical to the release manifest | `replicate.py`, `REPLICATION.md` |
+| Replication | 1456 of 1456 outputs identical to the release manifest | `replicate.py`, `REPLICATION.md` |
 | Synthetic run with planted constraints | Covered by the engine tests (`synthetic.test.mjs`) | `engine/test/fixtures/make_synthetic.mjs` |
 
 ## 3. Test 4 kill criterion
@@ -65,6 +65,9 @@ Each real intensity vector against 99 industry-permuted placebos (seed 20261029)
 | External finance dependence (Rajan-Zingales), N0 and N3 | 0.957 | 0.941 | 0.695 | 0.725 | no, shown only |
 | Schooling intensity (Ciccone-Papaioannou), N4 | 0.963 | 0.950 | 0.724 | 0.701 | yes, counted |
 | Transport time sensitivity (Hummels-Schaur air share), N6 | 0.944 | 0.861 | 0.501 | 0.528 | no, shown only |
+| CH.CONTRACT | 0.914 | 0.951 | 0.596 | 0.695 | no, shown only |
+| CH.INTANG | 0.939 | 0.946 | 0.465 | 0.653 | no, shown only |
+| CH.ELEC | 0.948 | 0.947 | 0.612 | 0.672 | no, shown only |
 
 ## 4. Coverage
 
