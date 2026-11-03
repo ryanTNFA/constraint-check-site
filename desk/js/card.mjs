@@ -88,6 +88,17 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
     plainSec.append(h('p', { class: 'plain' }, plainSummary(node, pctx)));
     const setLine = tierBySetLine(node, activeSet, Array.isArray(st.peers));
     if (setLine) plainSec.append(h('p', { class: 'small', style: 'margin-top:6px' }, setLine));
+    // "why not higher, why not lower" (teaching plan, Q23): the engine's blockers in plain words, for every user
+    const why = whyNotLines(node);
+    if (why) plainSec.append(why);
+    // Predict first (teaching plan, Q22): the verdict stays hidden until the learner commits and reveals it
+    drawer.dataset.node = nodeId;
+    drawer.classList.toggle('revealed', revealedSet().has(nodeId));
+    if (document.body.classList.contains('predict') && !revealedSet().has(nodeId)) {
+      const btn = h('button', { type: 'button', class: 'btn small reveal-btn' }, 'I have written my verdict: reveal this area');
+      btn.addEventListener('click', () => { revealArea(nodeId); drawer.classList.add('revealed'); });
+      plainSec.prepend(h('p', { class: 'predict-note' }, 'Predict first is on. The values, their gaps from expectation, peer ranks, kinds and years are below; the rating, the test scores and the rule are hidden until you reveal them.', ' ', btn));
+    }
     drawer.append(plainSec);
 
     const rule = h('details', { class: 'rule-detail' }, h('summary', {}, 'Rule detail (for analysts)'));
@@ -518,6 +529,47 @@ export function robustChip(n) {
   btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); const open = note.hidden; note.hidden = !open; btn.setAttribute('aria-expanded', String(open)); });
   return h('span', { class: 'robust-wrap' }, btn, note);
 }
+
+/**
+ * "Why not higher, why not lower" (docs/teaching-plan.md, Q23): the engine's blockers for the two extreme tiers,
+ * translated into plain words, one line each. The blockers name the guard that failed; the words name the evidence it asks for.
+ */
+const BLOCKER_WORDS = [
+  [/^C = (\d) < 3 \(no evidence for ([^)]*)\)/, (m) => `only ${m[1]} of the four tests speak${m[1] === '1' ? 's' : ''} (no voting evidence on ${m[2].replace(/T_/g, '').replace(/circumvention/g, 'workarounds').replace(/changes/g, 'co-movement').replace(/: no voting evidence/g, '')})`],
+  [/^C = (\d) < 3/, (m) => `only ${m[1]} of the four tests speak`],
+  [/^E = (\d+) < 5 voting families(?:; (\d+) quantity families inform without voting)?/, (m) => `${m[1]} voting famil${m[1] === '1' ? 'y' : 'ies'}, not the five a firm verdict needs${m[2] ? ` (${m[2]} quantity measures inform without voting)` : ''}`],
+  [/^N = ([-\d.]+) < 1/, (m) => `the net score (${m[1]}) is below the flagging line`],
+  [/^N = ([-\d.]+) > -1/, (m) => `the net score (${m[1]}) is above the clearing line`],
+  [/^T_price = ([-\d.]+) > -0\.5/, () => 'the price test does not point away from a problem'],
+  [/^T_price = ([-\d.]+) < 0\.5/, () => 'the price test does not point toward a problem'],
+  [/^T_circumvention not computed/, () => 'there is no evidence on workarounds, which a clear needs'],
+  [/^T_circumvention = ([-\d.]+) ≤ -1/, () => 'the workarounds test points away from a problem'],
+  [/^T_circumvention = ([-\d.]+) > -0\.5/, () => 'the workarounds test does not point away from a problem'],
+  [/^AB_pos = (\d) < 2/, (m) => `${m[1] === '0' ? 'no' : 'only one'} high-quality price or workaround measure points toward a problem; two are needed`],
+  [/^AB_count = (\d) < 2/, () => 'fewer than two high-quality measures'],
+  [/^(\d+) class A\/B famil(?:y|ies) with s > 0/, (m) => `${m[1]} high-quality measure${m[1] === '1' ? '' : 's'} still point${m[1] === '1' ? 's' : ''} toward a problem`],
+  [/^informing quantity dissents/, () => 'a quantity measure dissents from the verdict'],
+  [/^age\(R\)|stale|newest/, () => 'the newest high-quality evidence is too old'],
+  [/^F = /, () => 'the verdict changes with the choice of comparison countries'],
+  [/sovereign_spreads|requires famil/, () => 'the measure the rule requires (sovereign spreads) is not connected yet'],
+];
+function plainBlocker(s) {
+  for (const [re, f] of BLOCKER_WORDS) { const m = s.match(re); if (m) return f(m); }
+  return s;
+}
+export function whyNotLines(node) {
+  const bl = node && node.blockers; if (!bl || node.scored === false || node.N == null) return null;
+  const up = node.tier !== 'likely_binding' ? (bl.likely_binding || []) : [];
+  const down = node.tier !== 'ruled_out' ? (bl.ruled_out || []) : [];
+  if (!up.length && !down.length) return null;
+  const line = (label, items) => (items.length ? h('p', { class: 'why-not' }, h('strong', {}, label), ' ', englishList(items.slice(0, 3).map(plainBlocker)), items.length > 3 ? ` (and ${items.length - 3} more in the rule detail)` : '', '.') : null);
+  return h('div', { class: 'why-not-lines' }, line('Why not higher:', up), line('Why not lower:', down));
+}
+// Predict first helpers (the set lives in lesson.mjs; read it lazily so this module stays importable without it)
+let lessonMod = null;
+import('./lesson.mjs').then((m) => { lessonMod = m; }).catch(() => {});
+const revealedSet = () => (lessonMod ? lessonMod.revealed : new Set());
+const revealArea = (id) => { if (lessonMod) lessonMod.reveal(id); };
 
 /** Reason and lean beside a grey badge: "one kind of evidence ↗". Null for any other tier. */
 export function reasonTag(n) {

@@ -319,6 +319,9 @@ export function writeHash(state) {
   // the evidence setting is chosen in the top bar (nav.mjs); keep it unless the caller sets it
   const setting = state.setting || currentSetting();
   if (setting !== 'standard') p.set('setting', setting);
+  // teaching mode (lesson.mjs) keeps its own keys in the hash; a page rewriting its state must not drop them
+  const cur = new URLSearchParams(location.hash.replace(/^#/, ''));
+  for (const k of ['lesson', 'predict']) if (cur.get(k) != null) p.set(k, cur.get(k));
   const s = p.toString();
   history.replaceState(null, '', location.pathname + location.search + (s ? `#${s}` : ''));
 }

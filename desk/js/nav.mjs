@@ -23,7 +23,7 @@ const nameOf = (iso) => { const c = (countries || []).find((x) => x.iso3 === iso
 export function carriedHash() {
   const p = new URLSearchParams(location.hash.replace(/^#/, ''));
   const keep = new URLSearchParams();
-  for (const k of ['set', 'peers', 'o', 'setting']) if (p.get(k) != null) keep.set(k, p.get(k));
+  for (const k of ['set', 'peers', 'o', 'setting', 'lesson', 'predict']) if (p.get(k) != null) keep.set(k, p.get(k));
   const s = keep.toString();
   return s ? `#${s}` : '';
 }
@@ -147,3 +147,5 @@ function mount() {
   });
 }
 mount();
+// teaching mode (docs/teaching-plan.md): the lesson bar and Predict first mount after the bar, when the hash asks
+import('./lesson.mjs').catch((e) => console.error(e));

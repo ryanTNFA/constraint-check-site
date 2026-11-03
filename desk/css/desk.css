@@ -787,6 +787,80 @@ details.howto[open] > summary { margin-bottom: 4px; }
 .lv-controls { display: inline-flex; align-items: center; gap: 10px; }
 @media (max-width: 700px) { .lv-svg { min-width: 640px; } .longview { overflow-x: auto; } }
 
+/* ---------- Lesson one, "How a country gets read" (V6 / teaching plan section 4) ---------- */
+.learn-head { padding-block: 28px 8px; max-width: 70ch; }
+.step { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px 40px; align-items: start; padding-block: 36px; border-top: 1px solid var(--rule); }
+.step:first-of-type { border-top: 0; }
+.step-text p { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; max-width: 60ch; }
+.step-text h2 { margin-top: 2px; }
+.step-fig { margin: 0; min-width: 0; }
+.step-fig figcaption { margin-top: 6px; }
+.learn-svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
+.learn-dot { fill: var(--chart-other); opacity: 0.7; }
+.learn-dot.focus { fill: var(--chart-focus); opacity: 1; stroke: var(--text); stroke-width: 1; }
+.learn-fit { fill: none; stroke: var(--chart-fit); stroke-width: 2; }
+.learn-gap { stroke: var(--chart-focus); stroke-width: 2; stroke-dasharray: 4 3; }
+.learn-rowlab { font-size: 12px; fill: var(--text); }
+.learn-val { font-size: 12px; fill: var(--muted); }
+.learn-bar { fill: var(--chart-peer-fill); stroke: var(--chart-peer); stroke-width: 1; }
+.learn-bar.focus, .learn-bar.toward { fill: var(--chart-focus); stroke: var(--chart-focus-ink); }
+.learn-bar.away { fill: var(--chart-peer); }
+.learn-bar.none { fill: none; stroke-dasharray: 3 3; }
+.lv-axis { stroke: var(--rule-strong); }
+.ladders { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.ladder { border-top: 3px solid var(--rule-strong); padding-top: 8px; }
+.ladder:last-child { border-top-color: var(--tier-probnot); }
+.ladder h3 { font-size: 1.1rem; margin-bottom: 6px; }
+.ladder ol { padding-left: 1.2em; margin: 0 0 6px; display: grid; gap: 4px; }
+.learn-list h3 { font-size: 1.05rem; margin: 0 0 4px; padding-left: 10px; border-left: 4px solid var(--rule-strong); }
+.learn-list + .learn-list { margin-top: 14px; }
+.learn-list ul { margin: 0; padding-left: 1.2em; }
+.learn-next { margin-top: 14px; }
+.learn-index { padding-block: 28px; border-top: 1px solid var(--rule); max-width: 80ch; }
+.learn-index ol { padding-left: 1.3em; display: grid; gap: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .step { opacity: 0; transform: translateY(14px); transition: opacity 500ms ease, transform 500ms ease; }
+  .step.in { opacity: 1; transform: none; }
+}
+@media (max-width: 860px) { .step { grid-template-columns: 1fr; } }
+
+/* ---------- Teaching mode (docs/teaching-plan.md): the lesson bar, Predict first, the why-not lines ---------- */
+.lesson-bar { background: var(--surface); border-bottom: 3px solid var(--text); }
+.lesson-bar .wrap { padding-block: 12px 14px; }
+.lesson-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 20px; flex-wrap: wrap; }
+.lesson-head .kicker { margin: 0; }
+.lesson-nav { display: flex; gap: 16px; font-size: var(--fs-caption); }
+.lesson-nav .lesson-next { font-weight: 600; }
+.lesson-title { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; margin: 4px 0 2px; }
+.lesson-task { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.5; max-width: 90ch; margin: 0 0 8px; }
+.lesson-tools { display: flex; gap: 10px 16px; align-items: flex-start; flex-wrap: wrap; }
+.lesson-check { font-size: 0.9375rem; max-width: 70ch; }
+.lesson-check > summary, .lesson-answer > summary { cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.lesson-q { font-weight: 600; margin: 6px 0 4px; }
+.lesson-answer { margin-top: 4px; }
+.lesson-answer p { margin: 6px 0 0; }
+.why-not-lines { margin-top: 8px; display: grid; gap: 2px; font-size: 0.9375rem; }
+.why-not strong { font-weight: 600; }
+.predict-note { background: var(--surface-2); padding: 8px 10px; font-size: 0.9375rem; margin: 0 0 10px; }
+.reveal-btn { margin-left: 6px; }
+/* Predict first: the verdicts, test scores and rules vanish until revealed; values, gaps, ranks, kinds and years stay */
+.predict .tier-badge:not(.revealed), .predict .drawer:not(.revealed) .tier-badge { font-size: 0; background: var(--surface-2) !important; color: transparent; border-color: var(--rule-strong); min-width: 2.4em; min-height: 1.4em; vertical-align: middle; }
+.predict .tier-badge:not(.revealed)::after, .predict .drawer:not(.revealed) .tier-badge::after { content: '?'; font-size: 0.8125rem; color: var(--muted); }
+.predict .strip .sq:not(.revealed) { background: var(--surface-2) !important; border-style: dashed; }
+.predict .strip .sq:not(.revealed) .lean-mark, .predict .ctree-side, .predict .strip-key, .predict .ctree-key { visibility: hidden; }
+.predict .tree-wrap g.node:not(.revealed) .node-box { fill: var(--surface-2) !important; stroke-dasharray: 3 3; }
+.predict .tree-wrap g.node:not(.revealed) .node-sub, .predict .tree-wrap g.node:not(.revealed) .lean-mark, .predict .tree-wrap g.node:not(.revealed) .override-chip { visibility: hidden; }
+.predict .tree-wrap g.node:not(.revealed) .node-label { fill: var(--text) !important; }
+.predict .drawer:not(.revealed) .plain, .predict .drawer:not(.revealed) .ct-reason, .predict .drawer:not(.revealed) .robust-wrap, .predict .drawer:not(.revealed) .rule-detail, .predict .drawer:not(.revealed) .why-not-lines, .predict .drawer:not(.revealed) .tests .val, .predict .drawer:not(.revealed) .signal, .predict .drawer:not(.revealed) .statement { visibility: hidden; }
+.predict .drawer:not(.revealed) .tests .val::after { content: ''; }
+.predict .statements, .predict #statements-body, .predict .bl-lists .tnfa-view { position: relative; }
+.predict .statements:not(.revealed) > *, .predict #statements-body:not(.revealed) > * { visibility: hidden; }
+.predict #statements-body:not(.revealed)::before, .predict .statements:not(.revealed)::before { content: 'Predict first is on: write down what you expect in each list, then reveal. Use "Reveal everything on this page" in the lesson bar.'; visibility: visible; position: absolute; inset: 0; padding: 16px; background: var(--surface-2); font-family: var(--serif); font-size: 1.0625rem; }
+.predict-all #statements-body::before, .predict-all .statements::before { display: none; }
+.predict-all #statements-body > *, .predict-all .statements > * { visibility: visible !important; }
+.predict .hm-cell:not(.revealed), .predict td.cell:not(.revealed) { background: var(--surface-2) !important; color: transparent; }
+@media (max-width: 700px) { .lesson-head { flex-direction: column; } }
+
 /* ---------- V4: the compact tree beside the Bottom line title (below it on narrow screens) ---------- */
 .ctree { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: center; }
 .ctree-fork { display: grid; gap: 3px; justify-items: start; }
