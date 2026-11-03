@@ -1,6 +1,6 @@
 {
   "_comment": "Constraint Check indicator registry v0.1.2 (prototype; changes from v0.1 and v0.1.1 in docs/CHANGELOG-rubric.md). Fields: id (source code), name, source (worldbank_wdi | worldbank_zip | weo | eci | derived | static), nodes (list of node ids or [] for context), test (price | changes | circumvention | camels | context), class (A|B|C|D|X where X = context, no signal), direction (+1 = higher value means MORE binding, -1 = higher value means LESS binding, 0 = context), transform (none | log1p | log | logit), family (evidence family id; signals within a family are deduplicated to one), slow (true if slow-moving stock: recency decay relaxed), years (first year to ingest), notes. Optional: source_code (World Bank API indicator code when it differs from the id) and source_id (World Bank source/database id) for the bulk-zip fetch; hidden_until_fixed (true = the engine treats the indicator as unavailable: not displayed, not counted); regime_sensitive (\"monetary\": downgraded to class C for economies in registry/static_monetary_regimes.json, v0.1.2); fallback_for (indicator id: this indicator carries no signal for an economy where that indicator is available in the window, v0.1.2); caveat (one sentence the Desk prints under the indicator).",
-  "rubric_version": "0.2.2",
+  "rubric_version": "0.2.3",
   "indicators": [
     {
       "id": "NY.GDP.PCAP.PP.KD",
@@ -3704,7 +3704,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.FIN.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to access to finance. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.78, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to access to finance. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.78, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.FIN.SE",
@@ -3738,7 +3739,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.ELEC.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to electricity. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.81, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to electricity. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.81, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.ELEC.SE",
@@ -3772,7 +3774,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.TRANSPORT.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to transport. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.73, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to transport. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.73, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.TRANSPORT.SE",
@@ -3806,7 +3809,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.TELECOM.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to telecommunications. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.84, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to telecommunications. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.84, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.TELECOM.SE",
@@ -3840,7 +3844,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.LAND.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to access to land. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.77, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to access to land. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.77, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.LAND.SE",
@@ -3874,7 +3879,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.SKILLS.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to an inadequately educated workforce. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.78, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to an inadequately educated workforce. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.78, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.SKILLS.SE",
@@ -3908,7 +3914,8 @@
       "years": 2013,
       "scoring": "camels_percentile",
       "se_id": "CHF.MACRO.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to macroeconomic instability. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.8, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to macroeconomic instability. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.8, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.MACRO.SE",
@@ -3942,7 +3949,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.COURTS.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to courts. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.82, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to courts. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.82, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.COURTS.SE",
@@ -3976,7 +3984,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.CORRUPTION.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to corruption. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.79, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to corruption. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.79, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.CORRUPTION.SE",
@@ -4010,7 +4019,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.TAX.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to tax rates. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.75, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to tax rates. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.75, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.TAX.SE",
@@ -4044,7 +4054,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.LICENSING.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to business licensing and permits. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.79, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to business licensing and permits. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.79, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.LICENSING.SE",
@@ -4078,7 +4089,8 @@
       "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.CRIME.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to crime, theft and disorder. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.82, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to crime, theft and disorder. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.02 growth per SD of sensitivity): recovery 0.82, so the vector votes (class B). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency). Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more.",
+      "caveat": "Measured on surviving firms: where the constraint is severe, the exposed firms that would show it may never have opened, so a null here is weak evidence and the presence version of the test (the hippo gap) matters more."
     },
     {
       "id": "CHF.CRIME.SE",
@@ -4094,6 +4106,218 @@
       "slow": false,
       "years": 2010,
       "notes": "Cluster-robust SE of CHF.CRIME; the engine zeroes the signal within 2 SE."
+    },
+    {
+      "id": "HG.FIN",
+      "name": "Hippo gap: absence from finance-dependent products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": 1,
+      "transform": "none",
+      "family": "hippo_finance",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "HG.FIN.SE",
+      "notes": "Camels and hippos (test 4), the presence version: gamma on external finance dependence (Rajan-Zingales). In each year, whether the economy is absent from each scored HS92 4-digit product (RCA within the scored products below 0.2), fitted on log income per product, then each economy's residuals on the product's standardised intensity. Positive gamma: the economy is missing from factor-heavy products more than its income predicts (the hippos are missing), so the factor is more likely binding. This version reads absence, which the growth-based tests cannot see: where a constraint is severe the exposed activities never start. Gates (docs/hippo-gap-test.md): planted-absence power check at s=0.1 (recovery 0.42) and the placebo stability check (99 industry-permuted vectors):  it failed the power gate, so class X (shown, does not vote). Caveats: absence has other causes (comparative advantage, size, nobody tried), so read it with the price and circumvention tests; intensity assumed constant across countries; exports only.",
+      "caveat": "Absence has other causes than the constraint: comparative advantage, market size, or that nobody has tried yet."
+    },
+    {
+      "id": "HG.FIN.SE",
+      "name": "Standard error of the hippo gap for finance-dependent products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "hippo_finance_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of HG.FIN; the engine sets the signal to zero when |gamma| < 2 SE."
+    },
+    {
+      "id": "HG.SKILL",
+      "name": "Hippo gap: absence from skill-intensive products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [
+        "N4"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": 1,
+      "transform": "none",
+      "family": "hippo_skill",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "HG.SKILL.SE",
+      "notes": "Camels and hippos (test 4), the presence version: gamma on schooling intensity (Ciccone-Papaioannou). In each year, whether the economy is absent from each scored HS92 4-digit product (RCA within the scored products below 0.2), fitted on log income per product, then each economy's residuals on the product's standardised intensity. Positive gamma: the economy is missing from factor-heavy products more than its income predicts (the hippos are missing), so the factor is more likely binding. This version reads absence, which the growth-based tests cannot see: where a constraint is severe the exposed activities never start. Gates (docs/hippo-gap-test.md): planted-absence power check at s=0.1 (recovery 0.37) and the placebo stability check (99 industry-permuted vectors):  it failed the power gate, so class X (shown, does not vote). Caveats: absence has other causes (comparative advantage, size, nobody tried), so read it with the price and circumvention tests; intensity assumed constant across countries; exports only.",
+      "caveat": "Absence has other causes than the constraint: comparative advantage, market size, or that nobody has tried yet."
+    },
+    {
+      "id": "HG.SKILL.SE",
+      "name": "Standard error of the hippo gap for skill-intensive products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "hippo_skill_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of HG.SKILL; the engine sets the signal to zero when |gamma| < 2 SE."
+    },
+    {
+      "id": "HG.TIME",
+      "name": "Hippo gap: absence from time-sensitive products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [
+        "N6"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": 1,
+      "transform": "none",
+      "family": "hippo_time",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "HG.TIME.SE",
+      "notes": "Camels and hippos (test 4), the presence version: gamma on time sensitivity of shipments (Hummels-Schaur data). In each year, whether the economy is absent from each scored HS92 4-digit product (RCA within the scored products below 0.2), fitted on log income per product, then each economy's residuals on the product's standardised intensity. Positive gamma: the economy is missing from factor-heavy products more than its income predicts (the hippos are missing), so the factor is more likely binding. This version reads absence, which the growth-based tests cannot see: where a constraint is severe the exposed activities never start. Gates (docs/hippo-gap-test.md): planted-absence power check at s=0.1 (recovery 0.38) and the placebo stability check (99 industry-permuted vectors):  it failed the power gate, so class X (shown, does not vote). Caveats: absence has other causes (comparative advantage, size, nobody tried), so read it with the price and circumvention tests; intensity assumed constant across countries; exports only.",
+      "caveat": "Absence has other causes than the constraint: comparative advantage, market size, or that nobody has tried yet."
+    },
+    {
+      "id": "HG.TIME.SE",
+      "name": "Standard error of the hippo gap for time-sensitive products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "hippo_time_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of HG.TIME; the engine sets the signal to zero when |gamma| < 2 SE."
+    },
+    {
+      "id": "HG.CONTRACT",
+      "name": "Hippo gap: absence from contract-intensive products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [
+        "N11.property"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": 1,
+      "transform": "none",
+      "family": "hippo_contract",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "HG.CONTRACT.SE",
+      "notes": "Camels and hippos (test 4), the presence version: gamma on contract intensity (Nunn 2007: share of inputs needing relationship-specific investment). In each year, whether the economy is absent from each scored HS92 4-digit product (RCA within the scored products below 0.2), fitted on log income per product, then each economy's residuals on the product's standardised intensity. Positive gamma: the economy is missing from factor-heavy products more than its income predicts (the hippos are missing), so the factor is more likely binding. This version reads absence, which the growth-based tests cannot see: where a constraint is severe the exposed activities never start. Gates (docs/hippo-gap-test.md): planted-absence power check at s=0.1 (recovery 0.44) and the placebo stability check (99 industry-permuted vectors):  it failed the power gate and the stability gate, so class X (shown, does not vote). Caveats: absence has other causes (comparative advantage, size, nobody tried), so read it with the price and circumvention tests; intensity assumed constant across countries; exports only.",
+      "caveat": "Absence has other causes than the constraint: comparative advantage, market size, or that nobody has tried yet."
+    },
+    {
+      "id": "HG.CONTRACT.SE",
+      "name": "Standard error of the hippo gap for contract-intensive products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "hippo_contract_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of HG.CONTRACT; the engine sets the signal to zero when |gamma| < 2 SE."
+    },
+    {
+      "id": "HG.INTANG",
+      "name": "Hippo gap: absence from collateral-poor products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [
+        "N0",
+        "N3"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": 1,
+      "transform": "none",
+      "family": "hippo_intangibility",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "HG.INTANG.SE",
+      "notes": "Camels and hippos (test 4), the presence version: gamma on asset intangibility (one minus Braun 2003 tangibility: how little an industry can pledge as collateral). In each year, whether the economy is absent from each scored HS92 4-digit product (RCA within the scored products below 0.2), fitted on log income per product, then each economy's residuals on the product's standardised intensity. Positive gamma: the economy is missing from factor-heavy products more than its income predicts (the hippos are missing), so the factor is more likely binding. This version reads absence, which the growth-based tests cannot see: where a constraint is severe the exposed activities never start. Gates (docs/hippo-gap-test.md): planted-absence power check at s=0.1 (recovery 0.33) and the placebo stability check (99 industry-permuted vectors):  it failed the power gate and the stability gate, so class X (shown, does not vote). Caveats: absence has other causes (comparative advantage, size, nobody tried), so read it with the price and circumvention tests; intensity assumed constant across countries; exports only.",
+      "caveat": "Absence has other causes than the constraint: comparative advantage, market size, or that nobody has tried yet."
+    },
+    {
+      "id": "HG.INTANG.SE",
+      "name": "Standard error of the hippo gap for collateral-poor products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "hippo_intangibility_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of HG.INTANG; the engine sets the signal to zero when |gamma| < 2 SE."
+    },
+    {
+      "id": "HG.ELEC",
+      "name": "Hippo gap: absence from electricity-intensive products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [
+        "N5"
+      ],
+      "test": "camels",
+      "class": "X",
+      "direction": 1,
+      "transform": "none",
+      "family": "hippo_electricity",
+      "slow": false,
+      "years": 2000,
+      "scoring": "camels_percentile",
+      "se_id": "HG.ELEC.SE",
+      "notes": "Camels and hippos (test 4), the presence version: gamma on electricity cost share of output (BEA 2017 input-output, via NAICS, ISIC Rev. 4 and Rev. 3). In each year, whether the economy is absent from each scored HS92 4-digit product (RCA within the scored products below 0.2), fitted on log income per product, then each economy's residuals on the product's standardised intensity. Positive gamma: the economy is missing from factor-heavy products more than its income predicts (the hippos are missing), so the factor is more likely binding. This version reads absence, which the growth-based tests cannot see: where a constraint is severe the exposed activities never start. Gates (docs/hippo-gap-test.md): planted-absence power check at s=0.1 (recovery 0.4) and the placebo stability check (99 industry-permuted vectors):  it failed the power gate, so class X (shown, does not vote). Caveats: absence has other causes (comparative advantage, size, nobody tried), so read it with the price and circumvention tests; intensity assumed constant across countries; exports only.",
+      "caveat": "Absence has other causes than the constraint: comparative advantage, market size, or that nobody has tried yet."
+    },
+    {
+      "id": "HG.ELEC.SE",
+      "name": "Standard error of the hippo gap for electricity-intensive products (gamma)",
+      "source": "extra",
+      "extra_group": "hippo_gap",
+      "nodes": [],
+      "test": "context",
+      "class": "X",
+      "direction": 0,
+      "transform": "none",
+      "family": "hippo_electricity_se",
+      "slow": false,
+      "years": 2000,
+      "notes": "Cluster-robust standard error of HG.ELEC; the engine sets the signal to zero when |gamma| < 2 SE."
     }
   ],
   "comovement_specs": [

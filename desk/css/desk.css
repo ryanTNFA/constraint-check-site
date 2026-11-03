@@ -747,6 +747,8 @@ ol.sd-nearby { margin: 6px 0 8px; padding-left: 1.6em; display: grid; gap: 4px; 
 .sd-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 28px; }
 .sd-two h3 { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; margin: 0 0 2px; }
 ul.sd-nearby { margin: 6px 0 8px; padding-left: 1.1em; display: grid; gap: 3px; }
+#otherway h3 { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; margin: 0 0 2px; }
+#otherway .sd-hs { display: block; margin-left: 0; }
 
 /* ---------- V2 (visual-upgrade PRD): the home page leads with the map; no page opens on a placeholder ---------- */
 /* the home page's alert on one line: label, text and link; it still never goes away */

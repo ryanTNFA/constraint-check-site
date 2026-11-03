@@ -320,10 +320,10 @@ export function drawBypass(host, ctx) {
 
 // ---------- C12 camels and hippos (test 4) ----------
 /** Which intensity vectors speak to which node (ingest/camels.py writes them). */
-export const CAMEL_VECTORS = { N0: ['finance_dependence'], N3: ['finance_dependence'], N4: ['schooling'], N6: ['time_sensitivity'] };
+export const CAMEL_VECTORS = { N0: ['finance_dependence', 'intangibility'], N3: ['finance_dependence', 'intangibility'], N4: ['schooling'], N5: ['electricity'], N6: ['time_sensitivity'], 'N11.property': ['contract_intensity'] };
 /** 1-based rank from the most camels (lowest theta), from the stored percentile. */
 const camelRank = (pn) => Math.round((pn.pctile / 100) * (pn.n - 1)) + 1;
-const CAMEL_FACTOR = { finance_dependence: 'external finance', schooling: 'skilled workers', time_sensitivity: 'fast, reliable transport' };
+export const CAMEL_FACTOR = { finance_dependence: 'external finance', schooling: 'skilled workers', time_sensitivity: 'fast, reliable transport', contract_intensity: 'enforceable contracts', intangibility: 'lending without collateral', electricity: 'electricity' };
 
 /**
  * One panel per intensity vector: every HS 4-digit product the economy could export, placed by how

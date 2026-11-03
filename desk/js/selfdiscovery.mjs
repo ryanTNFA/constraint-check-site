@@ -20,8 +20,8 @@ async function main() {
   back.href = tabHref('/constraint-check-site/desk/areas.html', iso, '&node=N12');
   back.addEventListener('click', () => { back.href = tabHref('/constraint-check-site/desk/areas.html', iso, '&node=N12'); });
   try {
-    const [registry, sc, nearby, meta] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/nearby/${iso}.json`, { optional: true }), getJSON(`${DATA}/nearby/meta.json`, { optional: true })]);
-    state = { registry, sc, nearby, meta };
+    const [registry, sc, nearby, meta, hippo] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/nearby/${iso}.json`, { optional: true }), getJSON(`${DATA}/nearby/meta.json`, { optional: true }), getJSON(`${DATA}/hippo/${iso}.json`, { optional: true })]);
+    state = { registry, sc, nearby, meta, hippo };
   } catch (e) { showError(`Could not load the data for ${iso}: ${e.message}`); return; }
   render();
   window.addEventListener('desk-setting', render);
@@ -29,7 +29,7 @@ async function main() {
 }
 
 function render() {
-  const { registry, sc, nearby, meta } = state;
+  const { registry, sc, nearby, meta, hippo } = state;
   const c = sc.country.name;
   document.title = `${c} · Self-discovery · Constraint Check`;
   $('sd-title').textContent = `Self-discovery in ${c}`;
@@ -87,6 +87,73 @@ function render() {
     h('p', {}, meta ? meta.complexity : ''),
     h('p', {}, meta ? `${meta.kill_check} ${meta.countries_passing} of ${meta.countries} economies pass; the others show no list.` : ''),
     h('p', {}, meta ? `Source: ${meta.source}. Built by ingest/nearby_products.py.` : ''));
+  renderOtherWay(c, hippo);
+}
+
+// What each intensity vector measures, in the words the camels chart uses (ingest/camels.py VECTORS).
+const FACTOR = { finance_dependence: 'outside finance', schooling: 'skilled workers', time_sensitivity: 'fast, reliable transport', contract_intensity: 'enforceable contracts', intangibility: 'lending without collateral', electricity: 'electricity' };
+const VEC_ORDER = ['finance_dependence', 'intangibility', 'schooling', 'electricity', 'time_sensitivity', 'contract_intensity'];
+const shortHs = (s) => { const t = String(s || '').split(';')[0].trim(); return t.length > 60 ? `${t.slice(0, 58).replace(/[ ,]+\S*$/, '')}…` : t; };
+const ordinal = (n) => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+
+/** The other direction: the products that thrive, the products that are missing, what each group needs, and whether hippos ever tried. */
+function renderOtherWay(c, hippo) {
+  const host = $('sd-otherway'); host.replaceChildren();
+  const method = $('sd-otherway-method'); method.replaceChildren();
+  const s = hippo && hippo.surprises;
+  if (!s || (!s.well.length && !s.badly.length)) {
+    host.append(h('p', { class: 'note' }, `${c} exports too few products, or too little, for this reading (the test needs a basket of at least 50 products at US$1 million or more).`));
+    return;
+  }
+  const year = hippo.year;
+  const vecs = VEC_ORDER.filter((v) => hippo.surprise_vectors && hippo.surprise_vectors[v]);
+  const item = (p, kind) => h('li', { title: p.name || `HS ${p.hs4}` },
+    h('span', { class: 'sd-prod' }, p.name ? shortHs(p.name) : `HS ${p.hs4} (heading no longer in use)`),
+    h('span', { class: 'sd-hs small muted' }, kind === 'well'
+      ? ` HS ${p.hs4} · exports ${p.rca >= 10 ? Math.round(p.rca) : p.rca.toFixed(1)}× the world’s share, income predicts ${p.expected_rca.toFixed(1)}×`
+      : ` HS ${p.hs4} · income predicts ${p.expected_rca.toFixed(1)}× the world’s share, exports ${p.rca < 0.05 ? 'none' : `${p.rca.toFixed(2)}×`}`));
+  const list = (items, kind) => h('ul', { class: 'sd-nearby' }, items.map((p) => item(p, kind)));
+  host.append(h('div', { class: 'sd-two' },
+    h('div', {}, h('h3', {}, 'Doing surprisingly well'), h('p', { class: 'small muted' }, `The ${s.well.length} products ${c} exported in ${year} furthest above what its income predicts, among products it exports at US$1 million or more.`), s.well.length ? list(s.well, 'well') : h('p', { class: 'small' }, 'None.')),
+    h('div', {}, h('h3', {}, 'Surprisingly missing'), h('p', { class: 'small muted' }, `Products that economies at ${c}’s income export competitively (a predicted share at least the world’s) and that ${c} does not export at all${s.candidates_badly > s.badly.length ? `: the ${s.badly.length} furthest below prediction of ${s.candidates_badly}` : ''}.`), s.badly.length ? list(s.badly, 'badly') : h('p', { class: 'small' }, `None: ${c} exports every product its income predicts.`))));
+
+  // what the two groups need: mean intensity percentile, vector by vector
+  const mp = s.mean_pct || {};
+  const rows = vecs.filter((v) => mp[v]);
+  if (rows.length) {
+    const head = h('thead', {}, h('tr', {}, h('th', {}, 'What products need'), h('th', {}, 'The thriving ones'), h('th', {}, 'The missing ones'), h('th', {}, 'Reading')));
+    const reading = (v) => { const d = mp[v].badly - mp[v].well; return Math.abs(d) < 15 ? 'about the same' : d > 0 ? `the missing ones need more ${FACTOR[v]}` : `the thriving ones need more ${FACTOR[v]}`; };
+    const body = h('tbody', {}, rows.map((v) => h('tr', {}, h('td', {}, FACTOR[v][0].toUpperCase() + FACTOR[v].slice(1)), h('td', {}, `${ordinal(Math.round(mp[v].well))} percentile (${mp[v].n_well} scored)`), h('td', {}, `${ordinal(Math.round(mp[v].badly))} percentile (${mp[v].n_badly} scored)`), h('td', {}, reading(v)))));
+    // The two sentences that matter: the factor the missing products need most more of (the hippo-shaped hole), and the
+    // factor the thriving products need most more of (where a constraint is not the story).
+    const gaps = rows.map((v) => [v, mp[v].badly - mp[v].well]);
+    const hole = gaps.filter((g) => g[1] >= 15).sort((a, b) => b[1] - a[1])[0];
+    const thrive = gaps.filter((g) => g[1] <= -15).sort((a, b) => a[1] - b[1])[0];
+    const say = (v) => `${ordinal(Math.round(mp[v].badly))} against ${ordinal(Math.round(mp[v].well))} percentile`;
+    host.append(h('h3', { style: 'margin-top:16px' }, 'What the two groups need'),
+      h('div', { class: 'table-wrap' }, h('table', { class: 'data sd-elim' }, head, body)),
+      h('p', { class: 'plain' },
+        hole ? `The missing products need far more ${FACTOR[hole[0]]} than the ones that thrive (${say(hole[0])}). That is the pattern a binding ${FACTOR[hole[0]]} constraint would leave. It is also the pattern of comparative advantage, so it is a question for the price and workaround tests, not an answer. ` : '',
+        thrive ? `The thriving products need far more ${FACTOR[thrive[0]]} than the missing ones (${ordinal(Math.round(mp[thrive[0]].well))} against ${ordinal(Math.round(mp[thrive[0]].badly))} percentile), which is not what a binding ${FACTOR[thrive[0]]} constraint would leave.` : '',
+        !hole && !thrive ? 'Neither group needs clearly more of any factor than the other, as far as the vectors can tell from a handful of products.' : ''));
+  }
+
+  // did hippos ever try: entry rates by intensity quartile
+  const ev = vecs.map((v) => [v, hippo.vectors[v] && hippo.vectors[v].entry]).filter(([, e]) => e && e.top && e.top.at_risk && e.bottom && e.bottom.at_risk);
+  if (ev.length) {
+    const w = ev[0][1].windows;
+    const head = h('thead', {}, h('tr', {}, h('th', {}, 'Factor'), h('th', {}, 'Products that need the most of it: taken up'), h('th', {}, 'Products that need the least: taken up')));
+    const pc = (e) => `${e.entries} of ${e.at_risk} (${(100 * e.rate).toFixed(1)}%)`;
+    const body = h('tbody', {}, ev.map(([v, e]) => h('tr', {}, h('td', {}, FACTOR[v][0].toUpperCase() + FACTOR[v].slice(1)), h('td', {}, pc(e.top)), h('td', {}, pc(e.bottom)))));
+    host.append(h('h3', { style: 'margin-top:16px' }, 'Did hippos ever try?'),
+      h('p', { class: 'small muted' }, `New exports over five-year windows ending ${w[0]} to ${w[w.length - 1]}: of the products ${c} did not export at the start of a window (a share below half the world’s), how many it exported competitively by the end, among the quarter of products that need the most of each factor and the quarter that need the least. Where a factor binds, the new products should be the ones that need little of it.`),
+      h('div', { class: 'table-wrap' }, h('table', { class: 'data sd-elim' }, head, body)));
+  }
+
+  method.append(
+    h('p', {}, `Exports by HS 4-digit product in ${year} from the Growth Lab’s trade data, as a share of ${c}’s exports relative to the world’s share (revealed comparative advantage). For each product, a line is fitted across about 180 economies on log income per person; a product’s surprise is the distance from that line in ln(1 + RCA). “Thriving” products are the furthest above it; “missing” products are those the line puts at a competitive share for ${c}’s income while ${c}’s own share is below a fifth of the world’s. Mining, fuel and precious-metal products, stamps, art and scrap are left out, as in the nearby-products list.`),
+    h('p', {}, 'Each product’s intensities are the percentiles used by the camels chart on the Evidence page: how much of each factor the product’s industry uses in the United States (Rajan and Zingales; Ciccone and Papaioannou; Nunn; Braun; Hummels and Schaur; the BEA input-output table). A product is scored only where its industry is in the source table, so the counts differ by factor.'),
+    h('p', {}, 'What this cannot show: a missing product may be missing for comparative advantage, for market size, or because nobody has tried, not because of a constraint; the thriving products of a poor country are often farm goods whose intensities are not scored; eight products a side is a small sample. The same absence reading, run as a regression across every scored product (the hippo gap), is on the Evidence page under test 4; it did not pass its power check and does not vote (docs/hippo-gap-test.md). Built by ingest/hippo_gap.py.'));
 }
 
 main().catch((e) => { console.error(e); showError(`Unexpected error: ${e.message}`); });

@@ -6,7 +6,7 @@ import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, qs, unit
 import { INCOME_ID, refSpan, scatterRows, structureFit, linearFit, lowessFit, lineAndBand, peerRank, residualPercentile, backTransform, referenceTable, viableYears, peerSummary, seriesRows, coverage, changeSinceStart, peerBand, slope, endpoints, stripRows, playerFrames, playerDomains, raceFrames } from './evidence_math.mjs';
 import { createControls, bubbleChart, barRace, reducedMotion } from './player.mjs';
 import { renderRail, renderNodeHead, drawStrip, drawGrowth, drawObstacles, drawComposition, nodeScope, VIEWS } from './evidence_node.mjs';
-import { pqChoices, drawPriceQty, drawComove, drawBypass, drawCamels, CAMEL_VECTORS } from './evidence_tests.mjs';
+import { pqChoices, drawPriceQty, drawComove, drawBypass, drawCamels, CAMEL_VECTORS, CAMEL_FACTOR } from './evidence_tests.mjs';
 
 initTheme();
 const DATA = dataBase();
@@ -814,6 +814,43 @@ async function camelData(iso, vecNames) {
   return mine && Object.keys(products).length ? { products, mine } : null;
 }
 
+/** The presence version of test 4 (ingest/hippo_gap.py): the hippo gap, entry rates and the surprises; null when not built. */
+function hippoData(iso) {
+  if (!camelCache[`h:${iso}`]) camelCache[`h:${iso}`] = getJSON(`${DATA}/hippo/${iso}.json`, { optional: true });
+  return camelCache[`h:${iso}`];
+}
+
+const ordinalOf = (n) => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+
+/** One sentence per vector on what the hippo gap shows, in the readout's plain register. Never calls the node. */
+function hippoText(hp, vecNames, countryName, famOf) {
+  if (!hp) return '';
+  const out = [];
+  for (const v of vecNames) {
+    const hv = hp.vectors[v];
+    if (!hv) continue;
+    const factor = CAMEL_FACTOR[v] || 'the factor';
+    const g = hv.gap || {}, top = g.top || {}, bot = g.bottom || {};
+    const pctT = top.share == null ? null : Math.round(top.share * 100), pctB = bot.share == null ? null : Math.round(bot.share * 100);
+    const sig = Math.abs(hv.gamma) >= 2 * hv.se;
+    const read = !sig ? 'no clear gap: γ is within two standard errors of zero'
+      : hv.gamma > 0 ? `the hippos are missing: ${countryName} is absent from the products that need ${factor} more often than its income predicts`
+      : `no missing hippos: ${countryName} is present in the products that need ${factor} at least as often as its income predicts`;
+    const counts = top.usual ? ` Of the ${top.usual} products that need the most ${factor} and that economies at ${countryName}'s income usually export, it does not export ${top.absent} (${pctT}%)${bot.usual ? `, against ${pctB}% of the ${bot.usual} that need the least` : ''}.` : '';
+    const rank = Math.round((hv.pctile / 100) * (hv.n - 1)) + 1;
+    const f = famOf(hv.id);
+    const inRating = hv.passes && f && isNum(f.signal)
+      ? ` In the rating it enters ${f.node} as <strong>${fmtSigned(f.signal, 1)}</strong>: its γ is at the ${ordinalOf(Math.round(hv.pctile))} percentile of ${hv.n} economies.`
+      : ' It is shown here but not counted in the rating: this version did not pass both of its gates (the rubric changelog says which).';
+    const e = hv.entry, et = e && e.top, eb = e && e.bottom;
+    const entry = et && et.at_risk && eb && eb.at_risk
+      ? ` Did hippos ever try? Over the windows ending ${e.windows[0]} to ${e.windows[e.windows.length - 1]}, ${countryName} took up ${et.entries} of the ${et.at_risk} products it lacked that need the most ${factor} (${Math.round(et.rate * 100)}%) and ${eb.entries} of the ${eb.at_risk} that need the least (${Math.round(eb.rate * 100)}%).`
+      : '';
+    out.push(`<strong>The hippo gap, ${hv.label.replace(/ \(.*$/, '')}</strong>: γ = ${fmtSigned(hv.gamma, 3)} (se ${fmt(hv.se, 3)}), ${read}.${counts} It ranks ${ordinalOf(rank)} of ${hv.n} economies counting from the most hippos missing.${inRating}${entry}`);
+  }
+  return out.length ? `<br>${out.join('<br>')}` : '';
+}
+
 /** Under a node: C5 price against quantity, C6 co-movement and C8 bypass, each only where the node has the data for it. */
 async function renderTests(c) {
   if (!c) return;
@@ -872,8 +909,9 @@ async function renderTests(c) {
   if (camelPanels.length) {
     const out = drawCamels($('chart12'), { ...base, width: $('chart12').clientWidth || 900, panels: camelPanels });
     state.outs.c12 = out;
-    $('readout12').innerHTML = out.text;
-    $('foot12').textContent = `Each dot is an HS 4-digit export product, placed by how intensively it uses the factor (US-based intensity, as a percentile of products) and by how much more ${nameOf(state.iso)} exported of it in ${camelPanels[0].year} than economies at its income level do (ln(1 + revealed comparative advantage), after a separate income fit for each product across about 180 economies). Open circles are industry averages (products sharing one intensity value), sized by the number of products. The line is the fitted tilt: the economy's average plus θ times each product's intensity (the Rajan-Zingales differences-in-differences design, Rajan and Zingales 1998; schooling intensity after Ciccone and Papaioannou 2009), so it rises when θ is positive and falls when θ is negative. A negative θ means more camels: the economy does well in products that need little of the factor. ${camelPanels.some((p) => p.votes) ? `Counted in the rating: ${camelPanels.filter((p) => p.votes).map((p) => p.label).join(', ')}, the vector${camelPanels.filter((p) => p.votes).length === 1 ? '' : 's'} that passed the placebo check; ` : ''}${camelPanels.some((p) => !p.votes) ? `shown but not counted: ${camelPanels.filter((p) => !p.votes).map((p) => p.label).join(', ')} (failed the placebo check; see the rubric changelog).` : ''} Caveats: intensities are assumed the same everywhere; exports are not output; services are missing. This is the latest year only and does not follow the as-of year. Sources: Growth Lab HS92 trade; the intensity vectors and the method are documented in the Methodology Note, section on test 4.`;
+    const hp = await hippoData(state.iso);
+    $('readout12').innerHTML = out.text + hippoText(hp, vecNames, nameOf(state.iso), camelFam);
+    $('foot12').textContent = `Each dot is an HS 4-digit export product, placed by how intensively it uses the factor (US-based intensity, as a percentile of products) and by how much more ${nameOf(state.iso)} exported of it in ${camelPanels[0].year} than economies at its income level do (ln(1 + revealed comparative advantage), after a separate income fit for each product across about 180 economies). Open circles are industry averages (products sharing one intensity value), sized by the number of products. The line is the fitted tilt: the economy's average plus θ times each product's intensity (the Rajan-Zingales differences-in-differences design, Rajan and Zingales 1998; schooling intensity after Ciccone and Papaioannou 2009), so it rises when θ is positive and falls when θ is negative. A negative θ means more camels: the economy does well in products that need little of the factor. ${camelPanels.some((p) => p.votes) ? `Counted in the rating: ${camelPanels.filter((p) => p.votes).map((p) => p.label).join(', ')}, the vector${camelPanels.filter((p) => p.votes).length === 1 ? '' : 's'} that passed the placebo check; ` : ''}${camelPanels.some((p) => !p.votes) ? `shown but not counted: ${camelPanels.filter((p) => !p.votes).map((p) => p.label).join(', ')} (failed the placebo check; see the rubric changelog).` : ''} The hippo gap below the chart is the presence version of the same test: instead of how much the economy exports of each product, whether it exports it at all (RCA below 0.2 counts as absent), because where a constraint is severe the activities that need it never start, and a growth-based test cannot see them; γ is the slope of absence on intensity after an income fit per product, so a positive γ means the factor-heavy products are the missing ones. Caveats: intensities are assumed the same everywhere; exports are not output; services are missing; absence has other causes (comparative advantage, size, nobody tried). This is the latest year only and does not follow the as-of year. Sources: Growth Lab HS92 trade; the intensity vectors and the method are documented in the Methodology Note, section on test 4.`;
   }
   for (const k of ['c5', 'c6', 'c8', 'c12']) { const a = document.querySelector(`.ev-actions[data-chart="${k}"]`); if (a) a.hidden = !(state.outs[k] && state.outs[k].csv); }
   renderTabs();

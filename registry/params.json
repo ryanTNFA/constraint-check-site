@@ -1,6 +1,6 @@
 {
   "_comment": "Rubric parameters v0.1.4 (Workbook Appendix B as corrected by docs/CHANGELOG-rubric.md). Every number here is a starting point to be calibrated in Phase 0. The engine must read all thresholds from this file; nothing numeric is hard-coded.",
-  "rubric_version": "0.2.2",
+  "rubric_version": "0.2.3",
   "snapshot_reference_window_years": 12,
   "icr": {
     "controls": [
