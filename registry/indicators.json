@@ -3701,10 +3701,10 @@
       "transform": "none",
       "family": "camels_firm_fin",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.FIN.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to access to finance. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.41, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to access to finance. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.57, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.FIN.SE",
@@ -3718,7 +3718,7 @@
       "transform": "none",
       "family": "camels_firm_fin_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.FIN; the engine zeroes the signal within 2 SE."
     },
     {
@@ -3735,10 +3735,10 @@
       "transform": "none",
       "family": "camels_firm_elec",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.ELEC.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to electricity. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.54, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to electricity. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.6, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.ELEC.SE",
@@ -3752,7 +3752,7 @@
       "transform": "none",
       "family": "camels_firm_elec_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.ELEC; the engine zeroes the signal within 2 SE."
     },
     {
@@ -3769,10 +3769,10 @@
       "transform": "none",
       "family": "camels_firm_transport",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.TRANSPORT.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to transport. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.43, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to transport. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.52, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.TRANSPORT.SE",
@@ -3786,7 +3786,7 @@
       "transform": "none",
       "family": "camels_firm_transport_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.TRANSPORT; the engine zeroes the signal within 2 SE."
     },
     {
@@ -3803,10 +3803,10 @@
       "transform": "none",
       "family": "camels_firm_telecom",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.TELECOM.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to telecommunications. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.47, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to telecommunications. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.64, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.TELECOM.SE",
@@ -3820,7 +3820,7 @@
       "transform": "none",
       "family": "camels_firm_telecom_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.TELECOM; the engine zeroes the signal within 2 SE."
     },
     {
@@ -3837,10 +3837,10 @@
       "transform": "none",
       "family": "camels_firm_land",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.LAND.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to access to land. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.55, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to access to land. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.54, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.LAND.SE",
@@ -3854,7 +3854,7 @@
       "transform": "none",
       "family": "camels_firm_land_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.LAND; the engine zeroes the signal within 2 SE."
     },
     {
@@ -3871,10 +3871,10 @@
       "transform": "none",
       "family": "camels_firm_skills",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.SKILLS.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to an inadequately educated workforce. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.52, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to an inadequately educated workforce. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.57, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.SKILLS.SE",
@@ -3888,7 +3888,7 @@
       "transform": "none",
       "family": "camels_firm_skills_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.SKILLS; the engine zeroes the signal within 2 SE."
     },
     {
@@ -3908,7 +3908,7 @@
       "years": 2013,
       "scoring": "camels_percentile",
       "se_id": "CHF.MACRO.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to macroeconomic instability. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.55, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to macroeconomic instability. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.57, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.MACRO.SE",
@@ -3939,10 +3939,10 @@
       "transform": "none",
       "family": "camels_firm_courts",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.COURTS.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to courts. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.58, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to courts. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.6, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.COURTS.SE",
@@ -3956,7 +3956,7 @@
       "transform": "none",
       "family": "camels_firm_courts_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.COURTS; the engine zeroes the signal within 2 SE."
     },
     {
@@ -3973,10 +3973,10 @@
       "transform": "none",
       "family": "camels_firm_corruption",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.CORRUPTION.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to corruption. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.44, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to corruption. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.59, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.CORRUPTION.SE",
@@ -3990,7 +3990,7 @@
       "transform": "none",
       "family": "camels_firm_corruption_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.CORRUPTION; the engine zeroes the signal within 2 SE."
     },
     {
@@ -4007,10 +4007,10 @@
       "transform": "none",
       "family": "camels_firm_tax",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.TAX.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to tax rates. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.58, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to tax rates. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.51, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.TAX.SE",
@@ -4024,7 +4024,7 @@
       "transform": "none",
       "family": "camels_firm_tax_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.TAX; the engine zeroes the signal within 2 SE."
     },
     {
@@ -4041,10 +4041,10 @@
       "transform": "none",
       "family": "camels_firm_licensing",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.LICENSING.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to business licensing and permits. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.56, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to business licensing and permits. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.58, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.LICENSING.SE",
@@ -4058,7 +4058,7 @@
       "transform": "none",
       "family": "camels_firm_licensing_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.LICENSING; the engine zeroes the signal within 2 SE."
     },
     {
@@ -4075,10 +4075,10 @@
       "transform": "none",
       "family": "camels_firm_crime",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "scoring": "camels_percentile",
       "se_id": "CHF.CRIME.SE",
-      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to crime, theft and disorder. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.53, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
+      "notes": "Camels and hippos, firm-level variant (Workbook 4.5): in each Enterprise Survey, the slope of firm employment growth on the sector's sensitivity to crime, theft and disorder. Negative: exposed sectors grow slower, so the constraint is more likely binding. Sensitivity is measured from the same surveys' obstacle answers, pooled and conditioned on the survey. Power check (planted tilt of 0.01 growth per SD of sensitivity): recovery 0.63, below the 0.7 bar, so class X (shown, does not vote). Caveats: growth and obstacle answers come from the same firms; sector sensitivity assumed common across economies; employment growth only (sales growth is nominal and in local currency)."
     },
     {
       "id": "CHF.CRIME.SE",
@@ -4092,7 +4092,7 @@
       "transform": "none",
       "family": "camels_firm_crime_se",
       "slow": false,
-      "years": 2009,
+      "years": 2010,
       "notes": "Cluster-robust SE of CHF.CRIME; the engine zeroes the signal within 2 SE."
     }
   ],
