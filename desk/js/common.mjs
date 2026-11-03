@@ -395,9 +395,9 @@ export function nodeLabel(registry, id) { const n = registry.nodeById[id]; retur
 export function missingTestReason(test, nodeId, registry) {
   const specs = (registry.indicators.comovement_specs || []).filter((s) => s.node === nodeId || (s.also_nodes || []).includes(nodeId));
   const nb = registry.connectorsNotBuilt.filter((f) => f.nodes.includes(nodeId));
-  if (test === 'camels') return registry.indicators.indicators.some((i) => i.test === 'camels' && i.id.startsWith('CH.') && (i.nodes || []).includes(nodeId))
-    ? 'Shown in the "4 · Camels and hippos" tab under the strip, but not yet counted: the camels test has not yet passed its placebo check.'
-    : 'Not computed: no industry intensity vector is connected for this node yet (the prototype has finance, schooling and transport time).';
+  if (test === 'camels') return registry.indicators.indicators.some((i) => i.test === 'camels' && /^CHF?\./.test(i.id) && (i.nodes || []).includes(nodeId))
+    ? 'Shown in the "4 · Camels and hippos" tab under the strip, but not yet counted: neither the trade-based nor the firm-level version has passed its power check for this area.'
+    : 'Not computed: no intensity vector or survey sensitivity is connected for this area yet.';
   if (test === 'changes') return specs.length ? 'Not computed: the co-movement specification for this node had too few year pairs.' : 'Not computed: rubric v0.1 has no co-movement specification for this node.';
   if (test === 'circumvention') return `Not computed: no circumvention family with usable data for this node${nb.length ? `; connectors not built: ${nb.map((f) => `${f.family} (${f.source})`).join('; ')}` : ''}.`;
   return 'Not computed: no price family with usable data for this node.';
