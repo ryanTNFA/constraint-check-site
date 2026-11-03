@@ -1,8 +1,8 @@
 // The guided path (docs/teaching-plan.md, section 3): eight lessons on the pages that already exist, worked on Kenya,
-// with Senegal's human-capital card borrowed for the clearing lesson. Pinned to rubric 0.2.1: tests/test_lessons.py
+// with Senegal's human-capital card borrowed for the clearing lesson. Pinned to rubric 0.2.2: tests/test_lessons.py
 // checks every tier a lesson quotes against desk/data, so a rubric change cannot silently break a lesson.
 // Lessons speak in the tool's voice only: no TNFA view, no comparison of countries by their flags.
-export const RUBRIC = '0.2.1';
+export const RUBRIC = '0.2.2';
 
 export const LESSONS = [
   {
@@ -16,7 +16,7 @@ export const LESSONS = [
     n: 2, page: '/constraint-check-site/desk/country.html?iso=KEN', predict: true, title: 'The Bottom line, predicted first',
     task: 'With Predict first on, write down what you expect in each of the three lists for Kenya: which areas, and how many. Then reveal them and compare.',
     check: 'Kenya’s "stop arguing about" list is empty. Is that a failure of the tool?',
-    answer: 'No: it is a finding. 117 of 217 economies have nothing on this list, and none has a "ruled out". An area gets on it when its evidence leans away on two tests, or strongly on one. No Kenyan area does: among the areas the list draws on, the lowest net score is macro risk, at −0.06.',
+    answer: 'No: it is a finding. 127 of 217 economies have nothing on this list, and only one area anywhere is "ruled out" (regulation in Uzbekistan). An area gets on it when its evidence leans away on two tests, or strongly on one. No Kenyan area does: among the areas the list draws on, the lowest net score is land, at −0.3, and that rests on one test.',
     mindbook: 'Mindbook, the asymmetry of errors: a false clear costs more than an extra look.',
   },
   {
@@ -42,9 +42,9 @@ export const LESSONS = [
   },
   {
     n: 6, page: '/constraint-check-site/desk/areas.html?iso=SEN&node=N4', predict: true, title: 'What leaning away looks like',
-    task: 'Senegal’s schooling is low: 3.7 years on average, two standard deviations below what its income predicts. With Predict first on, write down your verdict on human capital, then reveal it and read why: educated workers are unusually unemployed, skill-intensive exports do well (the camels test, which counts because it beats shuffled versions of itself), and the return to schooling sits at expected, though that measure is from 2011.',
+    task: 'Senegal’s schooling is low: 3.7 years on average, two standard deviations below what its income predicts. With Predict first on, write down your verdict on human capital, then reveal it and read why: educated workers are unusually unemployed, firms in skill-hungry sectors grow no slower than the rest (the camels test, read from the firm surveys, which counts because it passed its power check), and the return to schooling sits at expected, though that measure is from 2011.',
     check: 'Low schooling, yet skills are probably not the constraint. Why, and why does it stop at "probably not" rather than "ruled out"?',
-    answer: 'Low schooling is a quantity; scarcity would show as a high price for skills, and the price sits at expected while workarounds and the camels test point away. "Ruled out" needs more, as the card’s "why not lower" line and its rule detail say: a net score of −1 or below (Senegal: −0.7), three tests agreeing (only two agree), a price pointing away (at expected), five voting families (four), and no quantity dissenting (schooling does).',
+    answer: 'Low schooling is a quantity; scarcity would show as a high price for skills, and the price sits at expected while workarounds and the camels test point away. "Ruled out" needs more, as the card’s "why not lower" line and its rule detail say: a net score of −1 or below (Senegal: −0.5), three tests agreeing (only two agree), a price pointing away (at expected), and no quantity dissenting (schooling does).',
     mindbook: 'Mindbook, price before quantity; the camels and hippos test.',
   },
   {

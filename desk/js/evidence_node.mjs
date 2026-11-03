@@ -353,7 +353,7 @@ export function drawStrip(host, ctx) {
       ? `${yi ? shortName(yi).toLowerCase() : c.y} moved ${c.expected_sign < 0 ? 'against' : 'with'} ${xi ? shortName(xi).toLowerCase() : c.x} in ${c.agree} of ${c.pairs} years (p = ${fmt(c.p_value, 2)}), ${c.direction}.`
       : `${what}: too few years with both series to test.`));
   }
-  if (fams.length && !fams.some((r) => r.test === 'camels')) notes.append(h('p', {}, h('strong', {}, 'Test 4 · Camels and hippos: '), ['N0', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11'].includes(String(view || '').split('.')[0]) ? 'shown in the "4 · Camels and hippos" tab below, but not yet counted in the verdict: neither the trade-based nor the firm-level version has passed its power check for this area (Methods, Test 4).' : 'not computed for this area: no intensity vector or survey sensitivity is connected for it yet.'));
+  if (fams.length && !fams.some((r) => r.test === 'camels')) notes.append(h('p', {}, h('strong', {}, 'Test 4 · Camels and hippos: '), ['N0', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11'].includes(String(view || '').split('.')[0]) ? 'in the "4 · Camels and hippos" tab below: the firm-level version from the Enterprise Surveys votes where it passed its power check; the trade-based version is shown only (Methods, Test 4).' : 'not computed for this area: no intensity vector or survey sensitivity is connected for it yet.'));
   if (m.missing.length) {
     notes.append(h('p', {}, h('strong', {}, `No value in the window (${m.missing.length}): `),
       m.missing.map((x) => `${shortName(ind(x.id) || { name: x.id })}${x.lastYear ? ` (latest ${x.lastYear})` : ''}`).join('; '), '.'));
