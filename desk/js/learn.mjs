@@ -137,7 +137,7 @@ async function main() {
   const st = sc.statements || {};
   const list = (title, ids, empty) => h('div', { class: 'learn-list' }, h('h3', {}, title), ids.length ? h('ul', {}, ids.map((id) => h('li', {}, h('strong', {}, short(id)), byId[id] ? `: ${plainTier(byId[id].tier).toLowerCase()}` : ''))) : h('p', { class: 'muted' }, empty));
   $('fig-lists').append(
-    list('Stop arguing about', st.stop_arguing || [], 'Nothing yet, like about half the economies (112 of 217); none has a "ruled out".'),
+    list('Stop arguing about', st.stop_arguing || [], 'Nothing yet, like about half the economies (117 of 217); none has a "ruled out".'),
     list('Look closer', st.look_hard || [], 'Nothing.'),
     list('Can’t settle', st.cannot_tell || [], 'Nothing.'));
 

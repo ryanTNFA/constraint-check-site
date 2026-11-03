@@ -1,6 +1,6 @@
 {
   "_comment": "Constraint Check indicator registry v0.1.2 (prototype; changes from v0.1 and v0.1.1 in docs/CHANGELOG-rubric.md). Fields: id (source code), name, source (worldbank_wdi | worldbank_zip | weo | eci | derived | static), nodes (list of node ids or [] for context), test (price | changes | circumvention | camels | context), class (A|B|C|D|X where X = context, no signal), direction (+1 = higher value means MORE binding, -1 = higher value means LESS binding, 0 = context), transform (none | log1p | log | logit), family (evidence family id; signals within a family are deduplicated to one), slow (true if slow-moving stock: recency decay relaxed), years (first year to ingest), notes. Optional: source_code (World Bank API indicator code when it differs from the id) and source_id (World Bank source/database id) for the bulk-zip fetch; hidden_until_fixed (true = the engine treats the indicator as unavailable: not displayed, not counted); regime_sensitive (\"monetary\": downgraded to class C for economies in registry/static_monetary_regimes.json, v0.1.2); fallback_for (indicator id: this indicator carries no signal for an economy where that indicator is available in the window, v0.1.2); caveat (one sentence the Desk prints under the indicator).",
-  "rubric_version": "0.2.0",
+  "rubric_version": "0.2.1",
   "indicators": [
     {
       "id": "NY.GDP.PCAP.PP.KD",
@@ -3492,6 +3492,96 @@
       "slow": false,
       "years": 2021,
       "notes": "Class A: the price of a public-infrastructure service (Workbook N7, ICT: price of connectivity). A high price relative to income is the shadow-price signal for ICT; it is a posted retail price, not a firm-reported cost. Fixed and mobile broadband are separate markets with separate networks and regulation, so they are separate families (inclusion check: |rho| < 0.9). Monthly price of the cheapest data-only mobile-broadband plan with at least 2 GB, as a share of monthly GNI per capita. "
+    },
+    {
+      "id": "ES.CRIME_SECURITY_COST",
+      "name": "Security costs (% of annual sales, all firms)",
+      "source": "extra",
+      "extra_group": "es_micro",
+      "source_code": "crime2",
+      "nodes": [
+        "N11.crime"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "security_costs",
+      "slow": false,
+      "years": 2006,
+      "notes": "WBES indicator crime2 (official definition, computed per firm in the Indicators Database), weighted mean over all firms, including the zeros of firms that pay nothing. Workbook N11 crime price/cost (class A): what firms pay to protect returns from crime. Fills the registry's connectors_not_built family 'security_costs'. Higher = crime taxes returns more = more likely binding. Asked until the 2019 rounds; the 2023 questionnaire dropped it."
+    },
+    {
+      "id": "ES.CRIME_THEFT_LOSS",
+      "name": "Losses to theft, robbery, vandalism or arson (% of annual sales, all firms)",
+      "source": "extra",
+      "extra_group": "es_micro",
+      "source_code": "crime3",
+      "nodes": [
+        "N11.crime"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "theft_losses",
+      "slow": false,
+      "years": 2006,
+      "notes": "WBES indicator crime3, weighted mean over all firms including zeros. Workbook N11 crime price/cost (class A): the direct cost of crime to the firm. Its own family (a loss, not a protection cost). Higher = more likely binding. Dropped from the 2023 questionnaire."
+    },
+    {
+      "id": "ES.CRIME_PAYS_SECURITY",
+      "name": "Firms paying for security (% of firms)",
+      "source": "extra",
+      "extra_group": "es_micro",
+      "source_code": "crime1",
+      "nodes": [
+        "N11.crime"
+      ],
+      "test": "circumvention",
+      "class": "B",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_security_paid",
+      "slow": false,
+      "years": 2006,
+      "notes": "WBES indicator crime1, weighted share. Workbook N11 crime circumvention (class B): firms buy private security only where public security fails. Higher = more circumvention = more likely binding. Dropped from the 2023 questionnaire."
+    },
+    {
+      "id": "ES.CRIME_OBST_MAJOR",
+      "name": "Firms identifying crime, theft and disorder as a major or very severe obstacle (% of firms)",
+      "source": "extra",
+      "extra_group": "es_micro",
+      "source_code": "crime8",
+      "nodes": [
+        "N11.crime"
+      ],
+      "test": "price",
+      "class": "C",
+      "direction": 1,
+      "transform": "none",
+      "family": "es_obstacle_N11_crime",
+      "slow": false,
+      "years": 2006,
+      "notes": "WBES indicator crime8, weighted share. Firm perception, class C: informs the price test and never votes (rubric 10.1). Joins the family es_obstacle_N11_crime with the Data360 biggest-obstacle share. Asked in every round, including 2023 onward."
+    },
+    {
+      "id": "ES.TRANSIT_THEFT_LOSS",
+      "name": "Domestic shipments lost in transit to theft (% of product value)",
+      "source": "extra",
+      "extra_group": "es_micro",
+      "source_code": "crime5",
+      "nodes": [
+        "N6"
+      ],
+      "test": "price",
+      "class": "A",
+      "direction": 1,
+      "transform": "log1p",
+      "family": "es_transport_losses",
+      "slow": false,
+      "years": 2006,
+      "notes": "WBES indicator crime5, weighted mean over firms that ship domestically (zeros included). Workbook N6 price/cost (class A): losses in transit are a direct cost of weak transport and security along it. Fills the registry's connectors_not_built family 'es_transport_losses'. Higher = more likely binding. Dropped from the 2023 questionnaire."
     }
   ],
   "comovement_specs": [
@@ -3527,14 +3617,6 @@
     "_comment": "Evidence families the Workbook defines that the prototype cannot compute. Nodes depending only on these show 'cannot tell: connector not built' rather than 'data gap'.",
     "families": [
       {
-        "family": "es_transport_losses",
-        "nodes": [
-          "N6"
-        ],
-        "source": "Enterprise Surveys (losses in transit)",
-        "class": "A"
-      },
-      {
         "family": "camels_hippos_trade",
         "nodes": [
           "N5",
@@ -3551,14 +3633,6 @@
         ],
         "source": "RASFF / FDA refusals; sector studies",
         "class": "B"
-      },
-      {
-        "family": "security_costs",
-        "nodes": [
-          "N11.crime"
-        ],
-        "source": "Enterprise Surveys (security spending, theft losses)",
-        "class": "A"
       }
     ]
   }
