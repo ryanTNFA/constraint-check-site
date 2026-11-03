@@ -837,7 +837,8 @@ function hippoText(hp, vecNames, countryName, famOf) {
       : hv.gamma > 0 ? `the hippos are missing: ${countryName} is absent from the products that need ${factor} more often than its income predicts`
       : `no missing hippos: ${countryName} is present in the products that need ${factor} at least as often as its income predicts`;
     const counts = top.usual ? ` Of the ${top.usual} products that need the most ${factor} and that economies at ${countryName}'s income usually export, it does not export ${top.absent} (${pctT}%)${bot.usual ? `, against ${pctB}% of the ${bot.usual} that need the least` : ''}.` : '';
-    const rank = Math.round((hv.pctile / 100) * (hv.n - 1)) + 1;
+    // the percentile counts from the lowest gamma; the rank counts from the highest (most hippos missing = 1)
+    const rank = hv.n - Math.round((hv.pctile / 100) * (hv.n - 1));
     const f = famOf(hv.id);
     const inRating = hv.passes && f && isNum(f.signal)
       ? ` In the rating it enters ${f.node} as <strong>${fmtSigned(f.signal, 1)}</strong>: its γ is at the ${ordinalOf(Math.round(hv.pctile))} percentile of ${hv.n} economies.`
