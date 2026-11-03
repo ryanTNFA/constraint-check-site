@@ -1,6 +1,6 @@
 // Country picker.
 import './nav.mjs';
-import { getJSON, initTheme, h, TIER_ORDER, TIER_ORD, tierClass, isCannotTell, dataBase, withData } from './common.mjs';
+import { getJSON, initTheme, h, TIER_ORDER, TIER_ORD, tierClass, isCannotTell, dataBase, withData, strip } from './common.mjs';
 import { PLAIN_TIER, fcsStatus } from './card.mjs';
 import { mountExplorer } from './explore.mjs';
 
@@ -21,6 +21,7 @@ function legend() {
     el.append(h('span', {}, h('span', { class: `swatch ${tierClass(t)}`, 'aria-hidden': 'true' }), PLAIN_TIER[t]));
   }
   el.append(h('span', {}, h('span', { class: 'swatch t-context', 'aria-hidden': 'true' }), 'Context, needs sector study, or judged by elimination'));
+  el.append(h('span', { class: 'strip-key' }, 'On each card: one square per area, in the order of the decision tree on each country’s Areas page (the first decision, then finance, then low returns), coloured by its rating. Hover a square for its name. More amber does not mean a worse country, and there is no total.'));
 }
 
 const shortOf = (id) => (registry.nodeById[id] ? registry.nodeById[id].short.replace(/\?$/, '') : id);
@@ -50,7 +51,9 @@ function card(c) {
   return h('a', { class: 'econ-card', href: withData(`/constraint-check-site/desk/country.html?iso=${encodeURIComponent(c.iso3)}`) },
     h('h3', {}, c.name, h('span', { class: 'iso' }, c.iso3)),
     h('div', { class: 'where' }, `${c.region} · ${c.income_group}`),
-    h('ul', { class: 'summary-lines' },
+    // V3: the signature replaces the count lines on screen; the lines stay for screen readers
+    strip(c.tiers, { label: shortOf, plain: (t) => PLAIN_TIER[t] || 'not rated' }),
+    h('ul', { class: 'summary-lines visually-hidden' },
       h('li', {}, h('span', { class: 'lab' }, 'Ruled out: '), list(g.ruled), h('span', { class: 'lab' }, ' · Probably not the main constraint: '), list(g.probNot)),
       h('li', {}, h('span', { class: 'lab' }, 'Worth a closer look: '), h('strong', {}, list(g.look))),
       h('li', {}, h('span', { class: 'lab' }, 'Unclear: '), `${g.unclear} of ${g.total} areas`),
@@ -71,16 +74,7 @@ function render() {
   status.textContent = list.length ? '' : 'No economy matches that search.';
 }
 
-function howTo() {
-  const box = document.getElementById('howto'); const hide = document.getElementById('howto-hide');
-  let hidden = false;
-  try { hidden = localStorage.getItem('desk-howto-hidden') === '1'; } catch { /* storage blocked: show it */ }
-  box.hidden = hidden;
-  hide.addEventListener('click', () => { box.hidden = true; try { localStorage.setItem('desk-howto-hidden', '1'); } catch { /* ignore */ } });
-}
-
 async function main() {
-  howTo();
   try {
     // the home page needs only the tree's area names, not the indicator registry
     let nodes;
@@ -98,6 +92,8 @@ async function main() {
   q.addEventListener('input', render);
   sortSel.addEventListener('change', render);
   render();
-  mountExplorer(document.getElementById('explore'), { index, registry }).catch((e) => { console.error(e); document.getElementById('explore').textContent = `The map could not load: ${e.message}`; });
+  mountExplorer(document.getElementById('explore'), { index, registry }).catch((e) => { console.error(e); document.getElementById('explore').textContent = `The map could not load: ${e.message}`; })
+    // V5: the Long View loads after the map, so it never delays it
+    .finally(() => import('./longview.mjs').then((m) => m.mountLongView(document.getElementById('longview'))).catch((e) => console.error(e)));
 }
 main();

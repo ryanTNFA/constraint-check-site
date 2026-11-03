@@ -12,11 +12,11 @@
 </head>
 <body data-page="home">
 <a class="skip-link" href="#main">Skip to content</a>
-<div class="banner" role="note" aria-label="Prototype under validation">
+<div class="banner compact" role="note" aria-label="Prototype under validation">
   <div class="wrap">
     <span class="alert-mark" aria-hidden="true">!</span>
     <strong>Prototype under validation</strong>
-    <span class="alert-text">In its first test against 35 published expert diagnoses, Constraint Check rarely dismissed a constraint they found binding (6 of 100), but said “cannot tell” most of the time. The final test has not run; its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund. <span id="mock-note"></span></span>
+    <span class="alert-text">In a first test on 35 published expert diagnoses, it rarely dismissed a constraint they found binding (6 of 100) but said “cannot tell” most of the time. The final test has not run; ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund. <span id="mock-note"></span></span>
     <a href="#how-we-test" class="banner-link">How we test it →</a>
   </div>
 </div>
@@ -26,9 +26,21 @@
   </div></div>
 </header>
 <main id="main" class="wrap" tabindex="-1">
+  <!-- V2 (visual-upgrade PRD): the headline, then the map, before any paragraph of argument -->
+  <section class="picker-head">
+    <span class="kicker">Constraint Check (prototype)</span>
+    <h1>What holds back private investment?</h1>
+    <p class="prose">See which of a dozen standard explanations for weak private investment the public data can rule out in a country, which deserve a closer look, and where the data cannot tell. It uses the growth-diagnostics method behind MCC's constraints analyses. It never recommends funding.</p>
+  </section>
+  <section class="explore" aria-labelledby="explore-h">
+    <h2 id="explore-h">Explore one area across countries</h2>
+    <div id="explore"><div class="ex-skeleton" aria-hidden="true"></div><p class="small muted">Loading the map…</p></div>
+  </section>
+
   <section class="why" aria-labelledby="why-h">
     <span class="kicker">Why this exists · The New Foreign Assistance’s view</span>
     <h2 id="why-h" class="visually-hidden">Why this exists</h2>
+    <div id="longview" class="longview-host"></div>
     <div class="why-grid">
       <div><h3>Growth is how countries leave poverty, and aid, behind.</h3><p>Two centuries ago most people everywhere were poor (Maddison Project). Where incomes rose for decades, poverty fell and countries moved from aid to trade. The New Foreign Assistance holds that sustained growth is the only proven cure for extreme poverty.</p></div>
       <div><h3>Find what holds growth back before spending.</h3><p>In each economy a few problems hold private investment back the most: unreliable power in one, insecure land titles or a slow road to the port in another. Fixing one of those lets investment follow. Fixing one that isn’t holding anything back changes little.</p></div>
@@ -37,25 +49,6 @@
     <p class="small"><a href="/constraint-check-site/desk/methods.html#mcc">Why this way of choosing →</a> <a href="https://thenewforeignassistance.org" target="_blank" rel="noopener">About The New Foreign Assistance →</a></p>
   </section>
 
-  <section class="picker-head">
-    <span class="kicker">Constraint Check (prototype)</span>
-    <h1>What holds back private investment?</h1>
-    <p class="prose">See which of a dozen standard explanations for weak private investment the public data can rule out in a country, which deserve a closer look, and where the data cannot tell. It uses the growth-diagnostics method behind MCC's constraints analyses. It never recommends funding.</p>
-    <p class="idea-hint"><strong>Have a program idea?</strong> Pick a country, then use “Test a program idea” on its Bottom line: Constraint Check packs the evidence into one file for the AI you already use.</p>
-    <div class="howto" id="howto" hidden>
-      <div class="howto-head"><strong>How to read a country page (five minutes)</strong><button class="btn quiet small" type="button" id="howto-hide">Hide</button></div>
-      <ol>
-        <li><strong>Bottom line.</strong> Three lists: what you can stop arguing about, what deserves a closer look, and what the public data can’t settle, with what would. “Probably not” is weaker than “ruled out”. Each line has a “Why?” link.</li>
-        <li><strong>Areas.</strong> The decision tree and each area’s evidence card: what points each way, what would change the rating, and what to ask in two days in-country.</li>
-        <li><strong>Test a program idea</strong> (on the Bottom line). Describe it and download one file with the evidence and instructions; your own AI assistant does the assessment. Constraint Check runs no AI and never says “fund this”.</li>
-        <li><strong>For analysts:</strong> Charts and the Heat map hold every chart, test and number.</li>
-      </ol>
-    </div>
-  </section>
-  <section class="explore" aria-labelledby="explore-h">
-    <h2 id="explore-h">Explore one area across countries</h2>
-    <div id="explore"><p class="small muted">Loading the map…</p></div>
-  </section>
   <h2 class="econ-title">Choose an economy</h2>
   <section class="controls" aria-label="Find and sort economies">
     <div class="field">
@@ -75,6 +68,16 @@
   <h2 class="visually-hidden" id="econ-h">Economies</h2>
   <div id="grid" class="econ-grid" role="region" aria-labelledby="econ-h"></div>
   <p id="status" class="empty" hidden></p>
+  <details class="howto" id="howto">
+    <summary>How to read a country page (five minutes)</summary>
+    <p class="idea-hint"><strong>Have a program idea?</strong> Pick a country, then use “Test a program idea” on its Bottom line: Constraint Check packs the evidence into one file for the AI you already use.</p>
+    <ol>
+      <li><strong>Bottom line.</strong> Three lists: what you can stop arguing about, what deserves a closer look, and what the public data can’t settle, with what would. “Probably not” is weaker than “ruled out”. Each line has a “Why?” link.</li>
+      <li><strong>Areas.</strong> The decision tree and each area’s evidence card: what points each way, what would change the rating, and what to ask in two days in-country.</li>
+      <li><strong>Test a program idea</strong> (on the Bottom line). Describe it and download one file with the evidence and instructions; your own AI assistant does the assessment. Constraint Check runs no AI and never says “fund this”.</li>
+      <li><strong>For analysts:</strong> Charts and the Heat map hold every chart, test and number.</li>
+    </ol>
+  </details>
 </main>
 <footer class="foot"><div class="wrap">
   <p id="how-we-test"><strong>How we test it.</strong> The plan has three parts: a retrospective against published constraints analyses using only the data available at the time, a pre-registered head-to-head against diagnostics now in progress, and a panel of economists given the same information. The first part's development run was done on 2 November 2026: on 35 analyses the tool wrongly ruled out 6 of 100 binding constraints and said “cannot tell” for 87 percent of areas. Its sealed holdout has not been run, and the other two parts have not started. Treat every rating as a starting point.</p>

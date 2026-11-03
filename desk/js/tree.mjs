@@ -40,11 +40,39 @@ function caption(n) {
 }
 
 /** Which branch the first decision points to, or null when it is unclear (the colour alone cannot say which side). */
-function forkSide(n) {
+export function forkSide(n) {
   if (!n) return null;
   if (n.tier === 'candidate' || n.tier === 'likely_binding') return 'leans to finance';
   if (n.tier === 'probably_not' || n.tier === 'ruled_out') return 'points to low returns';
   return null;
+}
+
+/**
+ * The compact tree (visual-upgrade PRD V4): the same decision in two rows, drawn with the signature's squares and no
+ * D3: the first decision at the fork, the finance branch above, the low-return areas below. No captions; each square
+ * links to its area card and says its name and rating on hover and to a screen reader. A fingerprint, not a score.
+ * opts: { registry, nodes (scorecard nodes), overrides, href(id) }
+ */
+export function compactTree({ registry, nodes, overrides = {}, href }) {
+  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
+  const regById = Object.fromEntries(registry.nodes.nodes.map((n) => [n.id, n]));
+  const label = (id) => (regById[id] ? regById[id].short.replace(/\?$/, '') : id);
+  const sq = (id) => {
+    const n = byId[id]; const ov = overrides[id]; const t = ov ? ov.tier : (n ? n.tier : null);
+    const lean = ov ? null : leanOf(n);
+    const words = `${label(id)}: ${plainTier(t)}${lean ? `, ${lean.words}` : ''}${ov ? ' (your override)' : ''}`;
+    return h('a', { class: `sq ${t ? tierClass(t) : 't-none'}${ov ? ' ov' : ''}`, role: 'listitem', 'data-area': id, href: href(id), title: words, 'aria-label': words },
+      lean ? h('span', { class: `lean-mark ${lean.band}`, 'aria-hidden': 'true' }, lean.mark) : null);
+  };
+  const branch = (name, ids) => h('div', { class: 'ctree-branch' },
+    h('span', { class: 'ctree-lab' }, name),
+    h('div', { class: 'strip strip-md', role: 'list', 'aria-label': `${name}: each area's rating, in tree order` }, ids.map(sq)));
+  const side = forkSide(byId[FORK]);
+  return h('div', { class: 'ctree', role: 'group', 'aria-label': 'The decision tree, compact: the first decision, then the finance branch above and the low-return areas below' },
+    h('div', { class: 'ctree-fork' }, h('span', { class: 'ctree-lab' }, 'Costly finance or low returns?'), h('div', { class: 'strip strip-md', role: 'list' }, sq(FORK)), h('span', { class: 'ctree-side' }, side || 'not settled')),
+    h('div', { class: 'ctree-branches' },
+      branch('Finance', ['N1', 'N2', 'N3']),
+      branch('Low returns', ['N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11', 'N12', 'N13'])));
 }
 
 /**

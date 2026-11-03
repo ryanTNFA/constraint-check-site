@@ -2,7 +2,7 @@
 // economy by its rating for that area under the default comparison set, and a list groups the economies by rating,
 // alphabetically within each group. Never a ranking: no list sorts by score, and nothing is summed across areas.
 // No map library: an Equal Earth projection (Šavrič, Patterson and Jenny 2018) drawn straight into SVG.
-import { h, tierPaint, withData, getJSON, dataBase } from './common.mjs';
+import { h, tierPaint, withData, getJSON, dataBase, highlightStrips } from './common.mjs';
 import { PLAIN_TIER } from './card.mjs';
 
 const SVG = 'http://www.w3.org/2000/svg';
@@ -12,9 +12,9 @@ const AREAS = ['N0', 'N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11
 const GROUPS = [
   { key: 'look', label: 'Worth a closer look', tiers: ['likely_binding', 'candidate'] },
   { key: 'not', label: 'Probably not the main constraint', tiers: ['probably_not', 'ruled_out'] },
-  { key: 'conflicting', label: 'Can’t tell: evidence points both ways', tiers: ['cannot_tell_conflicting'] },
-  { key: 'weak', label: 'Can’t tell: evidence too weak', tiers: ['cannot_tell_weak'] },
-  { key: 'gap', label: 'Can’t tell: data gap', tiers: ['cannot_tell_data_gap'] },
+  { key: 'conflicting', label: 'Unclear: conflicting evidence', tiers: ['cannot_tell_conflicting'] },
+  { key: 'weak', label: 'Unclear: evidence too weak', tiers: ['cannot_tell_weak'] },
+  { key: 'gap', label: 'Unclear: data gap', tiers: ['cannot_tell_data_gap'] },
 ];
 
 function equalEarth(lon, lat) {
@@ -74,8 +74,10 @@ export async function mountExplorer(host, { index, registry }) {
   }
   const listHost = h('div', { class: 'ex-list', 'aria-live': 'polite' });
   const keyHost = h('div', { class: 'legend ex-legend' });
+  const which = h('p', { class: 'ex-which' });
   const draw = () => {
     const area = areaSel.value, reg = regSel.value, inc = incSel.value;
+    highlightStrips(area); // V3: the same area lights up on every card's signature
     svg.setAttribute('aria-label', `World map of the ${label(area).toLowerCase()} rating for each economy. The same information is in the grouped list.`);
     const inScope = (c) => (!reg || c.region === reg) && (!inc || c.income_group === inc);
     for (const [iso, s] of Object.entries(shapes)) {
@@ -85,11 +87,13 @@ export async function mountExplorer(host, { index, registry }) {
       s.p.classList.toggle('ex-gap', tier === 'cannot_tell_data_gap');
       s.t.textContent = `${c.name}: ${(PLAIN_TIER[tier] || 'not rated').toLowerCase()}. Open its bottom line.`;
     }
+    // the reader test of 2 November: say which area the colours are about, or the lists read as verdicts on whole countries
+    which.textContent = `Showing one area, ${label(area).toLowerCase()}: each colour is that area’s rating for the country, not a verdict on the country.`;
     listHost.replaceChildren();
     for (const g of GROUPS) {
       const members = index.countries.filter((c) => inScope(c) && c.tiers && g.tiers.includes(c.tiers[area])).sort((a, b) => a.name.localeCompare(b.name));
       const det = h('details', { class: `ex-group ex-${g.key}`, open: g.key === 'look' || g.key === 'not' ? true : null },
-        h('summary', {}, h('span', { class: `swatch ${g.key === 'look' ? 't-candidate' : g.key === 'not' ? 't-probably_not' : `t-cannot_tell_${g.key === 'gap' ? 'data_gap' : g.key}`}`, 'aria-hidden': 'true' }), `${g.label} (${members.length})`),
+        h('summary', {}, h('span', { class: `swatch ${g.key === 'look' ? 't-candidate' : g.key === 'not' ? 't-probably_not' : `t-cannot_tell_${g.key === 'gap' ? 'data_gap' : g.key}`}`, 'aria-hidden': 'true' }), `${label(area)}: ${g.label.toLowerCase()} (${members.length})`),
         ...namesByMark(members, area, g.key === 'look' || g.key === 'not'));
       listHost.append(det);
     }
@@ -97,7 +101,8 @@ export async function mountExplorer(host, { index, registry }) {
   // verdict groups split by how firm the rating is; the "can't tell" groups list names only
   function namesByMark(members, area, split) {
     const link = (c) => h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${c.iso3}`) }, c.name);
-    const para = (list, label) => h('p', { class: 'ex-names' }, label ? h('span', { class: 'ex-mark' }, label) : null, ...list.flatMap((c, i) => [i ? ', ' : '', link(c)]));
+    // names are separated by a middle dot, since several carry commas of their own ("Korea, Rep.")
+    const para = (list, label) => h('p', { class: 'ex-names' }, label ? h('span', { class: 'ex-mark' }, label) : null, ...list.flatMap((c, i) => [i ? ' · ' : '', link(c)]));
     if (!members.length) return [h('p', { class: 'ex-names muted' }, 'None.')];
     if (!split) return [para(members)];
     const parts = [['h', 'Holds under every reading: '], ['s', 'Depends on the reading: '], ['c', 'Depends on the comparison countries: ']];
@@ -107,8 +112,8 @@ export async function mountExplorer(host, { index, registry }) {
   keyHost.append(
     h('span', {}, h('span', { class: 'swatch t-candidate', 'aria-hidden': 'true' }), 'Worth a closer look'),
     h('span', {}, h('span', { class: 'swatch t-probably_not', 'aria-hidden': 'true' }), 'Probably not the main constraint'),
-    h('span', {}, h('span', { class: 'swatch ex-swatch-tint', 'aria-hidden': 'true' }), 'Can’t tell (the list says why)'),
-    h('span', {}, h('span', { class: 'swatch ex-swatch-gap', 'aria-hidden': 'true' }), 'Can’t tell: data gap'),
+    h('span', {}, h('span', { class: 'swatch ex-swatch-tint', 'aria-hidden': 'true' }), 'Unclear (the list says why)'),
+    h('span', {}, h('span', { class: 'swatch ex-swatch-gap', 'aria-hidden': 'true' }), 'Unclear: data gap'),
     h('span', {}, h('span', { class: 'swatch ex-swatch-none', 'aria-hidden': 'true' }), 'Not covered'));
   for (const s of [areaSel, regSel, incSel]) s.addEventListener('change', draw);
   host.replaceChildren(
@@ -117,6 +122,6 @@ export async function mountExplorer(host, { index, registry }) {
       h('div', { class: 'field' }, h('label', { for: 'ex-region' }, 'Region'), regSel),
       h('div', { class: 'field' }, h('label', { for: 'ex-income' }, 'Income group'), incSel)),
     h('p', { class: 'ex-caveat' }, 'Ratings are about what holds back private investment in each country, compared with similar economies. They are not a ranking of countries.'),
-    h('div', { class: 'ex-body' }, h('figure', { class: 'ex-fig' }, svg, keyHost, h('figcaption', { class: 'small muted' }, `Ratings under each country’s default comparison set (similar economies), rubric ${index.rubric_version}. Click a country to open its bottom line. Boundaries: Natural Earth, public domain; small economies are shown as dots.`)), listHost));
+    h('div', { class: 'ex-body' }, h('figure', { class: 'ex-fig' }, which, svg, keyHost, h('figcaption', { class: 'small muted' }, `Ratings under each country’s default comparison set (similar economies), rubric ${index.rubric_version}. Click a country to open its bottom line. Boundaries: Natural Earth, public domain; small economies are shown as dots.`)), listHost));
   draw();
 }

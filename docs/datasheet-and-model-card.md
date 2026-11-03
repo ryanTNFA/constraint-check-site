@@ -30,6 +30,7 @@
 - **How?** Programs in `ingest/` download each source's public API or bulk file, validate it and cache it in `data/raw/` (§2.2; `ingest/README.md`). Each cached file has a sidecar recording its URL, method, time and size.
 - **When?** The World Bank, IMF and Growth Lab files on 24 October 2026; the extra connectors between 26 and 29 October 2026. `data/snapshot/meta.json` and `data/extra/<source>/meta.json` record the dates.
 - **Hand-fetched inputs.** Three: the Hummels-Schaur replication package (openICPSR, needs a sign-in), the Ciccone-Papaioannou schooling-intensity table (transcribed from the paper), and the ESCAP trade-cost user note and metadata. Their hashes are in `data/MANIFEST-raw.sha256`.
+- **The home page's Long View chart** (`desk/data/longview.json`, `ingest/src_longview.py`) uses two series that enter no rating: GDP per capita by world region, 1820 to 2022, from the Maddison Project Database 2023 (Bolt and van Zanden 2024), and the share of people in extreme poverty, 1820 to 2018, from Moatsos (2021); both as published by Our World in Data under CC BY 4.0.
 
 ### Preprocessing
 

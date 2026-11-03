@@ -3,7 +3,7 @@
 // container is on the page, so both pages share one source of truth for the comparison set, peers and overrides.
 import { tabHref, refreshNav } from './nav.mjs';
 import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, fmtInt, fmtValue, tierClass, TIER_ORDER, parseHash, writeHash, qs, unitHint, shortName, sourceLink, sourceLabel, isStale, englishList, downloadText, dataBase, withData, gNorm, reasonClause, DATA_GAP_KINDS, isRegistryGap, SETTING_LABEL } from './common.mjs';
-import { renderTree } from './tree.mjs';
+import { renderTree, compactTree } from './tree.mjs';
 import { createCard, plainTier, PLAIN_TIER, bottomLine, fcsNote, refSpan, robustChip } from './card.mjs';
 import { renderComparators, SET_PLAIN } from './comparators.mjs';
 import { buildMemo, memoHTML } from './memo.mjs';
@@ -153,7 +153,7 @@ function fallbackView(base) {
 }
 
 function renderAll() {
-  renderSettingNote(); renderTreePanel(); renderStatements(); renderPeersLine(); renderOverridesBox(); renderHeaderMeta();
+  renderSettingNote(); renderTreePanel(); renderStatements(); renderPeersLine(); renderOverridesBox(); renderHeaderMeta(); renderCompactTree();
   if (on('topsplit-body')) renderTopSplit();
   if (on('ranking-body')) renderRanking();
   if (on('comparators-body')) renderComparatorsPanel();
@@ -176,7 +176,7 @@ function renderSettingNote() {
 function renderHeader() {
   const sc = state.scorecard; const c = sc.country; const m = sc.meta;
   $('country-name').textContent = c.name; $('country-iso').textContent = c.iso3;
-  $('banner-text').textContent = `In its first test against 35 published expert diagnoses, Constraint Check rarely dismissed a constraint they found binding (6 of 100), but said “cannot tell” most of the time. The final test has not run; its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
+  $('banner-text').textContent = `In a first test on 35 published expert diagnoses, it rarely dismissed a constraint they found binding (6 of 100) but said “cannot tell” most of the time. The final test has not run; ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
   const note = fcsNote(state.fcs, c.iso3, c.name);
   const el = $('fcs-note');
   if (note) { el.hidden = false; el.textContent = note; } else el.hidden = true;
@@ -186,6 +186,14 @@ function renderHeader() {
 function activeMembers() {
   const sc = state.scorecard;
   return Array.isArray(state.peers) ? state.peers : (sc.comparators[state.activeSet] ? sc.comparators[state.activeSet].members : []);
+}
+/** V4: the compact tree beside the Bottom line title, from the view in force (reading, comparison set, overrides). */
+function renderCompactTree() {
+  if (!on('ctree-host')) return;
+  const iso = state.scorecard.country.iso3;
+  $('ctree-host').replaceChildren(
+    compactTree({ registry: state.registry, nodes: state.view.nodes, overrides: state.overrides, href: (id) => tabHref('/constraint-check-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`) }),
+    h('p', { class: 'ctree-key' }, 'One square per area, coloured by its rating; an arrow on a grey square is its lean, toward (↑) or away from (↓) a problem. Hover for the name; click for the evidence. No total.'));
 }
 function renderHeaderMeta() {
   const sc = state.scorecard; const c = sc.country; const m = sc.meta;

@@ -112,6 +112,12 @@ export function refreshNav() {
   const iso = currentIso();
   const name = document.getElementById('nav-country-name');
   if (name) name.textContent = nameOf(iso);
+  // V2: the page shell paints the ISO code at once; swap in the name as soon as the country list is here, until the page
+  // module writes its own title (it removes data-country-title or overwrites the text)
+  if (countries) for (const el of document.querySelectorAll('[data-country-title]')) {
+    if (el.textContent.startsWith(iso)) el.textContent = el.textContent.replace(iso, nameOf(iso));
+    if (document.title.startsWith(`${iso} ·`)) document.title = document.title.replace(iso, nameOf(iso));
+  }
   for (const a of document.querySelectorAll('.nav-country a.tab')) { const t = TABS.find((x) => x.label === a.textContent); if (t) a.href = tabHref(t.path, iso); }
   const p = new URLSearchParams(location.hash.replace(/^#/, ''));
   const set = p.get('peers') != null ? 'custom' : (p.get('set') || 'structural');

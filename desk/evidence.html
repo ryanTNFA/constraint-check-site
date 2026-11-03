@@ -19,7 +19,7 @@
   <div class="wrap">
     <span class="alert-mark" aria-hidden="true">!</span>
     <strong>Prototype under validation</strong>
-    <span class="alert-text">In its first test against 35 published expert diagnoses, Constraint Check rarely dismissed a constraint they found binding (6 of 100), but said “cannot tell” most of the time. The final test has not run; its ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.</span>
+    <span class="alert-text">In a first test on 35 published expert diagnoses, it rarely dismissed a constraint they found binding (6 of 100) but said “cannot tell” most of the time. The final test has not run; ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.</span>
     <a href="/constraint-check-site/desk/#how-we-test" class="banner-link">How we test it →</a>
   </div>
 </div>
@@ -32,7 +32,8 @@
 <main id="main" class="wrap ev" tabindex="-1">
   <header class="ev-head">
     <span class="kicker">Evidence</span>
-    <h1 id="page-title">Loading…</h1>
+    <h1 id="page-title" data-country-title>The evidence, node by node</h1>
+    <script>(function(){var i=(new URLSearchParams(location.search).get('iso')||'').toUpperCase();if(i){document.getElementById('page-title').textContent=i+': the evidence, node by node';document.title=i+' · '+document.title;}})();</script>
     <p class="ev-sub" id="page-sub">Pick a node on the left. Each node shows every piece of evidence the verdict layer weighed; pick any indicator to chart it against the income trend, its comparators and its own history.</p>
     <p class="ev-sub small">This is the analyst view: the evidence behind each verdict, chart by chart. For the plain answer, see the <a href="/constraint-check-site/desk/country.html" data-keep-iso>Bottom line</a>.</p>
     <p class="ev-pack"><button class="btn small" id="pack" type="button" title="One HTML file with every chart on this page, its readout and footnote; open it and print to PDF">Download chart pack</button>
