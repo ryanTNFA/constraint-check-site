@@ -471,7 +471,7 @@ function shareText() {
   const ix = state.index; if (!ix || !Array.isArray(ix.countries) || !ix.countries.length) return '';
   const none = ix.countries.filter((c) => !Object.entries(c.tiers || {}).some(([id, t]) => !/^N11\./.test(id) && (t === 'ruled_out' || t === 'probably_not'))).length;
   const k = Math.round((none / ix.countries.length) * 10);
-  return k >= 3 ? `This is common: about ${k} in 10 countries have no rule-out. ` : '';
+  return k >= 3 ? `This is common: about ${k} in 10 countries have nothing on this list. ` : '';
 }
 function renderOverridesBox() {
   if (!on('overrides-box')) return;

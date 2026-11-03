@@ -54,6 +54,8 @@ function bar(l) {
 function mount() {
   const l = currentLesson();
   applyPredict();
+  // lessons speak in the tool's voice only: TNFA's boxes are hidden while a lesson is on (teaching plan, guardrails)
+  document.body.classList.toggle('lesson', !!l);
   if (!l) return;
   const header = document.querySelector('header.topbar');
   const old = document.querySelector('.lesson-bar'); if (old) old.remove();

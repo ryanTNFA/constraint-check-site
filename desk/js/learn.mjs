@@ -122,7 +122,7 @@ async function main() {
       return { label, value: tv && tv.T != null ? Number(tv.T.toFixed(2)) : 0, note: tv && tv.T != null ? `(${n} measure${n === 1 ? '' : 's'})` : '(no evidence)', cls: tv && tv.T != null ? (tv.T > 0 ? 'toward' : tv.T < 0 ? 'away' : '') : 'none' };
     });
     $('fig-tests').append(bars(rows, { signed: true, max: 2 }));
-    $('tests-text').textContent = `On the first decision, the price test leans toward a problem (${fmtSigned(n0.tests.price.T)}: firms report credit constraints and discouraged borrowers, and the real rate is high), but the workarounds test leans away (${fmtSigned(n0.tests.circumvention.T)}: firms finance themselves internally and banks are liquid), and investment moved with the rate no more often than chance. A net near zero with the tests disagreeing is "can't tell", and the tool says so: ${plainTier(n0.tier).toLowerCase()}.`;
+    $('tests-text').textContent = `On the first decision, the price test leans toward a problem (${fmtSigned(n0.tests.price.T)}: a high real rate, and discouraged borrowers), but the workarounds test leans away (${fmtSigned(n0.tests.circumvention.T)}: firms fund less of their investment themselves, and use banks more, than expected, the opposite of working around scarce credit), and investment moved with the rate no more often than chance. Neither test is strong enough to count as conflicting, so the card files finance under "one kind of evidence": ${plainTier(n0.tier).toLowerCase()}.`;
   }
 
   // 6 the tree
@@ -137,7 +137,7 @@ async function main() {
   const st = sc.statements || {};
   const list = (title, ids, empty) => h('div', { class: 'learn-list' }, h('h3', {}, title), ids.length ? h('ul', {}, ids.map((id) => h('li', {}, h('strong', {}, short(id)), byId[id] ? `: ${plainTier(byId[id].tier).toLowerCase()}` : ''))) : h('p', { class: 'muted' }, empty));
   $('fig-lists').append(
-    list('Stop arguing about', st.stop_arguing || [], 'Nothing yet. Common: about half the economies have no rule-out.'),
+    list('Stop arguing about', st.stop_arguing || [], 'Nothing yet, like about half the economies (112 of 217); none has a "ruled out".'),
     list('Look closer', st.look_hard || [], 'Nothing.'),
     list('Can’t settle', st.cannot_tell || [], 'Nothing.'));
 
