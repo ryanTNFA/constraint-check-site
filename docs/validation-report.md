@@ -4,8 +4,9 @@
 
 ## Summary
 
-- **External validity: not yet tested.** None of the planned comparisons with expert diagnostics has been run, so there is no false rule-out rate yet. The thresholds are uncalibrated.
-- **Internal checks pass:** 100 of 100 engine tests; the statsmodels re-estimate of the residuals agrees (largest gap in t 0.030); 1430 of 1430 outputs reproduce from the release.
+- **Retrospective, development set** (35 published diagnoses, rubric 0.2.0, Standard, pooled): false rule-out 6.0% (6 of 100; Wilson 2.8–12.5%); hit 4.0% (4 of 100; Wilson 1.6–9.8%); false alarm 5.1% (12 of 237; Wilson 2.9–8.6%); cannot tell 87.5% (295 of 337; Wilson 83.6–90.6%). Verdict: split. See section 5.
+- **The holdout set has not been run.** The thresholds are uncalibrated: no rubric parameter has been tuned to these labels.
+- **Internal checks pass:** 110 of 110 engine tests; the statsmodels re-estimate of the residuals agrees (largest gap in t 0.030); 1430 of 1430 outputs reproduce from the release.
 - **Verdicts:** of 3,472 scored node rows (217 economies), 2,959 (85 percent) are a "cannot tell"; 0 reach an extreme tier.
 - **Test 4 kill criterion:** 1 of 3 vectors pass (CH.SKILL); CH.FIN, CH.TIME fail and are shown but not counted.
 
@@ -49,7 +50,7 @@ By node:
 
 | Check | Result | Where |
 |---|---|---|
-| Engine unit and integration tests | 100 passed, 0 failed, of 100 | `engine/test/` |
+| Engine unit and integration tests | 110 passed, 0 failed, of 110 | `engine/test/` |
 | statsmodels re-estimate of the income-conditional residuals (RLM, HuberT, MAD scale) | 10 indicators, 48 economy-indicator pairs; largest gap in t 0.030 (SLE, FP.CPI.TOTL.ZG); coefficients on log income within 5.8 percent | `engine/xcheck/icr_xcheck.py`, `tests/test_engine_parity.py` |
 | Replication | 1430 of 1430 outputs identical to the release manifest | `replicate.py`, `REPLICATION.md` |
 | Synthetic run with planted constraints | Covered by the engine tests (`synthetic.test.mjs`) | `engine/test/fixtures/make_synthetic.mjs` |
@@ -71,19 +72,38 @@ Each real intensity vector against 99 industry-permuted placebos (seed 20261029)
 - Comparator sets: 31 economies have no aspirational set; 18 have a structural set shorter than ten.
 - Engine warnings: 8 (listed in `out/engine-report.json`).
 
-## 5. Planned validation, not yet run
+## 5. External validation
 
-From the Methodology Note, section 6.2. Each will be reported here when run, including any failed kill criterion.
+From the Methodology Note, section 6.2. Each leg is reported here when run, including any failed kill criterion.
 
 | Leg | Pass | Kill | Status |
 |---|---|---|---|
-| Phase 0 screening: ten countries with public diagnostics, rubric frozen by hash, pre-registered | Zero adjudicated false rule-outs; "cannot tell" under 40 percent | Two or more adjudicated false rule-outs | not run |
-| Vintage-locked retrospective against MCC constraints analyses and Growth Lab diagnostics | False rule-out rate under 1 in 20 | Over 1 in 10 after one round of fixes | not run |
+| Phase 0 screening: ten countries with public diagnostics, rubric frozen by hash, pre-registered | Zero adjudicated false rule-outs; "cannot tell" under 40 percent | Two or more adjudicated false rule-outs | superseded by the retrospective |
+| Vintage-locked retrospective against MCC constraints analyses and Growth Lab diagnostics (pre-registered, `docs/preregistration/retrospective-v1.md`) | False rule-out rate under 1 in 20 | Over 1 in 10 after one round of fixes | development: 35 analyses, false rule-out 6.0% (6 of 100; Wilson 2.8–12.5%), verdict split; holdout sealed, not yet run |
 | Prospective, pre-registered comparisons | As the retrospective | As the retrospective | not run |
 | Expert panel (arms A0-A5) | Not worse than inter-expert agreement |  | not run |
 | Calibration: contradiction rate falls monotonically by tier | Required |  | not run |
 | Outside replication on a clean machine | Rebuilt without a question |  | not run |
 | Plain-language check of the guide (five non-economists) | Four of five correct |  | not run |
+
+### 5.1. Retrospective, development set
+
+35 analyses at rubric 0.2.0, engine 0.1.6 (frozen by amendment 2). Coder agreement on the doubly coded analyses: kappa 0.74 for BINDING against the rest (n = 324, gate 0.6), 86 disagreements resolved by a third reader. Rates are over analysis-node pairs; intervals are Wilson 95 percent.
+
+| Setting | False rule-out (primary) | Hit | False alarm | Cannot tell |
+|---|---|---|---|---|
+| Cautious | 4.0% (4 of 100; Wilson 1.6–9.8%) | 0.0% (0 of 100; Wilson 0.0–3.7%) | 0.8% (2 of 237; Wilson 0.2–3.0%) | 95.5% (322 of 337; Wilson 92.8–97.3%) |
+| Standard | 6.0% (6 of 100; Wilson 2.8–12.5%) | 4.0% (4 of 100; Wilson 1.6–9.8%) | 5.1% (12 of 237; Wilson 2.9–8.6%) | 87.5% (295 of 337; Wilson 83.6–90.6%) |
+| Exploratory | 6.0% (6 of 100; Wilson 2.8–12.5%) | 18.0% (18 of 100; Wilson 11.7–26.7%) | 12.7% (30 of 237; Wilson 9.0–17.5%) | 78.0% (263 of 337; Wilson 73.3–82.1%) |
+
+By source, Standard:
+
+| Source | False rule-out | Hit | False alarm | Cannot tell |
+|---|---|---|---|---|
+| mcc | 5.3% (5 of 94; Wilson 2.3–11.9%) | 2.1% (2 of 94; Wilson 0.6–7.4%) | 5.9% (11 of 187; Wilson 3.3–10.2%) | 88.3% (248 of 281; Wilson 84.0–91.5%) |
+| growthlab | 16.7% (1 of 6; Wilson 3.0–56.4%) | 33.3% (2 of 6; Wilson 9.7–70.0%) | 2.0% (1 of 50; Wilson 0.4–10.5%) | 83.9% (47 of 56; Wilson 72.2–91.3%) |
+
+**Verdict against the protocol's section 7: split**; sources at kill level: growthlab.
 
 ## 6. What changed in this release
 
