@@ -719,11 +719,19 @@ button.robust[aria-expanded="true"]::after { content: ' ▴'; }
 .tnfa-view ul { margin: 4px 0 0; padding-left: 1.1em; display: grid; gap: 6px; max-width: 70ch; }
 .tnfa-view p { margin: 0; }
 .tnfa-view .small a { margin-right: 14px; }
-.why { margin: 22px 0 6px; padding: 14px 18px 16px; background: var(--accent-soft); border-left: 4px solid var(--brand-amber); }
+/* TNFA's band is the site's own navy "Long View" section (thenewforeignassistance.org): its ground, type colours and
+   chart colours are the site's, fixed in both themes, so TNFA's voice looks like TNFA and the tool's like the tool. */
+.why { margin: 22px 0 6px; padding: 22px 28px 20px; background: #1c2e4a; color: #fff;
+  --why-soft: #be9a7a; --why-dim: #8a9bb5; --why-link: #6b9ae3; --why-grid: #3a4d6a; }
+.why .kicker { color: var(--why-soft); }
 .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 28px; margin: 8px 0 10px; }
-.why-grid h3 { font-family: var(--serif); font-weight: 500; font-size: 1.15rem; margin: 0 0 4px; text-wrap: balance; }
-.why-grid p { margin: 0; font-size: 0.9375rem; color: var(--muted); max-width: 46ch; }
+.why-grid h3 { font-family: var(--serif); font-weight: 500; font-size: 1.15rem; margin: 0 0 4px; text-wrap: balance; color: #fff; }
+.why-grid p { margin: 0; font-size: 0.9375rem; color: var(--why-soft); max-width: 46ch; }
 .why .small a { margin-right: 14px; }
+.why a { color: var(--why-link); }
+.why .btn.quiet { border-color: var(--why-link); color: #fff; }
+.why .btn.quiet:hover { background: rgba(255, 255, 255, 0.08); }
+.why .btn:focus-visible { outline-color: #fff; }
 .tnfa-panel { border-left: 4px solid var(--brand-amber); padding-left: 16px; }
 /* self-discovery page */
 .sd-prose { max-width: 46rem; display: grid; gap: 10px; }
@@ -770,20 +778,27 @@ details.howto[open] > summary { margin-bottom: 4px; }
 
 /* ---------- V5: the Long View, in TNFA's "Why this exists" band ---------- */
 .longview-host:empty { display: none; }
-.longview { margin: 10px 0 14px; }
+.longview { margin: 12px 0 16px; }
 .lv-svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
-.lv-title { font-size: 13px; font-weight: 600; fill: var(--text); }
-.lv-grid { stroke: var(--rule); stroke-width: 1; }
-.lv-tick { font-size: 11px; fill: var(--muted); }
-.lv-line { fill: none; stroke: var(--chart-other); stroke-width: 1.4; stroke-linejoin: round; }
-/* the world line is navy, not amber: amber already means "worth a closer look" (reader test, 2 November) */
-.lv-line.world { stroke: var(--chart-peer); stroke-width: 2.6; }
-.lv-area { fill: var(--chart-band); stroke: none; }
-.lv-label { font-size: 11px; fill: var(--text); }
-.lv-label.world { font-weight: 600; fill: var(--chart-peer); }
+/* the chart's type is the site's: italic Newsreader titles in the site's light blue, serif dollar ticks in tan,
+   end labels in each line's own colour; the lines carry their colours as attributes (longview.mjs, SERIES) */
+.lv-title { font-family: var(--serif); font-style: italic; font-size: 16px; fill: var(--why-link, #6b9ae3); }
+.lv-grid { stroke: var(--why-grid, #3a4d6a); stroke-width: 1; }
+.lv-tick { font-size: 12px; fill: var(--why-dim, #8a9bb5); }
+.lv-tick-y { font-family: var(--serif); font-size: 15px; fill: var(--why-soft, #be9a7a); }
+.lv-line { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.lv-line.world { stroke: #fff; stroke-width: 2.4; }
+.lv-area { fill: rgba(107, 154, 227, 0.22); stroke: none; }
+.lv-label { font-family: var(--serif); font-weight: 600; font-size: 13px; }
+.lv-label.world { fill: #fff; }
 .ex-which { margin: 0 0 6px; font-size: 0.9375rem; font-weight: 600; }
-.lv-year { font-family: var(--serif); font-size: 44px; fill: var(--rule); }
-.longview figcaption { margin-top: 6px; display: grid; gap: 4px; max-width: none; }
+.lv-year { font-family: var(--serif); font-size: 44px; fill: var(--why-grid, #3a4d6a); }
+.longview figcaption { margin-top: 8px; display: grid; gap: 4px; max-width: none; color: var(--why-dim, #8a9bb5); }
+.longview figcaption strong { color: #fff; }
+/* the lesson page borrows these classes on a light ground */
+.learn .lv-grid { stroke: var(--rule); } .learn .lv-tick { font-size: 11px; fill: var(--muted); }
+.learn .lv-label { font-family: var(--sans); font-weight: 400; font-size: 11px; fill: var(--text); }
+.learn .lv-label.world { font-weight: 600; fill: var(--chart-peer); }
 .lv-controls { display: inline-flex; align-items: center; gap: 10px; }
 @media (max-width: 700px) { .lv-svg { min-width: 640px; } .longview { overflow-x: auto; } }
 
