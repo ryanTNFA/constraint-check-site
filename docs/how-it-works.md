@@ -2,7 +2,7 @@
 
 *A plain-language guide for program officers, Hill staff and managers. Companion to the Constraint Check Methodology Note, v0.1 (rubric 0.1.7, engine 0.1.5, data snapshot 2026-10-24). The New Foreign Assistance (TNFA), 29 October 2026; updated 31 October.*
 
-**Constraint Check is a prototype.** In a first test against 35 published expert diagnoses (2 November 2026) its ratings rarely dismissed a binding constraint (6 of 100) but said “cannot tell” most of the time; the final test has not run. Use it to sharpen questions, not to settle them.
+**Constraint Check is a prototype.** In its pre-registered test against 57 published expert diagnoses (2 and 3 November 2026) its ratings rarely dismissed a binding constraint (9 of 175) and said “cannot tell” most of the time; the test was too small to pass or fail its own bar. Use it to sharpen questions, not to settle them.
 
 ## 1. What question it answers
 
@@ -28,7 +28,7 @@ The ratings are deliberately lopsided. The tool needs much more evidence to rule
 
 ## 3. How confident to be
 
-- **It is a prototype.** Its thresholds are starting points, and some were set after looking at results. Testing against published expert diagnoses, and against diagnoses still in progress, is planned with pass and fail criteria written down in advance. None has run yet.
+- **It is a prototype.** Its thresholds are starting points, and some were set after looking at results. It has been tested once, against 57 published expert diagnoses, with pass and fail lines written down in advance: it rarely contradicted them (9 of 175 binding constraints wrongly set aside) but said "unclear" so often that the test could neither pass nor fail it. No threshold was tuned to those diagnoses. A test against diagnoses still in progress was designed but has not been resourced.
 - **Most answers are "unclear".** About nine in ten ratings across all countries are a form of "unclear". Three areas (domestic savings, land, crime) cannot be rated for any country with the data connected today. Self-discovery is judged by elimination, with the lean of its evidence shown, and policy uncertainty is described as context, not rated. Every "unclear" says why: the evidence isn't connected yet, there is no recent data, only one kind of evidence speaks, or the evidence points both ways. An "unclear" is an honest answer, not a failure.
 - **Ratings depend on the comparison countries.** Each country is compared with countries of similar income, size, resource dependence and geography, and also with its region and with countries that grew fast from a similar starting point. A rating that changes a lot across these comparisons cannot reach the top or bottom rating. The page shows which countries were used.
 - **Firm surveys are often several years old.** Older evidence counts for less, and a rating needs at least one price or workaround measure from the last eight years.

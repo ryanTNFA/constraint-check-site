@@ -5,7 +5,8 @@
 ## Summary
 
 - **Retrospective, development set** (35 published diagnoses, rubric 0.2.0, Standard, pooled): false rule-out 6.0% (6 of 100; Wilson 2.8–12.5%); hit 4.0% (4 of 100; Wilson 1.6–9.8%); false alarm 5.1% (12 of 237; Wilson 2.9–8.6%); cannot tell 87.5% (295 of 337; Wilson 83.6–90.6%). Verdict: split. See section 5.
-- **The holdout set has not been run.** The thresholds are uncalibrated: no rubric parameter has been tuned to these labels.
+- **Retrospective, holdout set** (22 published diagnoses, rubric 0.2.0, Standard, pooled): false rule-out 4.0% (3 of 75; Wilson 1.4–11.1%); hit 12.0% (9 of 75; Wilson 6.4–21.3%); false alarm 5.3% (7 of 131; Wilson 2.6–10.6%); cannot tell 86.4% (178 of 206; Wilson 81.1–90.4%). Verdict: inconclusive (12 BINDING pairs in rule-out or flag; the protocol needs 20). See section 5.
+- **The protocol is complete.** No rubric parameter was tuned to these labels (the one round of fixes was forgone, amendment 4). The ratings are neither validated nor killed: the test was too small to pass or fail its own primary bar, so they stay uncalibrated.
 - **Internal checks pass:** 110 of 110 engine tests; the statsmodels re-estimate of the residuals agrees (largest gap in t 0.030); 1430 of 1430 outputs reproduce from the release.
 - **Verdicts:** of 3,472 scored node rows (217 economies), 2,959 (85 percent) are a "cannot tell"; 0 reach an extreme tier.
 - **Test 4 kill criterion:** 1 of 3 vectors pass (CH.SKILL); CH.FIN, CH.TIME fail and are shown but not counted.
@@ -79,7 +80,7 @@ From the Methodology Note, section 6.2. Each leg is reported here when run, incl
 | Leg | Pass | Kill | Status |
 |---|---|---|---|
 | Phase 0 screening: ten countries with public diagnostics, rubric frozen by hash, pre-registered | Zero adjudicated false rule-outs; "cannot tell" under 40 percent | Two or more adjudicated false rule-outs | superseded by the retrospective |
-| Vintage-locked retrospective against MCC constraints analyses and Growth Lab diagnostics (pre-registered, `docs/preregistration/retrospective-v1.md`) | False rule-out rate under 1 in 20 | Over 1 in 10 after one round of fixes | development: 35 analyses, false rule-out 6.0% (6 of 100; Wilson 2.8–12.5%), verdict split; holdout sealed, not yet run |
+| Vintage-locked retrospective against MCC constraints analyses and Growth Lab diagnostics (pre-registered, `docs/preregistration/retrospective-v1.md`) | False rule-out rate under 1 in 20 | Over 1 in 10 after one round of fixes | development: 35 analyses, false rule-out 6.0% (6 of 100; Wilson 2.8–12.5%), verdict split; holdout: 22 analyses, false rule-out 4.0% (3 of 75; Wilson 1.4–11.1%), verdict inconclusive; design: 3 analyses, false rule-out 0.0% (0 of 8; Wilson 0.0–32.4%), verdict below_kill_level |
 | Prospective, pre-registered comparisons | As the retrospective | As the retrospective | not run |
 | Expert panel (arms A0-A5) | Not worse than inter-expert agreement |  | not run |
 | Calibration: contradiction rate falls monotonically by tier | Required |  | not run |
@@ -104,6 +105,43 @@ By source, Standard:
 | growthlab | 16.7% (1 of 6; Wilson 3.0–56.4%) | 33.3% (2 of 6; Wilson 9.7–70.0%) | 2.0% (1 of 50; Wilson 0.4–10.5%) | 83.9% (47 of 56; Wilson 72.2–91.3%) |
 
 **Verdict against the protocol's section 7: split**; sources at kill level: growthlab.
+
+### 5.2. Retrospective, holdout set
+
+22 analyses at rubric 0.2.0, engine 0.1.6 (frozen by amendment 2). Coder agreement on the doubly coded analyses: kappa 0.74 for BINDING against the rest (n = 324, gate 0.6), 86 disagreements resolved by a third reader. Rates are over analysis-node pairs; intervals are Wilson 95 percent.
+
+| Setting | False rule-out (primary) | Hit | False alarm | Cannot tell |
+|---|---|---|---|---|
+| Cautious | 0.0% (0 of 75; Wilson 0.0–4.9%) | 2.7% (2 of 75; Wilson 0.7–9.2%) | 3.8% (5 of 131; Wilson 1.6–8.6%) | 95.6% (197 of 206; Wilson 91.9–97.7%) |
+| Standard | 4.0% (3 of 75; Wilson 1.4–11.1%) | 12.0% (9 of 75; Wilson 6.4–21.3%) | 5.3% (7 of 131; Wilson 2.6–10.6%) | 86.4% (178 of 206; Wilson 81.1–90.4%) |
+| Exploratory | 4.0% (3 of 75; Wilson 1.4–11.1%) | 24.0% (18 of 75; Wilson 15.8–34.8%) | 13.0% (17 of 131; Wilson 8.3–19.8%) | 77.2% (159 of 206; Wilson 71.0–82.4%) |
+
+By source, Standard:
+
+| Source | False rule-out | Hit | False alarm | Cannot tell |
+|---|---|---|---|---|
+| mcc | 5.4% (3 of 56; Wilson 1.8–14.6%) | 10.7% (6 of 56; Wilson 5.0–21.5%) | 3.4% (3 of 87; Wilson 1.2–9.7%) | 86.0% (123 of 143; Wilson 79.4–90.8%) |
+| growthlab | 0.0% (0 of 19; Wilson 0.0–16.8%) | 15.8% (3 of 19; Wilson 5.5–37.6%) | 9.1% (4 of 44; Wilson 3.6–21.2%) | 87.3% (55 of 63; Wilson 76.9–93.4%) |
+
+**Verdict against the protocol's section 7: inconclusive** (12 BINDING pairs in rule-out or flag; the protocol needs 20).
+
+### 5.3. Retrospective, design set (Brazil and South Africa, used in designing the tool; descriptive only, never pooled)
+
+3 analyses at rubric 0.2.0, engine 0.1.6 (frozen by amendment 2). Coder agreement on the doubly coded analyses: kappa 0.74 for BINDING against the rest (n = 324, gate 0.6), 86 disagreements resolved by a third reader. Rates are over analysis-node pairs; intervals are Wilson 95 percent.
+
+| Setting | False rule-out (primary) | Hit | False alarm | Cannot tell |
+|---|---|---|---|---|
+| Cautious | 0.0% (0 of 8; Wilson 0.0–32.4%) | 12.5% (1 of 8; Wilson 2.2–47.1%) | 0.0% (0 of 13; Wilson 0.0–22.8%) | 95.2% (20 of 21; Wilson 77.3–99.2%) |
+| Standard | 0.0% (0 of 8; Wilson 0.0–32.4%) | 12.5% (1 of 8; Wilson 2.2–47.1%) | 15.4% (2 of 13; Wilson 4.3–42.2%) | 85.7% (18 of 21; Wilson 65.4–95.0%) |
+| Exploratory | 0.0% (0 of 8; Wilson 0.0–32.4%) | 25.0% (2 of 8; Wilson 7.1–59.1%) | 23.1% (3 of 13; Wilson 8.2–50.3%) | 76.2% (16 of 21; Wilson 54.9–89.4%) |
+
+By source, Standard:
+
+| Source | False rule-out | Hit | False alarm | Cannot tell |
+|---|---|---|---|---|
+| growthlab | 0.0% (0 of 8; Wilson 0.0–32.4%) | 12.5% (1 of 8; Wilson 2.2–47.1%) | 15.4% (2 of 13; Wilson 4.3–42.2%) | 85.7% (18 of 21; Wilson 65.4–95.0%) |
+
+**Verdict against the protocol's section 7: below_kill_level**.
 
 ## 6. What changed in this release
 

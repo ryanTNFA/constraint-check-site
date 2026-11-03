@@ -17,7 +17,7 @@
   <div class="wrap">
     <span class="alert-mark" aria-hidden="true">!</span>
     <strong>Prototype under validation</strong>
-    <span class="alert-text">In a first test on 35 published expert diagnoses, it rarely dismissed a constraint they found binding (6 of 100) but said “cannot tell” most of the time. The final test has not run; ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.</span>
+    <span class="alert-text">In its pre-registered test against 57 published expert diagnoses, it rarely dismissed a constraint they found binding (9 of 175) and said “cannot tell” most of the time. The test was too small to pass or fail its own bar, so the ratings stay uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.</span>
     <a href="#testing" class="banner-link">How we test it →</a>
   </div>
 </div>
@@ -70,11 +70,11 @@
     <div class="panel-head"><div><span class="kicker">Validation</span><h2 id="testing-h">How we test it</h2></div></div>
     <div class="prose methods-prose">
       <ol>
-        <li><strong>A retrospective</strong> against published diagnostics: MCC's 43 constraints analyses and the Harvard Growth Lab's country growth diagnostics. The tool is run on data truncated to what each analysis could have seen. The design, the metrics and the pass and fail thresholds were written down and dated on 30 October 2026, before any comparison. The main measure is how often the tool says “probably not” about a constraint the analysts found binding. The results will be published whatever they are.</li>
-        <li><strong>A prospective test</strong> against diagnostics now in progress, with the tool's ratings recorded before the diagnostics are published.</li>
-        <li><strong>A panel of economists</strong> given the same public information.</li>
+        <li><strong>A retrospective</strong> against published diagnostics: MCC's 43 constraints analyses and 18 of the Harvard Growth Lab's country growth diagnostics, coded node by node by two independent readers (agreement 0.74) with every disagreement settled by a third. The tool was run on data truncated to what each analysis could have seen. The design, the metrics and the pass and fail thresholds were written down and dated on 30 October 2026, before any comparison; the analyses were split into a development set and a sealed holdout, and the holdout was run once, on 3 November 2026.</li>
+        <li><strong>The result.</strong> On the holdout (22 analyses) the tool wrongly ruled out 3 of 75 constraints the analysts found binding, flagged 9, and said “cannot tell” for 86 percent of areas; on the development set, 6 of 100, 4 and 87 percent. The pass line was a false rule-out rate below 1 in 20 and the kill line above 1 in 10. The point estimate sits under the pass line, but the protocol also required at least 20 binding constraints on which the tool committed either way, and there were 12: by its own rule the primary result is <strong>inconclusive</strong>. The tool commits too rarely for a test of this size to pass or fail it. No scoring rule was tuned to the analysts' findings: the protocol allowed one round of fixes and we chose not to use it.</li>
+        <li><strong>What the result does and does not say.</strong> It does not show the ratings are right. It shows that where the tool leans away from an area, it has rarely contradicted published experts, and that most of the time it declines to call. Agreement with MCC and the Growth Lab is not truth: their diagnoses are expert judgements made with governments, and the coded labels have their own uncertainty. Every “probably not” on this site now carries the measured rate. The full protocol, its five dated amendments and the result files are in the <a href="/constraint-check-site/desk/methods.html#documents">validation report</a>.</li>
       </ol>
-      <p>The retrospective's development run was done on 2 November 2026: on 35 analyses (29 MCC, 6 Growth Lab) the tool wrongly ruled out 6 of 100 binding constraints, flagged 4, and said “cannot tell” for 87 percent of areas. The sealed holdout has not been run, and the other two tests have not started. Treat every rating as a starting point.</p>
+      <p>A prospective test against diagnostics still in progress, and a panel of economists given the same information, were designed in the Methodology Note but have not been resourced and are not promised. Treat every rating as a starting point.</p>
     </div>
   </section>
 

@@ -176,7 +176,7 @@ function renderSettingNote() {
 function renderHeader() {
   const sc = state.scorecard; const c = sc.country; const m = sc.meta;
   $('country-name').textContent = c.name; $('country-iso').textContent = c.iso3;
-  $('banner-text').textContent = `In a first test on 35 published expert diagnoses, it rarely dismissed a constraint they found binding (6 of 100) but said “cannot tell” most of the time. The final test has not run; ratings are uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
+  $('banner-text').textContent = `In its pre-registered test against 57 published expert diagnoses, it rarely dismissed a constraint they found binding (9 of 175) and said “cannot tell” most of the time. The test was too small to pass or fail its own bar, so the ratings stay uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
   const note = fcsNote(state.fcs, c.iso3, c.name);
   const el = $('fcs-note');
   if (note) { el.hidden = false; el.textContent = note; } else el.hidden = true;

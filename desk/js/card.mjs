@@ -673,6 +673,8 @@ export function whatWouldMove(node, ctx) {
     out.push(`It would move down to ‘unclear’ if the score fell below ${fmtSigned((ev.C ?? 0) >= C.C_min ? C.N_min : C.N_alt_min)} (today ${fmtSigned(ev.N)})${f ? `, for example if a newer survey or data year put ${lowerFirst(shortName(f.r))} near the comparison-country median` : ''}.`);
   } else if (t === 'probably_not' || t === 'ruled_out') {
     if (t === 'probably_not') out.push(`It would be ruled out only with a score of ${fmtSigned(R.N_max)} or lower, ${R.C_min} tests agreeing, ${R.E_min} independent sources, a measure of firms working around the problem, data less than ${R.R_max_age} years old and no high-quality measure pointing toward a problem.`);
+    // the pre-registered retrospective's measured rate, shown beside every rule-out as its protocol (section 7) requires
+    if (t === 'probably_not') out.push('In the pre-registered test against published expert diagnoses, this rating was given to 3 of 75 constraints the experts found binding on the sealed holdout (9 of 175 across both sets): rarely wrong against them, but the tool commits so seldom that the test could not pass or fail it.');
     out.push(`It would move back to ‘unclear’ if the score rose above ${fmtSigned((ev.C ?? 0) >= PN.C_min ? PN.N_max : PN.N_alt_max)} (today ${fmtSigned(ev.N)}) or a counter-signal strengthened.`);
   } else if (t === 'cannot_tell_data_gap') {
     const sub = ev.tier_subreason || node.tier_subreason;
