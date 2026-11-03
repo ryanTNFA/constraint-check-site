@@ -70,7 +70,7 @@ Why only "worth a closer look" and not "likely a main constraint"?
 
 What it does not mean: it does not say corruption is *the* binding constraint in Kenya, and it does not say an anti-corruption program would raise investment. It says that firm-reported bribery is unusually high and that fieldwork should test whether it is what holds investment back.
 
-**Finance: unclear, evidence too weak.** The evidence points both ways:
+**Finance: unclear, evidence too weak.** Two tests pull against each other, neither strongly enough to count as conflicting:
 - *Toward a finance problem:* the real interest rate averaged 8.6 percent over 2022–2024, above what is typical for Kenya's income (1.1 standard deviations). The tool's first-decision reading is, provisionally, "supply of finance constrained".
 - *Against:* Kenyan firms pay for 59 percent of their investment from their own funds, less than in all but one comparison country, and more Kenyan firms use bank loans for investment and working capital than in all but one comparison country. That is the opposite of the workaround pattern a finance constraint would produce.
 - *Changes:* investment moved as a finance constraint would predict in 11 of 19 years, which is no better than chance.

@@ -122,7 +122,7 @@ async function main() {
       return { label, value: tv && tv.T != null ? Number(tv.T.toFixed(2)) : 0, note: tv && tv.T != null ? `(${n} measure${n === 1 ? '' : 's'})` : '(no evidence)', cls: tv && tv.T != null ? (tv.T > 0 ? 'toward' : tv.T < 0 ? 'away' : '') : 'none' };
     });
     $('fig-tests').append(bars(rows, { signed: true, max: 2 }));
-    $('tests-text').textContent = `On the first decision, the price test leans toward a problem (${fmtSigned(n0.tests.price.T)}: a high real rate, and discouraged borrowers), but the workarounds test leans away (${fmtSigned(n0.tests.circumvention.T)}: firms fund less of their investment themselves, and use banks more, than expected, the opposite of working around scarce credit), and investment moved with the rate no more often than chance. Neither test is strong enough to count as conflicting, so the card files finance under "one kind of evidence": ${plainTier(n0.tier).toLowerCase()}.`;
+    $('tests-text').textContent = `On the first decision, the price test leans toward a problem (${fmtSigned(n0.tests.price.T)}: a high real rate, and discouraged borrowers), but the workarounds test leans away (${fmtSigned(n0.tests.circumvention.T)}: firms fund less of their investment themselves, and use banks more, than expected, the opposite of working around scarce credit), and investment moved with the rate no more often than chance. Neither test is strong enough to count as conflicting, so the card rates finance "${plainTier(n0.tier).toLowerCase()}", for the reason "one kind of evidence".`;
   }
 
   // 6 the tree
