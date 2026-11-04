@@ -45,6 +45,49 @@
     </div>
   </section>
 
+  <section class="panel" id="signature" aria-labelledby="signature-h">
+    <div class="panel-head"><div><span class="kicker">What the hypotheses predict, and what the data show here</span><h2 id="signature-h">The signature</h2></div><p>Four stories can sit behind “few new products”. Each predicts something different in the trade data. The cards say what each predicts and which way this country’s numbers point; the sentence under them says whether the self-discovery signature holds.</p></div>
+    <div class="sd-cards" id="sd-cards"></div>
+    <p class="plain" id="sd-signature"></p>
+    <p class="small muted">The signature is a reading, not a rating: the tool keeps judging self-discovery by elimination, and the discovery gap below is the one of these measures that informs that judgement. The other three are the conditions it needs.</p>
+  </section>
+
+  <section class="panel" id="space" aria-labelledby="space-h">
+    <div class="panel-head"><div><span class="kicker">Where the country sits</span><h2 id="space-h">The product space</h2></div><p>About 1,150 products, laid out once so that products made with similar know-how sit close together. Filled: this country exports the product competitively. Amber ring: it started to since 2017–19. Outlined: the nearest products it does not yet make. This is a map of distance, <strong>not a list of sectors to back</strong>.</p></div>
+    <div class="sd-toolbar"><div class="sd-toggle" role="group" aria-label="Period" id="sd-map-toggle"></div><div class="sd-legend" id="sd-map-legend"></div></div>
+    <div class="sd-chart sd-map" id="sd-map" aria-describedby="sd-map-text"></div>
+    <p class="plain" id="sd-map-text"></p>
+    <details class="rule-detail"><summary>Show the numbers</summary><div class="small" id="sd-map-table"></div></details>
+  </section>
+
+  <section class="panel" id="jumps" aria-labelledby="jumps-h">
+    <div class="panel-head"><div><span class="kicker">Short jumps or long ones?</span><h2 id="jumps-h">Jumps taken</h2></div><p>Each new export since 2017–19, placed by how much of its neighbourhood the country already exported when it entered (its density). Entries far to the left were long jumps. The grey band is where the country’s other options sat.</p></div>
+    <div class="sd-chart" id="sd-jumps" aria-describedby="sd-jumps-text"></div>
+    <p class="plain" id="sd-jumps-text"></p>
+    <details class="rule-detail"><summary>Show the numbers</summary><div class="small" id="sd-jumps-table"></div></details>
+  </section>
+
+  <section class="panel" id="gap" aria-labelledby="gap-h">
+    <div class="panel-head"><div><span class="kicker">Fewer new products than expected, or more?</span><h2 id="gap-h">The discovery gap</h2></div><p>New competitive exports over 2017–19 to 2022–24 against the number a model predicts from the country’s position in the product space and its income. On the diagonal, as expected. Below it, fewer tries succeeded than its position predicts: the pattern the self-discovery story leaves. The comparison countries are shown for scale.</p></div>
+    <div class="sd-chart" id="sd-gap" aria-describedby="sd-gap-text"></div>
+    <p class="plain" id="sd-gap-text"></p>
+    <details class="rule-detail"><summary>Show the numbers</summary><div class="small" id="sd-gap-table"></div></details>
+  </section>
+
+  <section class="panel" id="frontier" aria-labelledby="frontier-h">
+    <div class="panel-head"><div><span class="kicker">Distance against complexity</span><h2 id="frontier-h">Where new products could come from</h2></div><p>Every product this country does not yet export competitively: how far it is (left is near) against how complex it is (up is more complex), sized by world trade. The quadrants are described in words. Nothing here is ranked, and near is not the same as good.</p></div>
+    <div class="sd-chart" id="sd-frontier" aria-describedby="sd-frontier-text"></div>
+    <p class="plain" id="sd-frontier-text"></p>
+    <details class="rule-detail"><summary>Show the numbers</summary><div class="small" id="sd-frontier-table"></div></details>
+  </section>
+
+  <section class="panel" id="survival" aria-labelledby="survival-h">
+    <div class="panel-head"><div><span class="kicker">Did past tries last?</span><h2 id="survival-h">Survival</h2></div><p>Of the products this country started exporting competitively in 2012–14, the share still exported competitively in 2019–21, beside its comparison countries and beside its own established exports. Tries that do not last point away from self-discovery and toward some other constraint.</p></div>
+    <div class="sd-chart" id="sd-survival" aria-describedby="sd-survival-text"></div>
+    <p class="plain" id="sd-survival-text"></p>
+    <details class="rule-detail"><summary>Show the numbers, and how all of this is made</summary><div class="small" id="sd-survival-table"></div><div class="small" id="sd-space-method"></div></details>
+  </section>
+
   <section class="panel" id="evidence" aria-labelledby="evidence-h">
     <div class="panel-head"><div><span class="kicker">What the public data show</span><h2 id="evidence-h">The measures</h2></div><p id="evidence-sub"></p></div>
     <p class="plain" id="sd-lean"></p>

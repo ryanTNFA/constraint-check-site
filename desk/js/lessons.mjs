@@ -1,8 +1,8 @@
 // The guided path (docs/teaching-plan.md, section 3): eight lessons on the pages that already exist, worked on Kenya,
-// with Senegal's human-capital card borrowed for the clearing lesson. Pinned to rubric 0.2.6: tests/test_lessons.py
+// with Senegal's human-capital card borrowed for the clearing lesson. Pinned to rubric 0.2.7: tests/test_lessons.py
 // checks every tier a lesson quotes against desk/data, so a rubric change cannot silently break a lesson.
 // Lessons speak in the tool's voice only: no TNFA view, no comparison of countries by their flags.
-export const RUBRIC = '0.2.6';
+export const RUBRIC = '0.2.7';
 
 export const LESSONS = [
   {

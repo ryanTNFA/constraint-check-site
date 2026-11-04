@@ -897,3 +897,38 @@ details.howto[open] > summary { margin-bottom: 4px; }
   .bl-head > * { grid-column: 1; }
   .bl-head > .ctree-host { grid-column: 2; grid-row: 1 / span 6; align-self: center; margin-top: 0; }
 }
+
+/* Self-discovery: the signature cards and the five product-space views (self-discovery plan, section 4) */
+.sd-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 6px 0 14px; }
+.sd-card { border: 1px solid var(--rule); background: var(--surface); padding: 12px 14px; display: grid; gap: 6px; align-content: start; }
+.sd-card h3 { font-family: var(--serif); font-weight: 500; font-size: 1.05rem; margin: 0; }
+.sd-card .sd-predict { color: var(--muted); font-size: 0.875rem; margin: 0; }
+.sd-card .sd-here { font-size: 0.9375rem; margin: 0; }
+.sd-card .sd-arrow { display: inline-block; font-family: var(--sans); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border: 1px solid var(--rule-strong); margin-top: 2px; }
+.sd-card .sd-arrow.toward { background: var(--accent-soft); border-color: var(--brand-amber); color: var(--accent); }
+.sd-card .sd-arrow.away { background: var(--chart-peer-fill); border-color: var(--chart-peer); color: var(--chart-peer); }
+.sd-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 8px; }
+.sd-toggle button { font-family: var(--sans); font-size: 0.8125rem; padding: 4px 10px; border: 1px solid var(--rule-strong); background: var(--surface); color: var(--text); cursor: pointer; }
+.sd-toggle button + button { margin-left: -1px; }
+.sd-toggle button[aria-pressed="true"] { background: var(--text); color: #fff; border-color: var(--text); }
+.sd-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.8125rem; color: var(--muted); }
+.sd-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; vertical-align: -1px; border-radius: 50%; border: 1.5px solid var(--chart-other); background: #fff; }
+.sd-legend .l-on::before { background: var(--text); border-color: var(--text); }
+.sd-legend .l-new::before { background: var(--text); border: 2px solid var(--brand-amber); }
+.sd-legend .l-near::before { background: #fff; border: 1.5px solid var(--text); }
+.sd-legend .l-other::before { background: #e4e0d8; border-color: #e4e0d8; }
+.sd-chart { position: relative; border: 1px solid var(--rule); background: var(--surface); }
+.sd-chart svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
+.sd-chart .axis text, .sd-chart .lab { font-size: 11px; fill: var(--muted); }
+.sd-chart .axis line, .sd-chart .axis path { stroke: var(--rule-strong); stroke-width: 1; }
+.sd-chart .grid line { stroke: var(--rule); stroke-width: 1; }
+.sd-chart .tick-lab { font-size: 11px; fill: var(--muted); }
+.sd-chart .quad { font-size: 11px; fill: var(--muted); font-style: italic; }
+.sd-chart .name { font-size: 11px; fill: var(--text); }
+.sd-chart .name, .sd-chart .quad, .sd-chart .lab { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+.sd-map svg { aspect-ratio: 1 / 1; max-height: 720px; margin: 0 auto; }
+.sd-tip { position: absolute; pointer-events: none; background: var(--text); color: #fff; font-family: var(--sans); font-size: 0.8125rem; padding: 6px 9px; max-width: 260px; z-index: 5; display: none; }
+.sd-tip b { color: #fff; }
+.sd-chart.has-tip .sd-tip { display: block; }
+#sd-map-table table, #sd-jumps-table table, #sd-gap-table table, #sd-frontier-table table, #sd-survival-table table { margin-top: 6px; }
+@media (max-width: 640px) { .sd-map svg { max-height: none; } .sd-card .sd-predict { display: none; } .sd-chart:not(.sd-map) { overflow-x: auto; } .sd-chart:not(.sd-map) svg { min-width: 600px; } }

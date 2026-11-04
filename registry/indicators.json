@@ -1,6 +1,6 @@
 {
   "_comment": "Constraint Check indicator registry v0.1.2 (prototype; changes from v0.1 and v0.1.1 in docs/CHANGELOG-rubric.md). Fields: id (source code), name, source (worldbank_wdi | worldbank_zip | weo | eci | derived | static), nodes (list of node ids or [] for context), test (price | changes | circumvention | camels | context), class (A|B|C|D|X where X = context, no signal), direction (+1 = higher value means MORE binding, -1 = higher value means LESS binding, 0 = context), transform (none | log1p | log | logit), family (evidence family id; signals within a family are deduplicated to one), slow (true if slow-moving stock: recency decay relaxed), years (first year to ingest), notes. Optional: source_code (World Bank API indicator code when it differs from the id) and source_id (World Bank source/database id) for the bulk-zip fetch; hidden_until_fixed (true = the engine treats the indicator as unavailable: not displayed, not counted); regime_sensitive (\"monetary\": downgraded to class C for economies in registry/static_monetary_regimes.json, v0.1.2); fallback_for (indicator id: this indicator carries no signal for an economy where that indicator is available in the window, v0.1.2); caveat (one sentence the Desk prints under the indicator).",
-  "rubric_version": "0.2.6",
+  "rubric_version": "0.2.7",
   "indicators": [
     {
       "id": "NY.GDP.PCAP.PP.KD",
@@ -4318,6 +4318,70 @@
       "slow": false,
       "years": 2000,
       "notes": "Cluster-robust standard error of HG.ELEC; the engine sets the signal to zero when |gamma| < 2 SE."
+    },
+    {
+      "id": "PS.GAP",
+      "name": "Discovery gap: new competitive exports against those the product space predicts (z)",
+      "source": "extra",
+      "extra_group": "productspace",
+      "nodes": [
+        "N12"
+      ],
+      "test": "camels",
+      "class": "B",
+      "direction": -1,
+      "transform": "none",
+      "family": "discovery_gap",
+      "slow": false,
+      "years": 2019,
+      "regime_sensitive": "trade_hub",
+      "notes": "The conditional transition count the Workbook's N12 row asks for (ATLAS.TRANSITIONS is the unconditional count): actual new competitive exports over a five-year window minus the number a logistic model predicts from each candidate product's density in the economy's basket, its starting RCA and the economy's income, in binomial standard deviations scaled by the quasi-binomial dispersion and winsorised at +/-4; an entry must reach US$1 million a year. Negative: fewer new products than the economy's position in the product space predicts, the pattern a self-discovery problem leaves (Hausmann and Rodrik 2003), so direction -1. Gates (ingest/productspace.py): placebo centred on zero (passed) and rank correlation across economies between the two windows 0.61 against a bar of 0.5 (passed); both passed, so class B. Caveats: a low gap can also come from a constraint elsewhere (the page's other measures separate the stories); HS4 is coarse; re-exports.",
+      "caveat": "Fewer new exports than expected has other causes than under-rewarded discovery: another constraint, re-exports, or a window that caught a shock."
+    },
+    {
+      "id": "PS.SURVIVAL",
+      "name": "Survival of past export entries (% still competitive seven years on)",
+      "source": "extra",
+      "extra_group": "productspace",
+      "nodes": [],
+      "test": "context",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "entry_survival",
+      "slow": false,
+      "years": 2021,
+      "notes": "Of the products entered in 2012-14 (RCA below 0.5 in 2009-11, 1 or more in 2012-14), the share still at RCA 1 or more in 2019-21. Context: read on the self-discovery page beside the incumbents' survival; low survival points away from self-discovery toward another constraint (H3), so it is not evidence on N12's lean."
+    },
+    {
+      "id": "PS.MARGIN",
+      "name": "Intensive margin: incumbent exports' growth beyond world growth (% per year)",
+      "source": "extra",
+      "extra_group": "productspace",
+      "nodes": [],
+      "test": "context",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "intensive_margin",
+      "slow": false,
+      "years": 2024,
+      "notes": "Growth of the products exported competitively in 2017-19 to 2022-24, less the growth the same products had in world trade, per year. Context: the condition the spillover story needs (H4, incumbents healthy); not evidence on N12's lean."
+    },
+    {
+      "id": "PS.JUMP",
+      "name": "Density at entry: median product-space density of the products newly exported (0-1)",
+      "source": "extra",
+      "extra_group": "productspace",
+      "nodes": [],
+      "test": "context",
+      "class": "C",
+      "direction": -1,
+      "transform": "none",
+      "family": "entry_density",
+      "slow": false,
+      "years": 2024,
+      "notes": "Median density, at 2017-19, of the products the economy exported competitively by 2022-24 and not before: short jumps (high) or long ones (low). Context for the coordination reading (H2)."
     }
   ],
   "comovement_specs": [

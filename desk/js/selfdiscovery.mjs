@@ -3,6 +3,7 @@
 import { tabHref, refreshNav } from './nav.mjs';
 import { getJSON, loadRegistry, initTheme, h, qs, dataBase, withData, currentSetting, SETTING_LABEL } from './common.mjs';
 import { plainTier, factText, eliminationSentence } from './card.mjs';
+import { renderSpace } from './selfdiscovery_space.mjs';
 
 initTheme();
 const iso = (qs('iso') || '').toUpperCase();
@@ -88,6 +89,7 @@ function render() {
     h('p', {}, meta ? `${meta.kill_check} ${meta.countries_passing} of ${meta.countries} economies pass; the others show no list.` : ''),
     h('p', {}, meta ? `Source: ${meta.source}. Built by ingest/nearby_products.py.` : ''));
   renderOtherWay(c, hippo);
+  renderSpace(state).catch((e) => { console.error(e); showError(`The product-space views could not be drawn: ${e.message}`); });
 }
 
 // What each intensity vector measures, in the words the camels chart uses (ingest/camels.py VECTORS).
