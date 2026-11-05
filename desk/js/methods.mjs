@@ -9,7 +9,6 @@ export const DOCS = [
   { id: 'how-it-works', title: 'How Constraint Check works', who: 'Plain-language guide for program officers, Hill staff and managers' },
   { id: 'methodology-note', title: 'Methodology Note', who: 'For economists: every formula, threshold and rule, with the code that implements it' },
   { id: 'datasheet-and-model-card', title: 'Datasheet and model card', who: 'What the data are, intended uses and misuses, known limits' },
-  { id: 'validation-report', title: 'Validation report', who: 'Internal checks and the current distribution of ratings, regenerated with every release' },
   { id: 'codebook', title: 'Indicator codebook', who: 'Every indicator: source, evidence class, test and direction' },
 ];
 

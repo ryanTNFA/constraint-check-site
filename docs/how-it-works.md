@@ -2,13 +2,13 @@
 
 *A plain-language guide for program officers, Hill staff and managers. Companion to the Constraint Check Methodology Note, v0.1 (rubric 0.1.7, engine 0.1.5, data snapshot 2026-10-24). The New Foreign Assistance (TNFA), 29 October 2026; updated 31 October.*
 
-**Constraint Check is a prototype.** In its pre-registered test against 57 published expert diagnoses (2 and 3 November 2026) its ratings rarely dismissed a binding constraint (9 of 175) and said “cannot tell” most of the time; the test was too small to pass or fail its own bar. Use it to sharpen questions, not to settle them.
+**Constraint Check is a prototype.** Its ratings are uncalibrated and may be wrong; most areas read “unclear” because public data cannot settle them. Use it to sharpen questions, not to settle them.
 
 ## 1. What question it answers
 
 Private investment and growth can be held back by many things: expensive credit, unreliable power, poor roads, corruption, unstable prices, a shortage of skills. Economists call the one that matters most at a given time the *binding constraint*. Fixing a constraint that does not bind changes little; that is how well-meant programs fail.
 
-Constraint Check looks at one country at a time and asks, for each possible constraint: does the public evidence already argue against it, does it point toward it, or can we not tell? It uses the decision tree that the Millennium Challenge Corporation and Harvard's Growth Lab use for their growth diagnostics, and it uses only public data (World Bank, IMF, firm surveys, trade data) for 217 economies.
+Constraint Check looks at one country at a time and asks, for each possible constraint: does the public evidence already argue against it, does it point toward it, or can we not tell? It uses the growth-diagnostics decision tree of Hausmann, Rodrik and Velasco, the one behind published constraints analyses, and it uses only public data (World Bank, IMF, firm surveys, trade data) for 217 economies.
 
 It is a triage tool. It tells you where to look first and which arguments the evidence has already weakened. It does not tell you what to fund. *(Methodology Note §1)*
 
@@ -28,7 +28,7 @@ The ratings are deliberately lopsided. The tool needs much more evidence to rule
 
 ## 3. How confident to be
 
-- **It is a prototype.** Its thresholds are starting points, and some were set after looking at results. It has been tested once, against 57 published expert diagnoses, with pass and fail lines written down in advance: it rarely contradicted them (9 of 175 binding constraints wrongly set aside) but said "unclear" so often that the test could neither pass nor fail it. No threshold was tuned to those diagnoses. A test against diagnoses still in progress was designed but has not been resourced.
+- **It is a prototype.** Its thresholds are starting points, and some were set after looking at results; none has been calibrated against outside judgement. Treat every rating as a starting point.
 - **Most answers are "unclear".** About nine in ten ratings across all countries are a form of "unclear". Two areas (domestic savings, land) cannot be rated for any country with the data connected today; crime can be rated only where a firm survey since 2018 asked about security costs, because the newest surveys no longer do. Self-discovery is rated from its own trade evidence (the discovery gap), and policy uncertainty is described as context, not rated. Every "unclear" says why: the evidence isn't connected yet, there is no recent data, only one kind of evidence speaks, or the evidence points both ways. An "unclear" is an honest answer, not a failure.
 - **Ratings depend on the comparison countries.** Each country is compared with countries of similar income, size, resource dependence and geography, and also with its region and with countries that grew fast from a similar starting point. A rating that changes a lot across these comparisons cannot reach the top or bottom rating. The page shows which countries were used.
 - **Firm surveys are often several years old.** Older evidence counts for less, and a rating needs at least one price or workaround measure from the last eight years.

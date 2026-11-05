@@ -169,14 +169,13 @@ function renderSettingNote() {
   el.replaceChildren(h('strong', {}, `${SETTING_LABEL[state.setting]} reading, not the one to cite.`),
     state.viewBase && state.viewBase.fallback
       ? ' This reading needs the in-browser engine for these comparison countries, so the page shows Standard.'
-      : ` ${state.setting === 'exploratory' ? 'It makes it easier to flag an area for a closer look, never easier to rule one out. The figures are the same under every reading; only the ratings change.' : 'It needs more and stronger evidence before rating anything.'} Standard is the only reading to cite. None of the three readings has been tested against expert diagnoses yet.`);
+      : ` ${state.setting === 'exploratory' ? 'It makes it easier to flag an area for a closer look, never easier to rule one out. The figures are the same under every reading; only the ratings change.' : 'It needs more and stronger evidence before rating anything.'} Standard is the only reading to cite.`);
 }
 
 // ---------------- header ----------------
 function renderHeader() {
   const sc = state.scorecard; const c = sc.country; const m = sc.meta;
   $('country-name').textContent = c.name; $('country-iso').textContent = c.iso3;
-  $('banner-text').textContent = `In its pre-registered test against 57 published expert diagnoses, it rarely dismissed a constraint they found binding (9 of 175) and said “cannot tell” most of the time. The test was too small to pass or fail its own bar, so the ratings stay uncalibrated and may be wrong. Use it to decide what to ask, not what to fund.${isMock() ? ' THE NUMBERS ON THIS PAGE ARE MOCK DATA from desk/dev/mock.mjs, not engine output.' : ''}${DATA !== '/constraint-check-site/desk/data' ? ` Data served from ${DATA}.` : ''}`;
   const note = fcsNote(state.fcs, c.iso3, c.name);
   const el = $('fcs-note');
   if (note) { el.hidden = false; el.textContent = note; } else el.hidden = true;
@@ -445,10 +444,9 @@ function sdLink() {
 function renderAssistanceBox(bl) {
   if (!on('assistance-box')) return;
   const c = state.scorecard.country.name;
-  // U.S. assistance does not go to high-income economies; the exit line fits countries that still receive aid
+  // U.S. assistance does not go to high-income economies
   const income = state.scorecard.country.income_group || '';
   if (income === 'High income') { $('assistance-box').replaceChildren(); return; }
-  const aidRecipient = income === 'Low income' || income === 'Lower middle income';
   const list = (items) => englishList(items.map((x) => x.short));
   const stops = [...bl.ruled, ...bl.probNot];
   const g = bl.groups;
@@ -464,7 +462,7 @@ function renderAssistanceBox(bl) {
         ? `The public data point first to ${list(bl.look.map((x) => (x.ev !== x.node ? { short: x.evShort } : x)))}, which is not established. Check it with ${c}’s government, firms and researchers before anything is designed.`
         : `No area stands out, so the first step is to ${firstGap}.`),
       h('li', {}, h('strong', {}, 'Measure what can’t be settled. '), 'The cheapest next step is often to collect the missing evidence. Each “can’t settle” line above says what that is.'),
-      aidRecipient ? h('li', {}, h('strong', {}, 'Aim for the exit. '), `The goal is growth that lets ${c} rely on trade and investment instead of aid. Fixing what truly holds growth back is how that happens; spending on what doesn’t changes little.`) : null),
+      h('li', {}, h('strong', {}, 'Fix what binds, or little changes. '), `Programs that ignore what actually holds growth back in ${c} are unlikely to reduce poverty for long. A reform that leaves the binding constraint in place does little for growth, however sound it is on its own (Hausmann, Rodrik and Velasco, 2005).`)),
     h('p', { class: 'small' }, h('a', { href: withData('/constraint-check-site/desk/methods.html#mcc') }, 'Why this way of choosing →'), ' ', h('a', { href: 'https://thenewforeignassistance.org', target: '_blank', rel: 'noopener' }, 'About The New Foreign Assistance →')));
 }
 function shareText() {

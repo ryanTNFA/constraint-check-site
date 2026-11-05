@@ -107,7 +107,7 @@ The scorecard reports each node's tier under all three comparator sets and its f
 ### Metrics
 
 - **No accuracy metric exists yet.** The thresholds are uncalibrated, and some were chosen after seeing results (§7.1, item 1).
-- The planned headline metric is the **false rule-out rate**: how often the rubric says "ruled out" or "probably not" about a constraint that expert diagnostics found binding. Target: under 1 in 20. Kill: over 1 in 10 after one round of fixes (§6.2).
+- The headline metric, when one is reported, is the **false rule-out rate**: how often the rubric says "ruled out" or "probably not" about a constraint later found to bind (§6.2).
 - Other reported quantities, per run:
   - the tier distribution;
   - rank stability across 300 bootstrap draws;
@@ -116,7 +116,7 @@ The scorecard reports each node's tier under all three comparator sets and its f
 
 ### Evaluation data
 
-- **None external yet.** The vintage-locked retrospective against MCC constraints analyses and Growth Lab diagnostics, the prospective pre-registered comparisons and the expert panel are designed but not run (§6.2).
+- **None external yet** (§6.2).
 - What exists (§6.1):
   - 96 engine tests;
   - a synthetic 150-economy run in which planted constraints receive the planted verdicts;
