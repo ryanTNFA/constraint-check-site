@@ -620,6 +620,9 @@ export function plainSummary(node, ctx, { brief = false } = {}) {
       const sub = ev.tier_subreason || node.tier_subreason;
       if (sub === 'stale' && ev.R != null) s.push(`Unclear: ${c} has no recent high-quality data on this; the newest is from ${ev.R}, more than ${P.cannot_tell_data_gap.staleness_limit_years} years ago.`);
       else s.push(`Unclear: ${c} has too few recent measures on this (${plural(ev.E ?? 0, 'independent source', 'independent sources')}; ${floorOf(ctx, ev.id)} needed).`);
+      // engine 0.1.9: a family downgraded for this economy (high income, re-export hub, monetary regime) informs but does not vote
+      const dg = (ev.families || []).filter((f) => f.downgraded && f.class_note);
+      if (dg.length) { const nm = (f) => { const r = (ctx.indicators || []).find((x) => x.id === (f.indicators || [])[0]); return r ? shortName(r) : String(f.id).replace(/_/g, ' '); }; s.push(`${englishList(dg.map(nm))} ${dg.length === 1 ? 'informs' : 'inform'} but ${dg.length === 1 ? 'does' : 'do'} not vote here: ${String(dg[0].class_note).replace(/^class C for this economy: /, '').replace(/, so the measure informs but does not vote$/, '')}.`); }
       whatThereIs();
     } else if (code === 'one_kind') {
       const lean = leanOf(ev);

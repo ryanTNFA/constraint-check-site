@@ -1,8 +1,8 @@
 // The guided path (docs/teaching-plan.md, section 3): eight lessons on the pages that already exist, worked on Kenya,
-// with Senegal's human-capital card borrowed for the clearing lesson. Pinned to rubric 0.2.8: tests/test_lessons.py
+// with Senegal's human-capital card borrowed for the clearing lesson. Pinned to rubric 0.2.9: tests/test_lessons.py
 // checks every tier a lesson quotes against desk/data, so a rubric change cannot silently break a lesson.
 // Lessons speak in the tool's voice only: no TNFA view, no comparison of countries by their flags.
-export const RUBRIC = '0.2.8';
+export const RUBRIC = '0.2.9';
 
 export const LESSONS = [
   {
@@ -16,7 +16,7 @@ export const LESSONS = [
     n: 2, page: '/constraint-check-site/desk/country.html?iso=KEN', predict: true, title: 'The Bottom line, predicted first',
     task: 'With Predict first on, write down what you expect in each of the three lists for Kenya: which areas, and how many. Then reveal them and compare.',
     check: 'Kenya’s "stop arguing about" list is empty. Is that a failure of the tool?',
-    answer: 'No: it is a finding. 114 of 217 economies have nothing on this list, and only two areas anywhere are "ruled out" (regulation in Uzbekistan and property rights in New Zealand). An area gets on it when its evidence leans away on two tests, or strongly on one. No Kenyan area does: among the areas the list draws on, the lowest net score is land, at −0.3, and that rests on one test.',
+    answer: 'No: it is a finding. 118 of 217 economies have nothing on this list, and only two areas anywhere are "ruled out" (regulation in Uzbekistan and property rights in New Zealand). An area gets on it when its evidence leans away on two tests, or strongly on one. No Kenyan area does: among the areas the list draws on, the lowest net score is land, at −0.3, and that rests on one test.',
     mindbook: 'Mindbook, the asymmetry of errors: a false clear costs more than an extra look.',
   },
   {

@@ -288,7 +288,7 @@ export function buildFamilies(records, nodeId) {
       g = { id: r.family, test: r.test, members: [] };
       groups.set(key, g);
     }
-    g.members.push({ id: r.id, signal: r.signal, weight: r.weight, class: r.class, year: r.year, readings: Array.isArray(r.readings) ? r.readings : null, downgraded: !!r.downgraded });
+    g.members.push({ id: r.id, signal: r.signal, weight: r.weight, class: r.class, year: r.year, readings: Array.isArray(r.readings) ? r.readings : null, downgraded: !!r.downgraded, class_note: r.class_note || null });
   }
   const families = [];
   for (const g of groups.values()) {
@@ -297,6 +297,7 @@ export function buildFamilies(records, nodeId) {
     let weight = -Infinity;
     let year = null;
     let downgraded = false;
+    let classNote = null;   // engine 0.1.9: why a member was downgraded, for the tier reason
     const readings = new Set();
     for (const m of g.members) {
       cls = betterClass(cls, m.class);
@@ -304,6 +305,7 @@ export function buildFamilies(records, nodeId) {
       if (isNum(m.year) && (year === null || m.year > year)) year = m.year;
       for (const rd of m.readings || []) readings.add(rd);
       if (m.downgraded) downgraded = true;
+      if (m.class_note && !classNote) classNote = m.class_note;
     }
     families.push({
       id: g.id,
@@ -315,6 +317,7 @@ export function buildFamilies(records, nodeId) {
       indicators: g.members.map((m) => m.id),
       readings: [...readings].sort(),
       downgraded,
+      class_note: classNote,
       members: g.members,
     });
   }

@@ -153,6 +153,8 @@ export function nodeStats(families, params) {
   const E_all = uniq(active.map((f) => f.id)).length;
   const informingOnlyIds = uniq(informing.map((f) => f.id)).filter((id) => !votingIds.includes(id));
   const downgradedPrice = uniq(informing.filter((f) => f.downgraded).flatMap((f) => f.indicators || [f.id]));
+  // engine 0.1.9: why they were downgraded, in the registry's words (monetary regime, re-export hub, high income)
+  const downgradedWhy = uniq(informing.filter((f) => f.downgraded && f.class_note).map((f) => String(f.class_note).replace(/^class C for this economy: /, '')));
   const ab = new Map();
   for (const f of voting) {
     if (f.class !== 'A' && f.class !== 'B') continue;
@@ -180,6 +182,7 @@ export function nodeStats(families, params) {
     E_all,
     E_informing: informingOnlyIds.length,
     downgraded_price_indicators: downgradedPrice,
+    downgraded_why: downgradedWhy,
     R,
     AB_count: ab.size,
     AB_pos,
@@ -255,7 +258,7 @@ export function assignTier(stats, ctx) {
     const down = stats.downgraded_price_indicators || [];
     const priceWhy = stats.price_not_observed
       ? down.length
-        ? ` (price not observed: ${down.join(', ')} downgraded to class C for this economy, no independent monetary policy)`
+        ? ` (price not observed: ${down.join(', ')} downgraded to class C for this economy${(stats.downgraded_why || []).length ? `: ${stats.downgraded_why.join('; ')}` : ', no independent monetary policy'})`
         : ` (price not observed: the registry's class A/B price famil${(ctx.registryABPrice || []).length === 1 ? 'y has' : 'ies have'} no data in the window for this economy)`
       : '';
     if (E === 0 && Einf === 0 && (ctx.connectorsNotBuilt || []).includes(ctx.nodeId)) {
@@ -543,6 +546,8 @@ function publicFamilies(families, priceInforming = [], camelsInforming = []) {
       readings: f.readings || [],
       votes,
       vote_note: votes ? null : f.test === 'camels' ? CAMELS_INFORMS_NOTE : PRICE_INFORMS_NOTE,
+      downgraded: !!f.downgraded,              // engine 0.1.9: class C for this economy by a regime rule, with the registry's note
+      class_note: f.class_note || null,
     };
   });
 }

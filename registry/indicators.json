@@ -1,6 +1,6 @@
 {
   "_comment": "Constraint Check indicator registry v0.1.2 (prototype; changes from v0.1 and v0.1.1 in docs/CHANGELOG-rubric.md). Fields: id (source code), name, source (worldbank_wdi | worldbank_zip | weo | eci | derived | static), nodes (list of node ids or [] for context), test (price | changes | circumvention | camels | context), class (A|B|C|D|X where X = context, no signal), direction (+1 = higher value means MORE binding, -1 = higher value means LESS binding, 0 = context), transform (none | log1p | log | logit), family (evidence family id; signals within a family are deduplicated to one), slow (true if slow-moving stock: recency decay relaxed), years (first year to ingest), notes. Optional: source_code (World Bank API indicator code when it differs from the id) and source_id (World Bank source/database id) for the bulk-zip fetch; hidden_until_fixed (true = the engine treats the indicator as unavailable: not displayed, not counted); regime_sensitive (\"monetary\": downgraded to class C for economies in registry/static_monetary_regimes.json, v0.1.2); fallback_for (indicator id: this indicator carries no signal for an economy where that indicator is available in the window, v0.1.2); caveat (one sentence the Desk prints under the indicator).",
-  "rubric_version": "0.2.8",
+  "rubric_version": "0.2.9",
   "indicators": [
     {
       "id": "NY.GDP.PCAP.PP.KD",
@@ -4334,7 +4334,10 @@
       "family": "discovery_gap",
       "slow": false,
       "years": 2019,
-      "regime_sensitive": "trade_hub",
+      "regime_sensitive": [
+        "trade_hub",
+        "high_income"
+      ],
       "notes": "The conditional transition count the Workbook's N12 row asks for (ATLAS.TRANSITIONS is the unconditional count): actual new competitive exports over a five-year window minus the number a logistic model predicts from each candidate product's density in the economy's basket, its starting RCA and the economy's income, in binomial standard deviations scaled by the quasi-binomial dispersion and winsorised at +/-4; an entry must reach US$1 million a year. Negative: fewer new products than the economy's position in the product space predicts, the pattern a self-discovery problem leaves (Hausmann and Rodrik 2003), so direction -1. Gates (ingest/productspace.py): placebo centred on zero (passed) and rank correlation across economies between the two windows 0.61 against a bar of 0.5 (passed); both passed, so class B. Caveats: a low gap can also come from a constraint elsewhere (the page's other measures separate the stories); HS4 is coarse; re-exports.",
       "caveat": "Fewer new exports than expected has other causes than under-rewarded discovery: another constraint, re-exports, or a window that caught a shock."
     },

@@ -32,10 +32,10 @@ The registry (`registry/nodes.json`) encodes the HRV tree as used by MCC and by 
 | N9 | Geography, natural capital, market size | social returns | context only, never scored | n/a |
 | N10 | Macroeconomic risk | appropriability: government failure | scored; cannot be ruled out without a sovereign-spread family | 44 |
 | N11 | Microeconomic risks (roll-up of five sub-nodes: property, corruption, taxes, regulation, crime; policy uncertainty is context from rubric 0.1.7) | appropriability: government failure | each sub-node scored; N11 takes the most binding (section 4.10). N11.policy is described, not scored (decision D5) | 51 |
-| N12 | Self-discovery and information externalities | appropriability: market failure | rated like the other areas from rubric 0.2.8 (the discovery gap votes on the camels test, class B; the other families inform the lean; ruling it out needs that family); judged by elimination from rubric 0.1.7 to 0.2.7 (decision D1) | 58 |
+| N12 | Self-discovery and information externalities | appropriability: market failure | rated like the other areas from rubric 0.2.8 (the discovery gap votes on the camels test, class B; the other families inform the lean; ruling it out needs that family); judged by elimination from rubric 0.1.7 to 0.2.7 (decision D1); read below high income only from 0.2.9 | 36 |
 | N13 | Coordination failures | appropriability: market failure | never scored: "needs sector study" | n/a |
 
-Counts are from `out/engine-report.json`, generated 2026-10-29T14:53:46Z, except N12, which is from the rubric 0.2.8 run of 5 November (24 worth a closer look, 34 probably not; `out/sweep-028.json`). Rubric 0.1.7 (31 October) changed only the status of N12 and N11.policy; rubrics 0.2.2 and 0.2.6 moved a handful of N11 cells (`docs/CHANGELOG-rubric.md`).
+Counts are from `out/engine-report.json`, generated 2026-10-29T14:53:46Z, except N12, which is from the rubric 0.2.9 run of 5 November (14 worth a closer look, 22 probably not; `out/sweep-029.json`). Rubric 0.1.7 (31 October) changed only the status of N12 and N11.policy; rubrics 0.2.2 and 0.2.6 moved a handful of N11 cells (`docs/CHANGELOG-rubric.md`).
 
 ### 1.3 The four tests
 
@@ -134,7 +134,7 @@ Each indicator in `registry/indicators.json` carries:
 | `years` | First year ingested |
 | `reference_window_years` | Optional longer reference window (20 for the six returns-to-schooling series) |
 | `icr_extra_controls` | Optional extra ICR controls (`log_remoteness` for the 12 ESCAP trade-cost series) |
-| `regime_sensitive` | `monetary`, `trade_hub` or `low_voice`: class C for listed economies (section 4.2) |
+| `regime_sensitive` | `monetary`, `trade_hub`, `low_voice` or `high_income` (engine 0.1.9): class C for listed economies (section 4.2) |
 | `fallback_for` | This series carries no signal where the named series is available (`DERIV.REAL_LENDING_CPI` for `FR.INR.RINR`) |
 | `formula`, `caveat`, `notes`, `review_note` | Text for the Desk and for reviewers |
 | `hidden_until_fixed` | Drops the indicator everywhere (none set in rubric 0.1.6) |
@@ -363,7 +363,8 @@ Within a node, signal-bearing indicators are grouped by (test, family). Family s
 Economy-specific downgrades of a class A or B indicator to class C (the registry class is kept as `class_registry`, the reason as `class_note`):
 
 - `monetary`: economies in `static_monetary_regimes.json` (`FP.CPI.TOTL.ZG`, `DERIV.INFLATION_VOL`, the two IMF dollarization ratios).
-- `trade_hub`: the seven hubs in `static_trade_hubs.json` (the 12 ESCAP trade-cost series).
+- `trade_hub`: the seven hubs in `static_trade_hubs.json` (the 12 ESCAP trade-cost series; the discovery gap `PS.GAP` too).
+- `high_income` (engine 0.1.9, rubric 0.2.9): the World Bank high-income group from the snapshot (86 economies), for the discovery gap `PS.GAP`: a mature exporter adds few new products because the products it lacks are ones it left behind, so the gap informs without voting there.
 - `low_voice`: economies whose WGI voice and accountability reference value is ≤ −1.0 (`params.candour`; 49 economies at rubric 0.1.5), for self-reported bribery (`IC.FRM.BRIB.ZS`, `IC.FRM.CORR.ZS`, `IC.TAX.GIFT.ZS`). The threshold is a judgment set after seeing results.
 
 *Implementation:* `engine/src/scorecard.mjs:buildIndicatorRecords`, `normalizeRegistry`, `buildContext`. *Tests:* `engine/test/synthetic.test.mjs` ("v0.1.5: self-reported bribery is class C where voice and accountability is very low, and only there").

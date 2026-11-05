@@ -20,7 +20,7 @@ import { evaluateNode, rollupNode, rankNodes, statements, bootstrapRanks, applyT
 import { topSplit, RATE_SOURCES } from './topsplit.mjs';
 import { growthUniverse, growthProblem } from './growth.mjs';
 
-export const ENGINE_VERSION = '0.1.8';
+export const ENGINE_VERSION = '0.1.9';
 export const DEFAULT_SETS = ['structural', 'regional', 'aspirational'];
 export const DESK_SERIES = ['NY.GDP.PCAP.KD', 'NY.GDP.PCAP.KD.ZG', 'NE.GDI.FTOT.ZS', 'FR.INR.RINR', 'FS.AST.PRVT.GD.ZS', 'FP.CPI.TOTL.ZG'];
 export const RATIONING_INDICATOR = 'IC.FRM.CRDC.FL.ZS';
@@ -89,6 +89,10 @@ export function normalizeRegistry(registry) {
 }
 
 export const HUB_CLASS_NOTE = 'class C for this economy: a re-export or accounting hub, where trade costs inferred from output minus exports are unreliable';
+// engine 0.1.9 (rubric 0.2.9): measures of discovery are read below high income only. A mature exporter adds few new
+// products because the products it lacks are ones it left behind, so a negative discovery gap there is saturation,
+// not under-rewarded discovery.
+export const HIGH_INCOME_CLASS_NOTE = 'class C for this economy: high income, where few new export products is saturation rather than under-rewarded discovery, so the measure informs but does not vote';
 export const LOW_VOICE_CLASS_NOTE = 'class C for this economy: very low voice and accountability, where firms may under-report bribery';
 export const REGIME_CLASS_NOTE = 'class C for this economy: no independent monetary policy in the window (dollarized or currency board), so CPI inflation does not read national macro risk';
 
@@ -117,6 +121,8 @@ export function buildContext({ observations, countries, meta, registry, params }
   const features = buildFeatures(refs, countries, R.fcs_set);
   // v0.1.5: low-voice set from the WGI voice and accountability estimate (params.candour).
   const cand = params.candour || null;
+  // engine 0.1.9: World Bank high-income economies, for regime_sensitive 'high_income' indicators
+  const highIncome = new Set((countries || []).filter((c) => c && c.income_group === 'High income').map((c) => c.iso3));
   const lowVoice = { set: new Set(), values: {}, threshold: cand ? cand.va_est_max : null, indicator: cand ? cand.indicator : null };
   if (cand && refs[cand.indicator]) {
     for (const [iso3, r] of Object.entries(refs[cand.indicator])) {
@@ -162,6 +168,7 @@ export function buildContext({ observations, countries, meta, registry, params }
     uni,
     unimplemented,
     lowVoice,
+    highIncome,
     warnings,
   };
 }
@@ -237,6 +244,10 @@ export function buildIndicatorRecords(ctx, iso3, setMembers, activeSet) {
     if (sens.includes('trade_hub') && R.hub_set && R.hub_set.has(iso3) && (cls === 'A' || cls === 'B')) {
       cls = 'C';
       classNote = HUB_CLASS_NOTE;
+    }
+    if (sens.includes('high_income') && ctx.highIncome && ctx.highIncome.has(iso3) && (cls === 'A' || cls === 'B')) {
+      cls = 'C';
+      classNote = HIGH_INCOME_CLASS_NOTE;
     }
     if (sens.includes('low_voice') && ctx.lowVoice && ctx.lowVoice.set.has(iso3) && (cls === 'A' || cls === 'B')) {
       cls = 'C';
@@ -482,6 +493,7 @@ export function assembleVerdicts({ indicators, comovement: cm, setMembers, activ
           year: i.year_ref,
           readings: readingsForSet(i, s),
           downgraded: !!i.class_note,
+          class_note: i.class_note || null,
         })),
       ...(cm || [])
         .filter((c) => isNum(c.signal) && isNum(c.weight))
