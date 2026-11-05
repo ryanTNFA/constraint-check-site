@@ -2,12 +2,12 @@
 // bubble chart (log income, bubbles by population, a trail for the economy, the year large behind) and chart 2 a bar
 // race. Axes are fixed from all frames; marks glide between years; stale points stay hollow; economies appear and
 // disappear with their data rather than being interpolated. Frames come from playerFrames / raceFrames.
+// Motion: reduced motion, the duration scale and the easing family come from motion.mjs (C6), the same tokens the CSS uses.
+import { reducedMotion, dur, easeFn } from './motion.mjs';
 const d3 = () => window.d3;
 const NS = 'http://www.w3.org/2000/svg';
 
-export const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-
-const tr = (sel, ms) => (ms > 0 ? sel.transition().duration(ms).ease(d3().easeCubicInOut) : sel);
+const tr = (sel, ms) => (ms > 0 ? sel.transition().duration(ms).ease(easeFn) : sel);
 
 /**
  * The control bar: play/pause, a year scrubber (arrow keys step a year), speed, and a button back to the static
@@ -51,7 +51,7 @@ export function createControls(el, { years, firstYear, onOpen, onShow, onSettle,
     if (timer) { clearInterval(timer); timer = null; label(); }
     await open(Number(range.value));
     setYear(Number(range.value));
-    onShow(year, reducedMotion() ? 0 : 300);
+    onShow(year, dur(2));
     clearTimeout(settleT);
     settleT = setTimeout(() => onSettle(year), 450);
   });
@@ -85,7 +85,7 @@ function svgEl(width, height) {
 }
 
 function bigYear(g, pal, x, y, size) {
-  return g.append('text').attr('class', 'pl-year').attr('x', x).attr('y', y).attr('text-anchor', 'end')
+  return g.append('text').attr('x', x).attr('y', y).attr('text-anchor', 'end')
     .attr('font-size', size).attr('font-weight', 600).attr('fill', pal.text).attr('fill-opacity', 0.09).attr('font-family', 'Newsreader, Georgia, serif');
 }
 

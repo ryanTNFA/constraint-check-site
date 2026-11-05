@@ -1,0 +1,55 @@
+/* Constraint Check Desk: base layer (C5). Fonts, the page, type, links, focus, the skip link, high contrast, the wrap.
+   No component rules here: those are components.css; motion is motion.css; one page's own rules are pages/<page>.css. */
+@layer base {
+@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-normal-400600.woff2") format("woff2"); font-weight: 400 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-italic-400600.woff2") format("woff2"); font-weight: 400 600; font-style: italic; font-display: swap; }
+@font-face { font-family: "Libertinus Serif Display"; src: url("/constraint-check-site/desk/fonts/libertinus-serif-display-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("/constraint-check-site/desk/fonts/inter-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  overflow-x: hidden;
+}
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--accent-hover); }
+/* TNFA: Newsreader is the voice; headings at weight 500, balanced wraps. */
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 500; line-height: 1.15; margin: 0 0 0.5rem; text-wrap: balance; }
+/* An editorial scale (visual-upgrade PRD V1): the headline, the standfirst and the body keep apart. */
+h1 { font-size: clamp(2.25rem, 4.5vw, 3.5rem); line-height: 1.04; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); }
+h3 { font-size: 1.25rem; }
+p { margin: 0 0 0.75rem; }
+small, .small { font-size: var(--fs-caption); }
+.muted { color: var(--muted); }
+.serif { font-family: var(--serif); }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--mono); font-size: 0.8125em; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 1.5rem 0; }
+code { font-family: var(--mono); font-size: 0.875em; }
+:focus-visible { outline: 2px solid var(--brand-amber); outline-offset: 2px; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip-link { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 6px 10px; border: 1px solid var(--rule-strong); z-index: 100; }
+.skip-link:focus { left: 8px; }
+/* The skip link's target takes focus without drawing a ring round the whole page. */
+main[tabindex="-1"]:focus { outline: none; }
+/* Inside scrolling boxes an outside ring is clipped by the overflow: draw it inside instead. */
+.tree-wrap :focus-visible, .table-wrap :focus-visible, .fam-scroll :focus-visible, .editor .suggest li:focus-visible { outline-offset: -2px; }
+.editor .suggest li:focus-visible { background: var(--accent-soft); }
+/* Windows high contrast: keep the tier colours, which carry meaning, rather than flattening them to system colours. */
+@media (forced-colors: active) {
+  .tier-badge, .tier-dot, .swatch, .chipstrip .chip, .sm-swatch { forced-color-adjust: none; }
+}
+
+.wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gutter); }
+}

@@ -6,6 +6,7 @@
 // the whole chart shows at once. Data: desk/data/longview.json (ingest/src_longview.py), loaded after the map so it
 // never delays it.
 import { h, getJSON, dataBase } from './common.mjs';
+import { reducedMotion } from './motion.mjs';
 
 const NS = 'http://www.w3.org/2000/svg';
 const W = 960, H = 400, TOP = 44, BOTTOM = 36, LEFT = 58, GAP = 70, LABEL = 160;
@@ -21,7 +22,6 @@ const SERIES = [
   { key: 'Sub-Saharan Africa', label: 'Sub-Saharan Africa', color: '#7eb8e8', width: 2.8 },
 ];
 const el = (tag, attrs = {}, text) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v); if (text != null) e.textContent = text; return e; };
-const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 const fmtK = (v) => (v >= 1000 ? `$${Math.round(v / 1000)}k` : `$${v}`);
 
 export async function mountLongView(host) {
@@ -42,7 +42,7 @@ export async function mountLongView(host) {
 
   // panel 1: GDP per capita, linear, as on TNFA's site
   const L1 = LEFT;
-  const g1 = el('g', { class: 'lv-panel' });
+  const g1 = el('g');
   g1.append(el('text', { x: L1, y: 20, class: 'lv-title' }, 'GDP per capita (international $, 2011 prices)'));
   for (const v of [0, 20000, 40000, 60000]) {
     g1.append(el('line', { x1: L1, x2: L1 + PANEL, y1: yUsd(v), y2: yUsd(v), class: 'lv-grid' }));
@@ -69,7 +69,7 @@ export async function mountLongView(host) {
 
   // panel 2: the world share in extreme poverty
   const L2 = LEFT + PANEL + LABEL + GAP;
-  const g2 = el('g', { class: 'lv-panel' });
+  const g2 = el('g');
   g2.append(el('text', { x: L2, y: 20, class: 'lv-title' }, 'Share of people in extreme poverty, world'));
   for (const v of [0, 25, 50, 75, 100]) {
     g2.append(el('line', { x1: L2, x2: L2 + PANEL, y1: yPct(v), y2: yPct(v), class: 'lv-grid' }));
@@ -92,8 +92,8 @@ export async function mountLongView(host) {
   svg.append(yearText);
 
   // playback: a clip that sweeps from 1820 to today; reduced motion shows everything at once
-  const btn = h('button', { type: 'button', class: 'btn quiet small lv-play', 'aria-pressed': 'false' }, '▶ Play two centuries');
-  const out = h('span', { class: 'small lv-out', 'aria-live': 'polite' });
+  const btn = h('button', { type: 'button', class: 'btn quiet small', 'aria-pressed': 'false' }, '▶ Play two centuries');
+  const out = h('span', { class: 'small', 'aria-live': 'polite' });
   let raf = null; // an interval, not requestAnimationFrame: it keeps time in a background tab too
   const sweep = (t) => { // t in [0, 1]: each panel's clip runs from its left edge to the year reached; at 1 it uncovers the labels too
     const yr = Y0 + t * (Y1 - Y0);

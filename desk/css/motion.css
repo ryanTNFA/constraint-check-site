@@ -1,0 +1,26 @@
+/* Constraint Check Desk: motion layer (C5). The only file besides tokens.css that may hold a literal duration or
+   easing (tests/test_desk_css.py). Everything here has a static equivalent under prefers-reduced-motion, and nothing
+   animates on a rating surface (tenet 6). The D9 tokens (--ease, --dur-1/2/3) live in tokens.css. */
+@layer motion {
+/* Phase 5 accessibility: honour reduced motion everywhere (the year player already checks it in JS). */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* the node card slides in from the right (components.css draws it; the transition lives here) */
+.drawer { transition: transform 180ms ease; }
+@media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
+
+/* reveal(el) in motion.mjs: an element fades in as it scrolls into view. Where the browser has scroll-driven
+   animations the CSS does it alone (.reveal-scroll); otherwise an IntersectionObserver adds .in. Lesson one's steps
+   use it. Under reduced motion none of this applies: the element is simply there. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 500ms ease, transform 500ms ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @supports (animation-timeline: view()) {
+    .reveal.reveal-scroll { opacity: 1; transform: none; transition: none; animation: reveal-in linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+    @keyframes reveal-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  }
+}
+}

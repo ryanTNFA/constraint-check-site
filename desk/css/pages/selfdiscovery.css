@@ -1,0 +1,60 @@
+/* Constraint Check Desk: the Self-discovery page: the prose, the signature cards, the product-space views and the section palette (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+@layer pages {
+/* self-discovery page */
+.sd-prose { max-width: 46rem; display: grid; gap: 10px; }
+.sd-prose p { margin: 0; }
+.sd-list { margin: 8px 0; padding-left: 1.2em; display: grid; gap: 6px; max-width: 70ch; }
+.sd-way { color: var(--muted); }
+ol.sd-nearby { margin: 6px 0 8px; padding-left: 1.6em; display: grid; gap: 4px; columns: 2; column-gap: 28px; }
+@media (max-width: 700px) { ol.sd-nearby { columns: 1; } }
+.sd-elim td, .sd-elim th { white-space: normal; }
+.sd .tnfa-view { margin-top: 28px; }
+
+.sd-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 28px; }
+.sd-two h3 { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; margin: 0 0 2px; }
+ul.sd-nearby { margin: 6px 0 8px; padding-left: 1.1em; display: grid; gap: 3px; }
+#otherway h3 { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; margin: 0 0 2px; }
+#otherway .sd-hs { display: block; margin-left: 0; }
+
+/* Self-discovery: the signature cards and the five product-space views (self-discovery plan, section 4) */
+.sd-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 6px 0 14px; }
+.sd-card { border: 1px solid var(--rule); background: var(--surface); padding: 12px 14px; display: grid; gap: 6px; align-content: start; }
+.sd-card h3 { font-family: var(--serif); font-weight: 500; font-size: 1.05rem; margin: 0; }
+.sd-card .sd-predict { color: var(--muted); font-size: 0.875rem; margin: 0; }
+.sd-card .sd-here { font-size: 0.9375rem; margin: 0; }
+.sd-card .sd-arrow { display: inline-block; font-family: var(--sans); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border: 1px solid var(--rule-strong); margin-top: 2px; }
+.sd-card .sd-arrow.toward { background: var(--accent-soft); border-color: var(--brand-amber); color: var(--accent); }
+.sd-card .sd-arrow.away { background: var(--chart-peer-fill); border-color: var(--chart-peer); color: var(--chart-peer); }
+.sd-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 8px; }
+.sd-toggle button { font-family: var(--sans); font-size: 0.8125rem; padding: 4px 10px; border: 1px solid var(--rule-strong); background: var(--surface); color: var(--text); cursor: pointer; }
+.sd-toggle button + button { margin-left: -1px; }
+.sd-toggle button[aria-pressed="true"] { background: var(--text); color: #fff; border-color: var(--text); }
+.sd-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.8125rem; color: var(--muted); }
+.sd-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; vertical-align: -1px; border-radius: 50%; border: 1.5px solid var(--chart-other); background: #fff; }
+.sd-legend .l-on::before { background: var(--text); border-color: var(--text); }
+.sd-legend .l-new::before { background: var(--text); border: 2px solid var(--brand-amber); }
+.sd-legend .l-near::before { background: #fff; border: 1.5px solid var(--text); }
+.sd-legend .l-other::before { background: #e4e0d8; border-color: #e4e0d8; }
+.sd-chart { position: relative; border: 1px solid var(--rule); background: var(--surface); }
+.sd-chart svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
+.sd-chart .axis text, .sd-chart .lab { font-size: 11px; fill: var(--muted); }
+.sd-chart .axis line, .sd-chart .axis path { stroke: var(--rule-strong); stroke-width: 1; }
+.sd-chart .grid line { stroke: var(--rule); stroke-width: 1; }
+.sd-chart .tick-lab { font-size: 11px; fill: var(--muted); }
+.sd-chart .quad { font-size: 11px; fill: var(--muted); font-style: italic; }
+.sd-chart .name { font-size: 11px; fill: var(--text); }
+.sd-chart .name, .sd-chart .quad, .sd-chart .lab { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+.sd-map svg { aspect-ratio: 1 / 1; max-height: 720px; margin: 0 auto; }
+.sd-tip { position: absolute; pointer-events: none; background: var(--text); color: #fff; font-family: var(--sans); font-size: 0.8125rem; padding: 6px 9px; max-width: 260px; z-index: 5; display: none; }
+.sd-tip b { color: #fff; }
+.sd-chart.has-tip .sd-tip { display: block; }
+#sd-map-table table, #sd-jumps-table table, #sd-gap-table table, #sd-frontier-table table, #sd-survival-table table { margin-top: 6px; }
+@media (max-width: 640px) { .sd-map svg { max-height: none; } .sd-card .sd-predict { display: none; } .sd-chart:not(.sd-map) { overflow-x: auto; } .sd-chart:not(.sd-map) svg { min-width: 600px; } }
+
+.sd-sectors span::before { border: none; border-radius: 50%; background: var(--swatch, var(--sector-other)); }
+.sd-sectors { margin: 6px 0 8px; }
+.sd-chart .sec-lab { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--text); paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.sd-legend .l-on::before { background: var(--text); border-color: var(--text); }
+.sd-legend .l-pale::before { background: #c9cfd8; border-color: #c9cfd8; }
+.sd-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; background: var(--swatch, var(--sector-other)); }
+}

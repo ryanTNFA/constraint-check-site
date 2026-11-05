@@ -1,6 +1,6 @@
 // Self-discovery page (front-door PRD W9): the idea in plain words, the country's N12 rating and measures, the
 // other low-return areas as context (the elimination gate until rubric 0.2.7), and the nearby products (ingest/nearby_products.py) when they pass the stability check.
-import { tabHref, refreshNav } from './nav.mjs';
+import { tabHref, refreshNav } from './shell.mjs';
 import { getJSON, loadRegistry, initTheme, h, qs, dataBase, withData, currentSetting, SETTING_LABEL } from './common.mjs';
 import { plainTier, factText, plainSummary } from './card.mjs';
 import { renderSpace } from './selfdiscovery_space.mjs';
@@ -77,7 +77,7 @@ function render() {
     // HS headings are long legal texts: keep the part before the first semicolon, and at most about 70 characters
     const shortHs = (s) => { const t = String(s).split(';')[0].trim(); return t.length > 72 ? `${t.slice(0, 70).replace(/[ ,]+\S*$/, '')}…` : t; };
     // alphabetical, never ranked: a numbered list reads as a list of targets (reader test, 1 November)
-    const list = (items) => h('ul', { class: 'sd-nearby' }, items.slice().sort((a, b) => shortHs(a.name).localeCompare(shortHs(b.name))).map((p) => h('li', { title: p.name }, h('span', { class: 'sd-prod' }, shortHs(p.name)), h('span', { class: 'sd-hs small muted' }, ` HS ${p.hs4}`))));
+    const list = (items) => h('ul', { class: 'sd-nearby' }, items.slice().sort((a, b) => shortHs(a.name).localeCompare(shortHs(b.name))).map((p) => h('li', { title: p.name }, h('span', {}, shortHs(p.name)), h('span', { class: 'sd-hs small muted' }, ` HS ${p.hs4}`))));
     host.append(h('div', { class: 'sd-two' },
       h('div', {}, h('h3', {}, 'The nearest products'), h('p', { class: 'small muted' }, `The ten products with most of their neighbours already exported by ${c}. Most are as simple as, or simpler than, what ${c} exports today.`), list(nearby.products)),
       h('div', {}, h('h3', {}, 'The nearest that are a step up'), h('p', { class: 'small muted' }, `The ten nearest products that are more complex than ${c}’s typical export: harder to make, and the kind of products richer countries tend to export.`), (nearby.step_up || []).length ? list(nearby.step_up) : h('p', { class: 'small' }, 'None found.'))));
@@ -111,7 +111,7 @@ function renderOtherWay(c, hippo) {
   const year = hippo.year;
   const vecs = VEC_ORDER.filter((v) => hippo.surprise_vectors && hippo.surprise_vectors[v]);
   const item = (p, kind) => h('li', { title: p.name || `HS ${p.hs4}` },
-    h('span', { class: 'sd-prod' }, p.name ? shortHs(p.name) : `HS ${p.hs4} (heading no longer in use)`),
+    h('span', {}, p.name ? shortHs(p.name) : `HS ${p.hs4} (heading no longer in use)`),
     h('span', { class: 'sd-hs small muted' }, kind === 'well'
       ? ` HS ${p.hs4} · exports ${p.rca >= 10 ? Math.round(p.rca) : p.rca.toFixed(1)}× the world’s share, income predicts ${p.expected_rca.toFixed(1)}×`
       : ` HS ${p.hs4} · income predicts ${p.expected_rca.toFixed(1)}× the world’s share, exports ${p.rca < 0.05 ? 'none' : `${p.rca.toFixed(2)}×`}`));

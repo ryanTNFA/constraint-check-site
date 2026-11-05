@@ -8,18 +8,16 @@
 <script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <link rel="preload" href="/constraint-check-site/desk/fonts/newsreader-normal-400600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/constraint-check-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/constraint-check-site/desk/css/desk.css">
-<link rel="stylesheet" href="/constraint-check-site/desk/css/summary.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<link rel="stylesheet" href="/constraint-check-site/desk/css/tokens.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/base.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/components.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/motion.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/pages/summary.css">
+<script src="/constraint-check-site/desk/vendor/d3-7.9.0.min.js"></script>
 </head>
 <body data-page="heat">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="topbar">
-  <div class="nav-row nav-global"><div class="wrap">
-    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>prototype</span></a>
-  </div></div>
-</header>
-
+<header class="topbar"></header>
 <main id="main" class="wrap sm" tabindex="-1">
   <header class="sm-head">
     <span class="kicker">Diagnostic summary</span>
@@ -37,7 +35,7 @@
       <select id="c-set"><option value="structural">Structural</option><option value="regional">Regional</option><option value="aspirational">Aspirational</option></select></label>
   </form>
 
-  <section class="sm-section" aria-labelledby="h-heat">
+  <section aria-labelledby="h-heat">
     <h2 class="visually-hidden" id="h-heat">Heat map</h2>
     <div class="sm-key" id="key" aria-hidden="true"></div>
     <div class="sm-scroll" id="heat-wrap" role="region" aria-labelledby="h-heat" aria-describedby="readout foot" tabindex="0"></div>
@@ -54,6 +52,7 @@
   </section>
 </main>
 
+<footer class="foot"></footer>
 <script type="module" src="/constraint-check-site/desk/js/summary.mjs"></script>
 </body>
 </html>

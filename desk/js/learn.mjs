@@ -1,26 +1,21 @@
 // Lesson one, "How a country gets read" (visual-upgrade PRD V6; teaching plan, section 4): the method walked once on
 // Kenya, built from the Desk's own pieces: the bribery scatter from the panel and fit files, the growth record and top
 // split from the scorecard, the four tests on the first decision, the full tree (tree.mjs), and the three lists
-// (bottomLine). Steps fade in as they scroll into view; with reduced motion everything is simply there.
-import './nav.mjs';
+// (bottomLine). Steps fade in as they scroll into view (motion.mjs reveal); with reduced motion everything is simply there.
+import './shell.mjs';
 import { getJSON, loadRegistry, initTheme, h, dataBase, withData, fmtSigned, CANNOT_TELL_PLAIN, cannotTellCode } from './common.mjs';
 import { renderTree } from './tree.mjs';
 import { plainTier } from './card.mjs';
 import { LESSONS } from './lessons.mjs';
+import { reveal } from './motion.mjs';
 
 initTheme();
 const $ = (id) => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 const el = (tag, attrs = {}, text) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v); if (text != null) e.textContent = text; return e; };
-const reduced = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 const ISO = 'KEN';
 
-function scrollIn() {
-  const steps = document.querySelectorAll('.step');
-  if (reduced() || !('IntersectionObserver' in window)) { steps.forEach((s) => s.classList.add('in')); return; }
-  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.2 });
-  steps.forEach((s) => io.observe(s));
-}
+function scrollIn() { for (const s of document.querySelectorAll('.step')) reveal(s); }
 
 /** Step 2: every economy's latest bribery share against log income, the fitted line, Kenya marked. */
 function scatter(panel, fit, countries) {

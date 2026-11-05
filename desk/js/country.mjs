@@ -1,12 +1,14 @@
 // Orchestrator for the two country pages (front-door PRD W3): the Bottom line (country.html, the front door)
 // and Areas (areas.html, the tree, the cards and the analyst panels). Each render function draws only when its
 // container is on the page, so both pages share one source of truth for the comparison set, peers and overrides.
-import { tabHref, refreshNav } from './nav.mjs';
-import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, fmtInt, fmtValue, tierClass, TIER_ORDER, parseHash, writeHash, qs, unitHint, shortName, sourceLink, sourceLabel, isStale, englishList, downloadText, dataBase, withData, gNorm, reasonClause, DATA_GAP_KINDS, isRegistryGap, SETTING_LABEL } from './common.mjs';
+import { tabHref, refreshNav } from './shell.mjs';
+import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, fmtInt, fmtValue, tierClass, TIER_ORDER, parseHash, writeState, qs, unitHint, shortName, sourceLink, sourceLabel, isStale, englishList, downloadText, dataBase, withData, gNorm, reasonClause, DATA_GAP_KINDS, isRegistryGap, SETTING_LABEL } from './common.mjs';
 import { renderTree, compactTree } from './tree.mjs';
-import { createCard, plainTier, PLAIN_TIER, bottomLine, fcsNote, refSpan, robustChip } from './card.mjs';
+import { createCard, plainTier, PLAIN_TIER, bottomLine, fcsNote, refSpan } from './card.mjs';
+import { robustChip } from './components/marks.mjs';
 import { renderComparators, SET_PLAIN } from './comparators.mjs';
-import { buildMemo, memoHTML } from './memo.mjs';
+import { buildMemo } from './memo.mjs';
+import { memoHTML } from './components/markdown.mjs';
 import { buildBriefing } from './briefing.mjs';
 
 initTheme();
@@ -52,7 +54,7 @@ async function main() {
     const mod = await import('/constraint-check-site/engine/src/scorecard.mjs');
     if (typeof mod.recomputeWithPeers === 'function') { state.engine = mod; state.engineStatus = { ok: true, message: '' }; }
     else state.engineStatus = { ok: false, message: '/constraint-check-site/engine/src/scorecard.mjs loaded but does not export recomputeWithPeers().' };
-  } catch (e) { state.engineStatus = { ok: false, message: `the engine module /engine/src/scorecard.mjs could not be imported (${e.message}).` }; }
+  } catch (e) { state.engineStatus = { ok: false, message: `the engine module (engine/src/scorecard.mjs) could not be imported (${e.message}).` }; }
 
   const hs = parseHash();
   state.activeSet = hs.set && state.scorecard.comparators[hs.set] ? hs.set : (state.scorecard.meta.active_comparator_set || 'structural');
@@ -64,7 +66,7 @@ async function main() {
     card = createCard({
       drawer: $('drawer'), scrim: $('scrim'), registry: state.registry,
       getState: () => state,
-      onOverride: (id, ov) => { if (ov) state.overrides[id] = ov; else delete state.overrides[id]; writeHash(state); renderTreePanel(); renderStatements(); renderOverridesBox(); refreshNav(); },
+      onOverride: (id, ov) => { if (ov) state.overrides[id] = ov; else delete state.overrides[id]; writeState(state); renderTreePanel(); renderStatements(); renderOverridesBox(); refreshNav(); },
       onOpenNode: (id) => card.open(id),
     });
   }
@@ -83,8 +85,8 @@ async function main() {
   const section = new URLSearchParams(location.search).get('section');
   if (section && on(section)) goTo(section);
   window.addEventListener('hashchange', () => { const p = parseHash(); state.overrides = p.overrides || {}; renderTreePanel(); renderStatements(); renderOverridesBox(); });
-  // the evidence setting is chosen in the top bar (nav.mjs, W4); the ratings on this page follow it
-  window.addEventListener('desk-setting', (e) => { state.setting = e.detail.setting; state.view = applySetting(state.viewBase); writeHash(state); renderAll(); });
+  // the evidence setting is chosen in the top bar (shell.mjs, W4); the ratings on this page follow it
+  window.addEventListener('desk-setting', (e) => { state.setting = e.detail.setting; state.view = applySetting(state.viewBase); writeState(state); renderAll(); });
 }
 
 // ---------------- section links: scroll without touching the state hash ----------------
@@ -128,7 +130,7 @@ async function applyComparatorsRaw() {
   const sc = state.scorecard; const base = baseView();
   const defaultMembers = sc.comparators[state.activeSet] ? sc.comparators[state.activeSet].members : [];
   const isDefault = state.activeSet === (sc.meta.active_comparator_set || 'structural') && !Array.isArray(state.peers);
-  if (isDefault) { state.view = base; state.lastRecompute = ''; writeHash(state); return; }
+  if (isDefault) { state.view = base; state.lastRecompute = ''; writeState(state); return; }
   const peers = Array.isArray(state.peers) ? state.peers : defaultMembers;
   if (state.engine) {
     try {
@@ -145,7 +147,7 @@ async function applyComparatorsRaw() {
       state.view = fallbackView(base); state.lastRecompute = `Recompute failed: ${e.message}. Showing the engine's precomputed ratings for the ${state.activeSet} set.`;
     }
   } else state.view = fallbackView(base);
-  writeHash(state);
+  writeState(state);
 }
 function fallbackView(base) {
   const nodes = base.nodes.map((n) => (n.tier_by_set && n.tier_by_set[state.activeSet] ? { ...n, ...(n.tier_by_set[state.activeSet] === n.tier ? {} : { cannot_tell_reason: null, cannot_tell_detail: null }), tier: n.tier_by_set[state.activeSet], tier_reason: n.tier_by_set[state.activeSet] === n.tier ? n.tier_reason : `${plainTier(n.tier_by_set[state.activeSet])} under the ${state.activeSet} set (precomputed by the engine; the rule text below describes the structural-set computation). ${n.tier_reason}` } : n));
@@ -375,7 +377,7 @@ function renderStatements() {
     h('span', { class: 'bl-area' }, areaLink(id, cap(name))),
     grade ? h('span', { class: 'bl-grade' }, grade) : null,
     robustChip(node),
-    h('span', { class: 'bl-text' }, text), ' ', why(id), ovMark(id));
+    h('span', {}, text), ' ', why(id), ovMark(id));
   const names = (items) => joinEls(items.map((x) => [areaLink(x.id, x.short), state.overrides[x.id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTier(state.overrides[x.id].tier).toLowerCase()}`) : ''].filter(Boolean)));
   const list = (cls, title, sub) => h('section', { class: `bl-list ${cls}` }, h('h2', {}, title), sub ? h('p', { class: 'bl-sub' }, sub) : null);
 
@@ -410,7 +412,7 @@ function renderStatements() {
   if (!bl.nUnclear) s3.append(h('p', { class: 'bl-none' }, 'Nothing: every area has a rating.'));
   else {
     const g = bl.groups;
-    const grp = (items, label, next) => (items.length ? h('li', {}, h('span', { class: 'bl-reason' }, `${label} (${items.length})`), h('span', { class: 'bl-text' }, ...names(items), '. '), h('span', { class: 'bl-next' }, next)) : null);
+    const grp = (items, label, next) => (items.length ? h('li', {}, h('span', { class: 'bl-reason' }, `${label} (${items.length})`), h('span', {}, ...names(items), '. '), h('span', { class: 'bl-next' }, next)) : null);
     const elim = g.elimination.map((x) => x.node.elimination && x.node.elimination.direction !== 'none' ? ` Today it leans ${x.node.elimination.direction === 'toward' ? 'toward' : 'away from'} a problem.` : '').join('');
     s3.append(h('ul', {},
       grp(g.oneKind, 'Only one kind of evidence', `Next: a second kind of evidence (a price, a response to change, or firms working around it) would settle it.${bl.closest ? ` Of these, ${bl.closest.short} comes nearest to a rating (it leans ${bl.closest.node.N > 0 ? 'toward' : 'away from'} a problem).` : ''}`),
@@ -418,7 +420,7 @@ function renderStatements() {
       grp(g.dataGap, `Too little recent data for ${c}`, 'Next: a newer survey or data year would settle it.'),
       grp(g.toolGap, 'Not connected to the tool yet', `Next: a new measure in the tool; no data for ${c} changes it today.`),
       grp(g.sector, 'Needs a sector study', 'Next: sector work.'),
-      g.elimination.length ? h('li', {}, h('span', { class: 'bl-reason' }, `Judged by elimination (${g.elimination.length})`), h('span', { class: 'bl-text' }, ...names(g.elimination), '. '),
+      g.elimination.length ? h('li', {}, h('span', { class: 'bl-reason' }, `Judged by elimination (${g.elimination.length})`), h('span', {}, ...names(g.elimination), '. '),
         h('span', { class: 'bl-next' }, `Self-discovery asks whether firms are held back from trying new products. Next: rule out the other causes of low returns first.${elim} `),
         sdLink()) : null));
     if (bl.firmsTop) {
@@ -477,7 +479,7 @@ function renderOverridesBox() {
   const ovs = Object.entries(state.overrides);
   if (!ovs.length) { if (PAGE === 'areas') box.append(h('p', { class: 'small muted' }, 'None yet. Open an area and use “Your override” at the end of its card.')); return; }
   const ul = h('ul', { class: 'diff-list' });
-  for (const [id, v] of ovs) { const n = nodeOf(id); ul.append(h('li', {}, h('strong', {}, `${nodeCode(id)} ${short(id)}`), h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, `tool: ${plainTier(n && n.tier)}`)), h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(v.tier)}` }, h('span', {}, `you: ${plainTier(v.tier)}`)), h('span', { class: 'muted' }, v.note), card ? h('button', { class: 'btn quiet small', type: 'button', onclick: () => card.open(id) }, 'Edit') : areaLink(id, 'Edit', 'btn quiet small'), h('button', { class: 'btn quiet small', type: 'button', onclick: () => { delete state.overrides[id]; writeHash(state); renderTreePanel(); renderStatements(); renderOverridesBox(); refreshNav(); } }, 'Remove'))); }
+  for (const [id, v] of ovs) { const n = nodeOf(id); ul.append(h('li', {}, h('strong', {}, `${nodeCode(id)} ${short(id)}`), h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, `tool: ${plainTier(n && n.tier)}`)), h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(v.tier)}` }, h('span', {}, `you: ${plainTier(v.tier)}`)), h('span', { class: 'muted' }, v.note), card ? h('button', { class: 'btn quiet small', type: 'button', onclick: () => card.open(id) }, 'Edit') : areaLink(id, 'Edit', 'btn quiet small'), h('button', { class: 'btn quiet small', type: 'button', onclick: () => { delete state.overrides[id]; writeState(state); renderTreePanel(); renderStatements(); renderOverridesBox(); refreshNav(); } }, 'Remove'))); }
   box.append(h('div', { class: 'note alert', style: 'margin-top:16px' }, h('strong', {}, 'Your overrides'), ' (your judgment, shown next to the tool\'s; encoded in this page\'s URL so the link reproduces them)', ul));
 }
 

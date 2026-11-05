@@ -1,9 +1,10 @@
 // Evidence page, node views (evidence-viz-prd phase 2): the left rail in Mindbook order, the C9 evidence
 // strip for a node, the C4 growth record, the C7 firm obstacles and (phase 4) the C11 composition. evidence.mjs owns the state and the
 // indicator charts (C1 to C3); it passes what these views need in `ctx`.
-import { nodeCode, h, fmt, fmtSigned, shortName, sourceLabel, tierLabel, tierClass, withData, currentSetting, SETTING_LABEL } from './common.mjs';
+import { nodeCode, h, fmt, fmtSigned, shortName, sourceLabel, tierLabel, tierClass, withData, currentSetting, SETTING_LABEL, currentHash } from './common.mjs';
 import { stripRows, familyRows, obstacleRows, indexSeries, exportShares, TEST_ORDER } from './evidence_math.mjs';
-import { plainTier, tierBySetLine, reasonTag, robustChip } from './card.mjs';
+import { plainTier, tierBySetLine } from './card.mjs';
+import { reasonTag, robustChip } from './components/marks.mjs';
 import { median, isNum } from '../../engine/src/stats.mjs';
 
 const TEST_LABEL = { price: 'Test 1 · Price', changes: 'Test 2 · Changes', circumvention: 'Test 3 · Circumvention', camels: 'Test 4 · Camels and hippos' };
@@ -152,7 +153,7 @@ export function renderRail(host, { registry, scorecard, current, hrefFor, onPick
         onclick: (e) => { if (e.metaKey || e.ctrlKey || e.shiftKey) return; e.preventDefault(); onPick(it.id); },
       },
       tier ? h('span', { class: `tier-dot ${tierClass(tier)}`, title: tierLabel(tier), 'aria-hidden': 'true' }) : h('span', { class: 'tier-dot none', 'aria-hidden': 'true' }),
-      h('span', { class: 'ev-rail-name' }, it.short),
+      h('span', {}, it.short),
       tier ? h('span', { class: 'visually-hidden' }, ` (${tierLabel(tier)})`) : null);
       ul.append(h('li', {}, a));
     }
@@ -230,8 +231,8 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
     offStandard ? h('span', { class: 'small muted' }, ` (${SETTING_LABEL[setting]} reading, not the one to cite)`) : null,
     ' ', robustChip(sn),
     lean ? h('span', { class: 'small muted' }, ` ${lean}.`) : null,
-    ' ', h('a', { href: withData(`/constraint-check-site/desk/areas.html?iso=${iso}&node=${encodeURIComponent(view)}`) + location.hash }, 'Open the rating card for the reasoning'),
-    bySet ? h('span', { class: 'small muted ev-byset' }, ` ${bySet}`) : null,
+    ' ', h('a', { href: withData(`/constraint-check-site/desk/areas.html?iso=${iso}&node=${encodeURIComponent(view)}`) + currentHash() }, 'Open the rating card for the reasoning'),
+    bySet ? h('span', { class: 'small muted' }, ` ${bySet}`) : null,
   ].filter(Boolean));
   const np = sn.tier === 'elimination' ? null : noPriceNote(scorecard, view, countryName);
   if (np) verdictEl.append(h('span', { class: 'small ev-noprice' }, np));

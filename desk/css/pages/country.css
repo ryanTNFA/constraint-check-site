@@ -1,0 +1,63 @@
+/* Constraint Check Desk: the Bottom line (country.html): the three lists, the compact head and the compact tree (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+@layer pages {
+/* ---------- Bottom line, the front door (front-door PRD W3, section 3.3) ----------
+   Three lists that fit one laptop screen for a typical country: stop arguing, look closer, can't settle. */
+.bl-head { padding-block: 12px 4px; }
+.bl-head .lede-question { margin: 10px 0 0; }
+.bl-lists { margin-top: 8px; }
+.bl-scope { margin: 0 0 8px; }
+/* V1: the three lists sit on the page, each under a rule, instead of in one box */
+#statements-body { display: grid; gap: 0 36px; }
+.bl-list { padding: 8px 0 10px; border-top: 1px solid var(--rule); font-size: 1rem; }
+.bl-list h2 { font-family: var(--serif); font-weight: 500; font-size: 1.2rem; margin: 0 0 2px; padding-left: 12px; border-left: 4px solid var(--rule-strong); }
+.bl-stop h2 { border-left-color: var(--tier-probnot); }
+.bl-look h2 { border-left-color: var(--brand-amber); }
+.bl-unclear h2 { border-left-color: var(--rule-strong); }
+.bl-sub { margin: 0 0 8px 16px; color: var(--muted); font-size: 0.875rem; }
+.bl-list ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 3px; }
+.bl-list li { line-height: 1.45; padding-left: 16px; }
+.bl-area { font-weight: 600; margin-right: 6px; }
+.bl-area a { color: var(--text); }
+.bl-grade { font-family: var(--mono); font-size: 0.68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--rule-strong); padding: 0 5px; margin-right: 6px; vertical-align: 1px; }
+.bl-reason { display: block; font-weight: 600; }
+.bl-next { color: var(--muted); }
+.bl-why { font-size: 0.8125rem; white-space: nowrap; }
+.bl-ov { margin-left: 6px; font-size: 0.8125rem; color: var(--accent); }
+.bl-none { margin: 6px 0 0 16px; }
+.bl-note { margin: 8px 0 0 16px; font-size: 0.875rem; color: var(--muted); }
+.bl #proposal, .bl #export { margin-top: 20px; }
+@media (max-width: 600px) { .bl-list { padding: 12px 12px 14px; } .bl-list li, .bl-sub, .bl-none, .bl-note { padding-left: 0; margin-left: 0; } }
+
+/* one laptop screen: a compact head, and on wide screens "stop" and "look" beside "can't settle" */
+.bl-head .kicker { display: none; }
+.bl-head h1 { font-size: clamp(2rem, 3.2vw, 2.75rem); margin: 0; }
+.bl-head .meta-list { margin-top: 4px; }
+.bl-head .lede-question { font-size: 1.125rem; margin: 6px 0 0; max-width: 70ch; }
+@media (min-width: 1000px) {
+  #statements-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); grid-template-rows: auto 1fr; }
+  .bl-stop { grid-column: 1; grid-row: 1; }
+  .bl-look { grid-column: 1; grid-row: 2; }
+  .bl-unclear { grid-column: 2; grid-row: 1 / span 2; }
+  #statements-body > .note { grid-column: 1 / -1; }
+}
+
+#statements-body:empty { min-height: 220px; background: repeating-linear-gradient(180deg, var(--surface-2) 0 14px, transparent 14px 32px); }
+
+/* ---------- V4: the compact tree beside the Bottom line title (below it on narrow screens) ---------- */
+.ctree { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: center; }
+.ctree-fork { display: grid; gap: 3px; justify-items: start; }
+.ctree-branches { display: grid; gap: 6px; border-left: 1px solid var(--rule-strong); padding-left: 12px; position: relative; }
+.ctree-branches::before { content: ''; position: absolute; left: -14px; top: 50%; width: 13px; border-top: 1px solid var(--rule-strong); }
+.ctree-branch { display: flex; align-items: center; gap: 8px; }
+.ctree-branch > .ctree-lab { width: 6.4rem; flex: none; }
+.ctree-lab { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.ctree-side { font-size: var(--fs-caption); color: var(--muted); }
+.ctree-host { margin-top: 10px; }
+.ctree-key { font-size: var(--fs-caption); color: var(--muted); margin: 5px 0 0; max-width: 60ch; }
+.bl-head { display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1000px) {
+  .bl-head { grid-template-columns: minmax(0, 1fr) auto; column-gap: 36px; }
+  .bl-head > * { grid-column: 1; }
+  .bl-head > .ctree-host { grid-column: 2; grid-row: 1 / span 6; align-self: center; margin-top: 0; }
+}
+}

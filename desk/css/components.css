@@ -1,155 +1,7 @@
-/* Constraint Check Desk: shared styles. No build step.
-   Visual system: the TNFA Design System (https://claude.ai/artifact/FGtwDL393QuVYodATMiRLR).
-   Light is TNFA's data-page theme (bg-soft ground, ink text, one amber accent, square corners).
-   The dark theme is a tool-only extension derived from the same tokens; the website has none.
-   --chart-* and --tier-* are the TNFA data palette (validated for colour-vision deficiency and contrast). */
-
-@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-normal-400600.woff2") format("woff2"); font-weight: 400 600; font-style: normal; font-display: swap; }
-@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-italic-400600.woff2") format("woff2"); font-weight: 400 600; font-style: italic; font-display: swap; }
-@font-face { font-family: "Libertinus Serif Display"; src: url("/constraint-check-site/desk/fonts/libertinus-serif-display-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "Inter"; src: url("/constraint-check-site/desk/fonts/inter-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
-
-:root {
-  /* surfaces and text (TNFA: bg-soft, white, bone, ink, ink-muted, toc-rail) */
-  --bg: #faf7f0;
-  --surface: #ffffff;
-  --surface-2: #f4ede0;
-  --text: #1c2e4a;
-  --muted: #4a5d7e;
-  --rule: #e6d9d0;
-  --rule-strong: #7a879c;
-  /* the accent (TNFA: amber-mid for text and fills, amber for marks and rules, amber-pale) */
-  --accent: #9a5620;
-  --accent-hover: #7d4519;
-  --accent-ink: #ffffff;
-  --accent-soft: #f5e6d4;
-  --brand-amber: #b8682a;
-  --banner: #1e3452;
-  /* chart roles */
-  --chart-focus: #b8682a;
-  --chart-focus-ink: #9a5620;
-  --chart-peer: #2e4060;
-  --chart-peer-fill: #e3e8f0;
-  --chart-fit: #4f6d99;
-  --chart-band: #e6ebf2;
-  --chart-other: #8f98a6;
-  --chart-binding: #9c1f45;
-  /* verdict tiers: a diverging scale from ruled out (navy) through cannot tell (neutral hatch) to binding (crimson) */
-  --tier-ruled: #2e4060;
-  --tier-ruled-ink: #ffffff;
-  --tier-probnot: #7f98c0;
-  --tier-probnot-ink: #1c2e4a;
-  --tier-cannot: #ffffff;
-  --tier-cannot-hatch: #6d7a90;
-  --tier-weak-hatch: #b9c2d0;
-  --tier-cannot-ink: #1c2e4a;
-  --tier-cannot-tint: #e9e4d8;
-  --tier-candidate: #d4852a;
-  --tier-candidate-ink: #1c2e4a;
-  --tier-binding: #9c1f45;
-  --tier-binding-ink: #ffffff;
-  --tier-context: #f4ede0;
-  --tier-context-ink: #4a5d7e;
-  /* type (TNFA families) */
-  --serif: Newsreader, Georgia, "Times New Roman", serif;
-  --display: "Libertinus Serif Display", Newsreader, Georgia, serif;
-  --sans: Inter, "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
-  --mono: "IBM Plex Mono", Consolas, ui-monospace, monospace;
-  --maxw: 1240px;
-  --gutter: clamp(20px, 4vw, 60px);
-  --radius: 0;
-  --radius-tag: 3px;
-  /* one elevation, for the drawer, menus and tooltips only (visual-upgrade PRD V1, decision V-D2) */
-  --elev: 0 10px 30px rgba(28, 46, 74, 0.16);
-  /* three small sizes, kept apart: eyebrow (Libertinus, tracked), label (mono, uppercase), caption (Inter) */
-  --fs-eyebrow: 0.9375rem;
-  --fs-caption: 0.8125rem;
-  --fs-label: 0.72rem;
-  color-scheme: light;
-}
-
-/* Dark: tool-only extension. Navy ground from TNFA's banner, cream text, a lighter amber. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #111a28; --surface: #172338; --surface-2: #1f2d45;
-    --text: #ece6da; --muted: #a9b4c6; --rule: #2a3a54; --rule-strong: #6b7c99;
-    --accent: #e0a066; --accent-hover: #f0b98a; --accent-ink: #111a28; --accent-soft: #3a2c22;
-    --brand-amber: #c27a38; --banner: #0b1220;
-    --chart-focus: #c27a38; --chart-focus-ink: #e0a066; --chart-peer: #a9bde0; --chart-peer-fill: #24344f;
-    --chart-fit: #7f9fcf; --chart-band: #1f2e47; --chart-other: #5d6a80; --chart-binding: #e0608f;
-    --tier-ruled: #c5d1e6; --tier-ruled-ink: #111a28; --tier-probnot: #52688d; --tier-probnot-ink: #ece6da;
-    --tier-cannot: #1f2d45; --tier-cannot-hatch: #8a98b0; --tier-weak-hatch: #46587a; --tier-cannot-ink: #ece6da; --tier-cannot-tint: #243249;
-    --tier-candidate: #e5923a; --tier-candidate-ink: #111a28; --tier-binding: #e0608f; --tier-binding-ink: #111a28;
-    --tier-context: #1f2d45; --tier-context-ink: #a9b4c6; --elev: 0 10px 30px rgba(0, 0, 0, 0.55);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #111a28; --surface: #172338; --surface-2: #1f2d45;
-  --text: #ece6da; --muted: #a9b4c6; --rule: #2a3a54; --rule-strong: #6b7c99;
-  --accent: #e0a066; --accent-hover: #f0b98a; --accent-ink: #111a28; --accent-soft: #3a2c22;
-  --brand-amber: #c27a38; --banner: #0b1220;
-  --chart-focus: #c27a38; --chart-focus-ink: #e0a066; --chart-peer: #a9bde0; --chart-peer-fill: #24344f;
-  --chart-fit: #7f9fcf; --chart-band: #1f2e47; --chart-other: #5d6a80; --chart-binding: #e0608f;
-  --tier-ruled: #c5d1e6; --tier-ruled-ink: #111a28; --tier-probnot: #52688d; --tier-probnot-ink: #ece6da;
-  --tier-cannot: #1f2d45; --tier-cannot-hatch: #8a98b0; --tier-weak-hatch: #46587a; --tier-cannot-ink: #ece6da; --tier-cannot-tint: #243249;
-  --tier-candidate: #e5923a; --tier-candidate-ink: #111a28; --tier-binding: #e0608f; --tier-binding-ink: #111a28;
-  --tier-context: #1f2d45; --tier-context-ink: #a9b4c6; --elev: 0 10px 30px rgba(0, 0, 0, 0.55);
-  color-scheme: dark;
-}
-
-/* ---------- base ---------- */
-*, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  font-size: 1.0625rem;
-  line-height: 1.5;
-  font-variant-numeric: tabular-nums;
-  overflow-x: hidden;
-}
-a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
-a:hover { color: var(--accent-hover); }
-/* TNFA: Newsreader is the voice; headings at weight 500, balanced wraps. */
-h1, h2, h3, h4 { font-family: var(--serif); font-weight: 500; line-height: 1.15; margin: 0 0 0.5rem; text-wrap: balance; }
-/* An editorial scale (visual-upgrade PRD V1): the headline, the standfirst and the body keep apart. */
-h1 { font-size: clamp(2.25rem, 4.5vw, 3.5rem); line-height: 1.04; letter-spacing: -0.01em; }
-h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); }
-h3 { font-size: 1.25rem; }
-p { margin: 0 0 0.75rem; }
-small, .small { font-size: var(--fs-caption); }
-.muted { color: var(--muted); }
-.serif { font-family: var(--serif); }
-.num { font-variant-numeric: tabular-nums; }
-.mono { font-family: var(--mono); font-size: 0.8125em; }
-hr { border: 0; border-top: 1px solid var(--rule); margin: 1.5rem 0; }
-code { font-family: var(--mono); font-size: 0.875em; }
-:focus-visible { outline: 2px solid var(--brand-amber); outline-offset: 2px; }
-.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.skip-link { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 6px 10px; border: 1px solid var(--rule-strong); z-index: 100; }
-.skip-link:focus { left: 8px; }
-/* The skip link's target takes focus without drawing a ring round the whole page. */
-main[tabindex="-1"]:focus { outline: none; }
-/* Inside scrolling boxes an outside ring is clipped by the overflow: draw it inside instead. */
-.tree-wrap :focus-visible, .table-wrap :focus-visible, .fam-scroll :focus-visible, .editor .suggest li:focus-visible { outline-offset: -2px; }
-.editor .suggest li:focus-visible { background: var(--accent-soft); }
-/* Phase 5 accessibility: honour reduced motion everywhere (the year player already checks it in JS). */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto !important; }
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
-}
-/* Windows high contrast: keep the tier colours, which carry meaning, rather than flattening them to system colours. */
-@media (forced-colors: active) {
-  .tier-badge, .tier-dot, .swatch, .chipstrip .chip, .sm-swatch { forced-color-adjust: none; }
-}
-
-.wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gutter); }
-
+/* Constraint Check Desk: components layer (C5). Everything shared by more than one page or drawn by a shared module
+   (shell.mjs, card.mjs, tree.mjs, common.mjs, lesson.mjs, longview.mjs). Cap: 1,200 lines (tests/test_desk_css.py).
+   One page's own rules go in pages/<page>.css; durations and easings go in motion.css; tokens in tokens.css. */
+@layer components {
 /* ---------- kicker labels ---------- */
 /* TNFA eyebrow: Libertinus Serif Display, uppercase, tracked 0.2em, amber. */
 .kicker {
@@ -175,29 +27,6 @@ main[tabindex="-1"]:focus { outline: none; }
 @media (max-width: 600px) { .brand span { display: none; } .brand-logo { height: 30px; } }
 .brand span { color: var(--muted); font-size: 0.8125rem; }
 .topnav { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 0.9375rem; }
-
-/* ---------- prototype alert ----------
-   Shown at the top of every page, in print too, and never dismissable: the tool is public before it is validated.
-   The square "!" mark is typographic (TNFA uses no icon set). */
-.banner {
-  background: var(--accent-soft);
-  border-top: 3px solid var(--brand-amber);
-  border-bottom: 3px solid var(--brand-amber);
-}
-.banner .wrap { padding-block: 10px; display: grid; grid-template-columns: auto 1fr auto; gap: 2px 18px; align-items: center; }
-.banner .alert-mark {
-  grid-row: span 2; width: 52px; height: 52px; display: grid; place-items: center;
-  background: var(--brand-amber); color: #fff; font-family: var(--display); font-size: 2.25rem; line-height: 1; font-weight: 700;
-}
-.banner strong { font-family: var(--display); font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase; font-size: 1rem; color: var(--text); }
-.banner .alert-text { grid-column: 2; font-family: var(--serif); font-size: 0.9375rem; line-height: 1.4; color: var(--text); }
-.banner .banner-link { grid-column: 3; grid-row: 1 / span 2; color: var(--accent); white-space: nowrap; font-weight: 600; }
-@media (max-width: 700px) {
-  .banner .wrap { grid-template-columns: auto 1fr; }
-  .banner .alert-mark { width: 40px; height: 40px; font-size: 1.75rem; }
-  .banner .alert-text { grid-column: 1 / -1; }
-  .banner .banner-link { grid-column: 1 / -1; grid-row: auto; }
-}
 
 /* ---------- buttons, inputs ---------- */
 /* TNFA button-label: Libertinus Serif Display, uppercase, tracked 0.2em; square corners. */
@@ -434,11 +263,10 @@ table.data td .sub { display: block; font-size: 0.75rem; color: var(--muted); }
 .drawer {
   position: fixed; top: 0; right: 0; height: 100dvh; width: min(680px, 100vw);
   background: var(--surface); border-left: 1px solid var(--rule-strong); box-shadow: var(--elev);
-  z-index: 50; overflow-y: auto; transform: translateX(102%); transition: transform 180ms ease;
+  z-index: 50; overflow-y: auto; transform: translateX(102%);
   padding: 20px var(--gutter) 40px;
 }
 .drawer.open { transform: translateX(0); }
-@media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
 .drawer-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
 .drawer-head h2 { font-size: 1.3rem; }
 .drawer-head .q { font-family: var(--serif); color: var(--muted); font-size: 1rem; margin-top: 4px; }
@@ -492,15 +320,6 @@ table.data td .sub { display: block; font-size: 0.75rem; color: var(--muted); }
 /* V1: the home headline and its standfirst (V2 keeps the map inside the first screen at 1366 × 768) */
 .picker-head h1 { font-size: clamp(2.5rem, 5vw, 3.75rem); line-height: 1.02; letter-spacing: -0.015em; max-width: 18ch; }
 .picker-head .prose { margin-top: 10px; font-size: 1.375rem; line-height: 1.4; max-width: 56ch; }
-.econ-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 18px; }
-.econ-card { display: block; text-decoration: none; color: inherit; border: 1px solid var(--rule); background: var(--surface); padding: 14px 16px; }
-.econ-card:hover { border-color: var(--accent); }
-.econ-card h3 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.econ-card .iso { font-family: var(--mono); color: var(--muted); font-size: 0.8125rem; font-weight: 400; }
-.econ-card .where { font-size: 0.8125rem; color: var(--muted); }
-.econ-card .counts { display: flex; gap: 14px; margin-top: 10px; font-size: 0.8125rem; color: var(--muted); flex-wrap: wrap; }
-.econ-card .counts strong { color: var(--text); }
-.empty { color: var(--muted); padding: 24px 0; }
 
 /* ---------- plain-language pass (UX clarity, 2026-10-29) ---------- */
 .fcs-note { margin-top: 14px; max-width: 80ch; }
@@ -525,15 +344,12 @@ details.rule-detail .stat-grid { margin-top: 8px; }
 .analyst-group > summary:focus-visible { outline: 2px solid var(--brand-amber); outline-offset: 4px; }
 .subpanel { padding-block: 28px 8px; border-top: 1px solid var(--rule); margin-top: 24px; }
 .para .para-text { font-family: var(--serif); }
-.howto { border: 1px solid var(--rule); background: var(--surface); padding: 14px 18px; margin-top: 14px; max-width: 80ch; }
-.howto ol { margin: 6px 0 0; padding-left: 20px; font-size: 0.9375rem; line-height: 1.5; }
-.howto .howto-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.econ-card .summary-lines { margin: 10px 0 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.45; }
-.econ-card .summary-lines li { margin-bottom: 2px; }
-.econ-card .summary-lines .lab { color: var(--muted); }
-.econ-card .fcs-tag { display: inline-block; margin-top: 8px; font-size: 0.75rem; border: 1px solid var(--accent); color: var(--accent); padding: 0 6px; }
-.idea-hint { font-size: 0.9375rem; margin-top: 10px; }
 .foot p { margin: 0 0 8px; max-width: 90ch; }
+.foot p:empty { display: none; }
+
+/* ---------- the two custom elements (C7): a term with its definition on hover, a disclosure that folds ---------- */
+gt-term { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
+gt-fold { display: block; }
 
 /* ---------- footer ---------- */
 .foot { border-top: 1px solid var(--rule); margin-top: 48px; padding-block: 20px 40px; font-size: 0.8125rem; color: var(--muted); }
@@ -557,9 +373,8 @@ details.rule-detail .stat-grid { margin-top: 8px; }
   .stat .val { font-size: 1.15rem; }
 }
 @media print {
-  .topbar, .banner .banner-link, .subnav, .btn, .editor, .scrim, .drawer, .analyst-group > summary::after { display: none !important; }
+  .topbar, .subnav, .btn, .editor, .scrim, .drawer, .analyst-group > summary::after { display: none !important; }
   body { background: #fff; color: #000; }
-  .banner { background: #fff; border-color: #000; } .banner .alert-mark { background: #000; }
 }
 
 /* Lean of an unclear area (front-door PRD W1): an arrow beside the grey, never a fill, so it cannot read as a verdict. */
@@ -603,87 +418,6 @@ details.rule-detail .stat-grid { margin-top: 8px; }
   .nav-long { display: none; }
 }
 
-/* ---------- Bottom line, the front door (front-door PRD W3, section 3.3) ----------
-   Three lists that fit one laptop screen for a typical country: stop arguing, look closer, can't settle. */
-.bl-head { padding-block: 12px 4px; }
-.bl-head .lede-question { margin: 10px 0 0; }
-.bl-lists { margin-top: 8px; }
-.bl-scope { margin: 0 0 8px; }
-/* V1: the three lists sit on the page, each under a rule, instead of in one box */
-#statements-body { display: grid; gap: 0 36px; }
-.bl-list { padding: 8px 0 10px; border-top: 1px solid var(--rule); font-size: 1rem; }
-.bl-list h2 { font-family: var(--serif); font-weight: 500; font-size: 1.2rem; margin: 0 0 2px; padding-left: 12px; border-left: 4px solid var(--rule-strong); }
-.bl-stop h2 { border-left-color: var(--tier-probnot); }
-.bl-look h2 { border-left-color: var(--brand-amber); }
-.bl-unclear h2 { border-left-color: var(--rule-strong); }
-.bl-sub { margin: 0 0 8px 16px; color: var(--muted); font-size: 0.875rem; }
-.bl-list ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 3px; }
-.bl-list li { line-height: 1.45; padding-left: 16px; }
-.bl-area { font-weight: 600; margin-right: 6px; }
-.bl-area a { color: var(--text); }
-.bl-grade { font-family: var(--mono); font-size: 0.68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--rule-strong); padding: 0 5px; margin-right: 6px; vertical-align: 1px; }
-.bl-reason { display: block; font-weight: 600; }
-.bl-next { color: var(--muted); }
-.bl-why { font-size: 0.8125rem; white-space: nowrap; }
-.bl-ov { margin-left: 6px; font-size: 0.8125rem; color: var(--accent); }
-.bl-none { margin: 6px 0 0 16px; }
-.bl-note { margin: 8px 0 0 16px; font-size: 0.875rem; color: var(--muted); }
-.bl #proposal, .bl #export { margin-top: 20px; }
-@media (max-width: 600px) { .bl-list { padding: 12px 12px 14px; } .bl-list li, .bl-sub, .bl-none, .bl-note { padding-left: 0; margin-left: 0; } }
-
-/* ---------- Explore one area across countries (front-door PRD W3, section 3.4) ---------- */
-.explore { margin: 8px 0 32px; padding-top: 18px; border-top: 1px solid var(--rule); }
-.explore h2, .econ-title { font-family: var(--serif); font-weight: 500; font-size: 1.75rem; margin: 0 0 10px; }
-.ex-controls { margin-bottom: 6px; }
-.ex-caveat { margin: 0 0 12px; font-size: 0.875rem; color: var(--muted); }
-.ex-body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(240px, 3fr); gap: 20px; align-items: start; }
-@media (max-width: 860px) { .ex-body { grid-template-columns: 1fr; } }
-/* V1: the map sits on the page without a box; "can't tell" is one quiet tint there, outlined for a data gap (V-D1) */
-.ex-fig { margin: 0; }
-.ex-map { display: block; width: 100%; height: auto; }
-.ex-shape { stroke: var(--bg); stroke-width: 0.6; cursor: pointer; }
-.ex-dot { stroke: var(--text); stroke-width: 0.6; }
-.ex-map a:hover .ex-shape, .ex-map a:focus .ex-shape { stroke: var(--text); stroke-width: 1.4; }
-.ex-out { opacity: 0.18; }
-.ex-none { fill: none; stroke: var(--rule-strong); stroke-width: 0.5; stroke-dasharray: 2 2; }
-.ex-gap { stroke: var(--tier-cannot-hatch); stroke-width: 0.7; }
-.ex-legend { margin: 6px 0 4px; }
-.ex-swatch-none { background: transparent; border: 1px dashed var(--rule-strong); }
-.ex-swatch-tint { background: var(--tier-cannot-tint); border-color: var(--rule); }
-.ex-swatch-gap { background: var(--tier-cannot-tint); border-color: var(--tier-cannot-hatch); }
-.ex-list { display: grid; gap: 6px; }
-.ex-group { border: 1px solid var(--rule); background: var(--surface); padding: 6px 10px; }
-.ex-group > summary { cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-.ex-names { margin: 6px 0 2px; font-size: 0.875rem; line-height: 1.5; }
-.econ-title { margin-top: 8px; }
-
-/* ---------- Methods page ---------- */
-.methods-prose { max-width: 46rem; }
-.methods-prose ol { padding-left: 1.3em; display: grid; gap: 6px; }
-.doc-list { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 6px; }
-.doc-list a { font-weight: 600; }
-.doc-list a[aria-current="true"] { color: var(--text); text-decoration-color: var(--brand-amber); text-decoration-thickness: 2px; }
-.doc-body { max-width: 52rem; border-top: 1px solid var(--rule); padding-top: 8px; }
-.doc-body:empty { display: none; }
-.doc-body h1 { font-family: var(--serif); font-weight: 500; font-size: 1.8rem; }
-.doc-body h2 { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; margin-top: 1.6em; }
-.doc-body h3 { font-size: 1.05rem; margin-top: 1.3em; }
-.doc-body code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); padding: 0 3px; }
-.doc-body pre { overflow-x: auto; background: var(--surface-2); padding: 10px; }
-.doc-body .table-wrap { margin: 10px 0; }
-/* one laptop screen: a compact head, and on wide screens "stop" and "look" beside "can't settle" */
-.bl-head .kicker { display: none; }
-.bl-head h1 { font-size: clamp(2rem, 3.2vw, 2.75rem); margin: 0; }
-.bl-head .meta-list { margin-top: 4px; }
-.bl-head .lede-question { font-size: 1.125rem; margin: 6px 0 0; max-width: 70ch; }
-@media (min-width: 1000px) {
-  #statements-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); grid-template-rows: auto 1fr; }
-  .bl-stop { grid-column: 1; grid-row: 1; }
-  .bl-look { grid-column: 1; grid-row: 2; }
-  .bl-unclear { grid-column: 2; grid-row: 1 / span 2; }
-  #statements-body > .note { grid-column: 1 / -1; }
-}
-
 /* ---------- evidence settings and robustness marks (front-door PRD W4) ---------- */
 .nav-meta { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; margin-left: auto; }
 .nav-meta .nav-set { margin-left: 0; }
@@ -719,52 +453,8 @@ button.robust[aria-expanded="true"]::after { content: ' ▴'; }
 .tnfa-view ul { margin: 4px 0 0; padding-left: 1.1em; display: grid; gap: 6px; max-width: 70ch; }
 .tnfa-view p { margin: 0; }
 .tnfa-view .small a { margin-right: 14px; }
-/* TNFA's band is the site's own navy "Long View" section (thenewforeignassistance.org): its ground, type colours and
-   chart colours are the site's, fixed in both themes, so TNFA's voice looks like TNFA and the tool's like the tool. */
-.why { margin: 22px 0 6px; padding: 22px 28px 20px; background: #1c2e4a; color: #fff;
-  --why-soft: #be9a7a; --why-dim: #8a9bb5; --why-link: #6b9ae3; --why-grid: #3a4d6a; }
-.why .kicker { color: var(--why-soft); }
-.why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 28px; margin: 8px 0 10px; }
-.why-grid h3 { font-family: var(--serif); font-weight: 500; font-size: 1.15rem; margin: 0 0 4px; text-wrap: balance; color: #fff; }
-.why-grid p { margin: 0; font-size: 0.9375rem; color: var(--why-soft); max-width: 46ch; }
-.why .small a { margin-right: 14px; }
-.why a { color: var(--why-link); }
-.why .btn.quiet { border-color: var(--why-link); color: #fff; }
-.why .btn.quiet:hover { background: rgba(255, 255, 255, 0.08); }
-.why .btn:focus-visible { outline-color: #fff; }
 .tnfa-panel { border-left: 4px solid var(--brand-amber); padding-left: 16px; }
-/* self-discovery page */
-.sd-prose { max-width: 46rem; display: grid; gap: 10px; }
-.sd-prose p { margin: 0; }
-.sd-list { margin: 8px 0; padding-left: 1.2em; display: grid; gap: 6px; max-width: 70ch; }
-.sd-way { color: var(--muted); }
-ol.sd-nearby { margin: 6px 0 8px; padding-left: 1.6em; display: grid; gap: 4px; columns: 2; column-gap: 28px; }
-@media (max-width: 700px) { ol.sd-nearby { columns: 1; } }
-.sd-elim td, .sd-elim th { white-space: normal; }
-.sd .tnfa-view { margin-top: 28px; }
 .sd-link { display: block; margin: 4px 0; }
-
-.sd-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 28px; }
-.sd-two h3 { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; margin: 0 0 2px; }
-ul.sd-nearby { margin: 6px 0 8px; padding-left: 1.1em; display: grid; gap: 3px; }
-#otherway h3 { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; margin: 0 0 2px; }
-#otherway .sd-hs { display: block; margin-left: 0; }
-
-/* ---------- V2 (visual-upgrade PRD): the home page leads with the map; no page opens on a placeholder ---------- */
-/* the home page's alert on one line: label, text and link; it still never goes away */
-.banner.compact .wrap { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; padding-block: 8px; }
-.banner.compact .alert-mark { display: none; }
-.banner.compact strong { font-size: 0.8125rem; }
-.banner.compact .alert-text { flex: 1 1 40ch; max-width: none; font-size: 0.9375rem; line-height: 1.4; }
-.banner.compact .banner-link { white-space: nowrap; }
-/* skeletons: the shape of what is coming, in place of "Loading…" */
-.ex-skeleton { aspect-ratio: 960 / 470; max-height: 470px; background: var(--surface-2); }
-#explore .ex-skeleton + p { margin-top: 6px; }
-#statements-body:empty { min-height: 220px; background: repeating-linear-gradient(180deg, var(--surface-2) 0 14px, transparent 14px 32px); }
-/* "How to read" is collapsed by default, after the economies */
-details.howto { margin-top: 28px; }
-details.howto > summary { cursor: pointer; font-weight: 600; }
-details.howto[open] > summary { margin-bottom: 4px; }
 
 /* ---------- V3: the country signature, 13 squares in tree order; a fingerprint, never a score ---------- */
 .strip { display: flex; gap: 3px; flex-wrap: nowrap; }
@@ -797,49 +487,8 @@ details.howto[open] > summary { margin-bottom: 4px; }
 .lv-year { font-family: var(--serif); font-size: 44px; fill: var(--why-grid, #3a4d6a); }
 .longview figcaption { margin-top: 8px; display: grid; gap: 4px; max-width: none; color: var(--why-dim, #8a9bb5); }
 .longview figcaption strong { color: #fff; }
-/* the lesson page borrows these classes on a light ground */
-.learn .lv-grid { stroke: var(--rule); } .learn .lv-tick { font-size: 11px; fill: var(--muted); }
-.learn .lv-label { font-family: var(--sans); font-weight: 400; font-size: 11px; fill: var(--text); }
-.learn .lv-label.world { font-weight: 600; fill: var(--chart-peer); }
 .lv-controls { display: inline-flex; align-items: center; gap: 10px; }
 @media (max-width: 700px) { .lv-svg { min-width: 640px; } .longview { overflow-x: auto; } }
-
-/* ---------- Lesson one, "How a country gets read" (V6 / teaching plan section 4) ---------- */
-.learn-head { padding-block: 28px 8px; max-width: 70ch; }
-.step { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px 40px; align-items: start; padding-block: 36px; border-top: 1px solid var(--rule); }
-.step:first-of-type { border-top: 0; }
-.step-text p { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; max-width: 60ch; }
-.step-text h2 { margin-top: 2px; }
-.step-fig { margin: 0; min-width: 0; }
-.step-fig figcaption { margin-top: 6px; }
-.learn-svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
-.learn-dot { fill: var(--chart-other); opacity: 0.7; }
-.learn-dot.focus { fill: var(--chart-focus); opacity: 1; stroke: var(--text); stroke-width: 1; }
-.learn-fit { fill: none; stroke: var(--chart-fit); stroke-width: 2; }
-.learn-gap { stroke: var(--chart-focus); stroke-width: 2; stroke-dasharray: 4 3; }
-.learn-rowlab { font-size: 12px; fill: var(--text); }
-.learn-val { font-size: 12px; fill: var(--muted); }
-.learn-bar { fill: var(--chart-peer-fill); stroke: var(--chart-peer); stroke-width: 1; }
-.learn-bar.focus, .learn-bar.toward { fill: var(--chart-focus); stroke: var(--chart-focus-ink); }
-.learn-bar.away { fill: var(--chart-peer); }
-.learn-bar.none { fill: none; stroke-dasharray: 3 3; }
-.lv-axis { stroke: var(--rule-strong); }
-.ladders { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-.ladder { border-top: 3px solid var(--rule-strong); padding-top: 8px; }
-.ladder:last-child { border-top-color: var(--tier-probnot); }
-.ladder h3 { font-size: 1.1rem; margin-bottom: 6px; }
-.ladder ol { padding-left: 1.2em; margin: 0 0 6px; display: grid; gap: 4px; }
-.learn-list h3 { font-size: 1.05rem; margin: 0 0 4px; padding-left: 10px; border-left: 4px solid var(--rule-strong); }
-.learn-list + .learn-list { margin-top: 14px; }
-.learn-list ul { margin: 0; padding-left: 1.2em; }
-.learn-next { margin-top: 14px; }
-.learn-index { padding-block: 28px; border-top: 1px solid var(--rule); max-width: 80ch; }
-.learn-index ol { padding-left: 1.3em; display: grid; gap: 6px; }
-@media (prefers-reduced-motion: no-preference) {
-  .step { opacity: 0; transform: translateY(14px); transition: opacity 500ms ease, transform 500ms ease; }
-  .step.in { opacity: 1; transform: none; }
-}
-@media (max-width: 860px) { .step { grid-template-columns: 1fr; } }
 
 /* ---------- Teaching mode (docs/teaching-plan.md): the lesson bar, Predict first, the why-not lines ---------- */
 .lesson-bar { background: var(--surface); border-bottom: 3px solid var(--text); }
@@ -879,78 +528,6 @@ details.howto[open] > summary { margin-bottom: 4px; }
 .predict .hm-cell:not(.revealed), .predict td.cell:not(.revealed) { background: var(--surface-2) !important; color: transparent; }
 @media (max-width: 700px) { .lesson-head { flex-direction: column; } }
 
-/* ---------- V4: the compact tree beside the Bottom line title (below it on narrow screens) ---------- */
-.ctree { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: center; }
-.ctree-fork { display: grid; gap: 3px; justify-items: start; }
-.ctree-branches { display: grid; gap: 6px; border-left: 1px solid var(--rule-strong); padding-left: 12px; position: relative; }
-.ctree-branches::before { content: ''; position: absolute; left: -14px; top: 50%; width: 13px; border-top: 1px solid var(--rule-strong); }
-.ctree-branch { display: flex; align-items: center; gap: 8px; }
-.ctree-branch > .ctree-lab { width: 6.4rem; flex: none; }
-.ctree-lab { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
-.ctree-side { font-size: var(--fs-caption); color: var(--muted); }
+/* the compact tree's square size (the tree itself is pages/country.css) */
 .strip-md .sq { width: 24px; height: 24px; font-size: 13px; }
-.ctree-host { margin-top: 10px; }
-.ctree-key { font-size: var(--fs-caption); color: var(--muted); margin: 5px 0 0; max-width: 60ch; }
-.bl-head { display: grid; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 1000px) {
-  .bl-head { grid-template-columns: minmax(0, 1fr) auto; column-gap: 36px; }
-  .bl-head > * { grid-column: 1; }
-  .bl-head > .ctree-host { grid-column: 2; grid-row: 1 / span 6; align-self: center; margin-top: 0; }
 }
-
-/* Self-discovery: the signature cards and the five product-space views (self-discovery plan, section 4) */
-.sd-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 6px 0 14px; }
-.sd-card { border: 1px solid var(--rule); background: var(--surface); padding: 12px 14px; display: grid; gap: 6px; align-content: start; }
-.sd-card h3 { font-family: var(--serif); font-weight: 500; font-size: 1.05rem; margin: 0; }
-.sd-card .sd-predict { color: var(--muted); font-size: 0.875rem; margin: 0; }
-.sd-card .sd-here { font-size: 0.9375rem; margin: 0; }
-.sd-card .sd-arrow { display: inline-block; font-family: var(--sans); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border: 1px solid var(--rule-strong); margin-top: 2px; }
-.sd-card .sd-arrow.toward { background: var(--accent-soft); border-color: var(--brand-amber); color: var(--accent); }
-.sd-card .sd-arrow.away { background: var(--chart-peer-fill); border-color: var(--chart-peer); color: var(--chart-peer); }
-.sd-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 8px; }
-.sd-toggle button { font-family: var(--sans); font-size: 0.8125rem; padding: 4px 10px; border: 1px solid var(--rule-strong); background: var(--surface); color: var(--text); cursor: pointer; }
-.sd-toggle button + button { margin-left: -1px; }
-.sd-toggle button[aria-pressed="true"] { background: var(--text); color: #fff; border-color: var(--text); }
-.sd-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.8125rem; color: var(--muted); }
-.sd-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; vertical-align: -1px; border-radius: 50%; border: 1.5px solid var(--chart-other); background: #fff; }
-.sd-legend .l-on::before { background: var(--text); border-color: var(--text); }
-.sd-legend .l-new::before { background: var(--text); border: 2px solid var(--brand-amber); }
-.sd-legend .l-near::before { background: #fff; border: 1.5px solid var(--text); }
-.sd-legend .l-other::before { background: #e4e0d8; border-color: #e4e0d8; }
-.sd-chart { position: relative; border: 1px solid var(--rule); background: var(--surface); }
-.sd-chart svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
-.sd-chart .axis text, .sd-chart .lab { font-size: 11px; fill: var(--muted); }
-.sd-chart .axis line, .sd-chart .axis path { stroke: var(--rule-strong); stroke-width: 1; }
-.sd-chart .grid line { stroke: var(--rule); stroke-width: 1; }
-.sd-chart .tick-lab { font-size: 11px; fill: var(--muted); }
-.sd-chart .quad { font-size: 11px; fill: var(--muted); font-style: italic; }
-.sd-chart .name { font-size: 11px; fill: var(--text); }
-.sd-chart .name, .sd-chart .quad, .sd-chart .lab { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
-.sd-map svg { aspect-ratio: 1 / 1; max-height: 720px; margin: 0 auto; }
-.sd-tip { position: absolute; pointer-events: none; background: var(--text); color: #fff; font-family: var(--sans); font-size: 0.8125rem; padding: 6px 9px; max-width: 260px; z-index: 5; display: none; }
-.sd-tip b { color: #fff; }
-.sd-chart.has-tip .sd-tip { display: block; }
-#sd-map-table table, #sd-jumps-table table, #sd-gap-table table, #sd-frontier-table table, #sd-survival-table table { margin-top: 6px; }
-@media (max-width: 640px) { .sd-map svg { max-height: none; } .sd-card .sd-predict { display: none; } .sd-chart:not(.sd-map) { overflow-x: auto; } .sd-chart:not(.sd-map) svg { min-width: 600px; } }
-
-/* Product sections (the Growth Lab's ten, BSD-3-Clause classification): a categorical palette for the product-space views only.
-   Validated with the dataviz validator: lightness 0.43-0.77, chroma >= 0.10, adjacent-pair CVD dE >= 10, >= 3:1 on white and bg-soft.
-   Nine hues cannot all be told apart under colour-vision deficiency, so every view also names the section (labels, legend, tooltip, table). */
-:root {
-  --sector-agriculture: #307c1b;
-  --sector-textiles: #d4599b;
-  --sector-machinery: #285cc2;
-  --sector-stone: #9a8700;
-  --sector-chemicals: #673ba2;
-  --sector-electronics: #009084;
-  --sector-vehicles: #c5353e;
-  --sector-metals: #2d8ab8;
-  --sector-minerals: #723776;
-  --sector-other: #8f98a6;
-}
-.sd-sectors span::before { border: none; border-radius: 50%; background: var(--swatch, var(--sector-other)); }
-.sd-sectors { margin: 6px 0 8px; }
-.sd-chart .sec-lab { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--text); paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
-.sd-legend .l-on::before { background: var(--text); border-color: var(--text); }
-.sd-legend .l-pale::before { background: #c9cfd8; border-color: #c9cfd8; }
-.sd-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; background: var(--swatch, var(--sector-other)); }

@@ -2,7 +2,8 @@
 // economy by its rating for that area under the default comparison set, and a list groups the economies by rating,
 // alphabetically within each group. Never a ranking: no list sorts by score, and nothing is summed across areas.
 // No map library: an Equal Earth projection (Šavrič, Patterson and Jenny 2018) drawn straight into SVG.
-import { h, tierPaint, withData, getJSON, dataBase, highlightStrips } from './common.mjs';
+import { h, tierPaint, withData, getJSON, dataBase } from './common.mjs';
+import { highlightStrips } from './components/strip.mjs';
 import { PLAIN_TIER } from './card.mjs';
 
 const SVG = 'http://www.w3.org/2000/svg';

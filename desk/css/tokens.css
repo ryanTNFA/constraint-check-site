@@ -1,0 +1,127 @@
+/* Constraint Check Desk: design tokens, the first of the five layered stylesheets (Growth Test PRD, Part 6C, C5).
+   Load order and layer order are the same: tokens, base, components, motion, pages; a page stylesheet
+   (css/pages/<page>.css) comes last. Every file wraps its rules in its own @layer, so a later layer wins over an
+   earlier one whatever the specificity, and the order below is the only cascade rule to remember.
+   Visual system: the TNFA Design System (https://claude.ai/artifact/FGtwDL393QuVYodATMiRLR).
+   Light is TNFA's data-page theme (bg-soft ground, ink text, one amber accent, square corners).
+   The dark theme is a tool-only extension derived from the same tokens; the website has none.
+   --chart-* and --tier-* are the TNFA data palette (validated for colour-vision deficiency and contrast).
+   tests/test_palette.py reads the light block and both dark blocks from this file. */
+@layer tokens, base, components, motion, pages;
+
+@layer tokens {
+:root {
+  /* surfaces and text (TNFA: bg-soft, white, bone, ink, ink-muted, toc-rail) */
+  --bg: #faf7f0;
+  --surface: #ffffff;
+  --surface-2: #f4ede0;
+  --text: #1c2e4a;
+  --muted: #4a5d7e;
+  --rule: #e6d9d0;
+  --rule-strong: #7a879c;
+  /* the accent (TNFA: amber-mid for text and fills, amber for marks and rules, amber-pale) */
+  --accent: #9a5620;
+  --accent-hover: #7d4519;
+  --accent-ink: #ffffff;
+  --accent-soft: #f5e6d4;
+  --brand-amber: #b8682a;
+  --banner: #1e3452;
+  /* chart roles */
+  --chart-focus: #b8682a;
+  --chart-focus-ink: #9a5620;
+  --chart-peer: #2e4060;
+  --chart-peer-fill: #e3e8f0;
+  --chart-fit: #4f6d99;
+  --chart-band: #e6ebf2;
+  --chart-other: #8f98a6;
+  --chart-binding: #9c1f45;
+  /* verdict tiers: a diverging scale from ruled out (navy) through cannot tell (neutral hatch) to binding (crimson) */
+  --tier-ruled: #2e4060;
+  --tier-ruled-ink: #ffffff;
+  --tier-probnot: #7f98c0;
+  --tier-probnot-ink: #1c2e4a;
+  --tier-cannot: #ffffff;
+  --tier-cannot-hatch: #6d7a90;
+  --tier-weak-hatch: #b9c2d0;
+  --tier-cannot-ink: #1c2e4a;
+  --tier-cannot-tint: #e9e4d8;
+  --tier-candidate: #d4852a;
+  --tier-candidate-ink: #1c2e4a;
+  --tier-binding: #9c1f45;
+  --tier-binding-ink: #ffffff;
+  --tier-context: #f4ede0;
+  --tier-context-ink: #4a5d7e;
+  /* type (TNFA families) */
+  --serif: Newsreader, Georgia, "Times New Roman", serif;
+  --display: "Libertinus Serif Display", Newsreader, Georgia, serif;
+  --sans: Inter, "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, ui-monospace, monospace;
+  --maxw: 1240px;
+  --gutter: clamp(20px, 4vw, 60px);
+  --radius: 0;
+  --radius-tag: 3px;
+  /* one elevation, for the drawer, menus and tooltips only (visual-upgrade PRD V1, decision V-D2) */
+  --elev: 0 10px 30px rgba(28, 46, 74, 0.16);
+  /* D9 vocabulary (Growth Test PRD): one easing family and one duration scale for entrances, reveals, hovers and
+     disclosures; two elevation steps; the dark ink band as a surface inside a light page. Tokens only for now: nothing
+     below uses them until the motion pass, and nothing ever animates on a tier, a count or a caveat (tenet 6). */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-1: 150ms;
+  --dur-2: 250ms;
+  --dur-3: 400ms;
+  --elev-1: 0 1px 2px rgba(28, 46, 74, 0.08), 0 2px 8px rgba(28, 46, 74, 0.06);
+  --elev-2: 0 10px 30px rgba(28, 46, 74, 0.16);
+  --band: #1c2e4a;
+  /* three small sizes, kept apart: eyebrow (Libertinus, tracked), label (mono, uppercase), caption (Inter) */
+  --fs-eyebrow: 0.9375rem;
+  --fs-caption: 0.8125rem;
+  --fs-label: 0.72rem;
+  color-scheme: light;
+}
+
+/* Dark: tool-only extension. Navy ground from TNFA's banner, cream text, a lighter amber. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111a28; --surface: #172338; --surface-2: #1f2d45;
+    --text: #ece6da; --muted: #a9b4c6; --rule: #2a3a54; --rule-strong: #6b7c99;
+    --accent: #e0a066; --accent-hover: #f0b98a; --accent-ink: #111a28; --accent-soft: #3a2c22;
+    --brand-amber: #c27a38; --banner: #0b1220;
+    --chart-focus: #c27a38; --chart-focus-ink: #e0a066; --chart-peer: #a9bde0; --chart-peer-fill: #24344f;
+    --chart-fit: #7f9fcf; --chart-band: #1f2e47; --chart-other: #5d6a80; --chart-binding: #e0608f;
+    --tier-ruled: #c5d1e6; --tier-ruled-ink: #111a28; --tier-probnot: #52688d; --tier-probnot-ink: #ece6da;
+    --tier-cannot: #1f2d45; --tier-cannot-hatch: #8a98b0; --tier-weak-hatch: #46587a; --tier-cannot-ink: #ece6da; --tier-cannot-tint: #243249;
+    --tier-candidate: #e5923a; --tier-candidate-ink: #111a28; --tier-binding: #e0608f; --tier-binding-ink: #111a28;
+    --tier-context: #1f2d45; --tier-context-ink: #a9b4c6; --elev: 0 10px 30px rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111a28; --surface: #172338; --surface-2: #1f2d45;
+  --text: #ece6da; --muted: #a9b4c6; --rule: #2a3a54; --rule-strong: #6b7c99;
+  --accent: #e0a066; --accent-hover: #f0b98a; --accent-ink: #111a28; --accent-soft: #3a2c22;
+  --brand-amber: #c27a38; --banner: #0b1220;
+  --chart-focus: #c27a38; --chart-focus-ink: #e0a066; --chart-peer: #a9bde0; --chart-peer-fill: #24344f;
+  --chart-fit: #7f9fcf; --chart-band: #1f2e47; --chart-other: #5d6a80; --chart-binding: #e0608f;
+  --tier-ruled: #c5d1e6; --tier-ruled-ink: #111a28; --tier-probnot: #52688d; --tier-probnot-ink: #ece6da;
+  --tier-cannot: #1f2d45; --tier-cannot-hatch: #8a98b0; --tier-weak-hatch: #46587a; --tier-cannot-ink: #ece6da; --tier-cannot-tint: #243249;
+  --tier-candidate: #e5923a; --tier-candidate-ink: #111a28; --tier-binding: #e0608f; --tier-binding-ink: #111a28;
+  --tier-context: #1f2d45; --tier-context-ink: #a9b4c6; --elev: 0 10px 30px rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+
+/* Product sections (the Growth Lab's ten, BSD-3-Clause classification): a categorical palette for the product-space views only.
+   Validated with the dataviz validator: lightness 0.43-0.77, chroma >= 0.10, adjacent-pair CVD dE >= 10, >= 3:1 on white and bg-soft.
+   Nine hues cannot all be told apart under colour-vision deficiency, so every view also names the section (labels, legend, tooltip, table). */
+:root {
+  --sector-agriculture: #307c1b;
+  --sector-textiles: #d4599b;
+  --sector-machinery: #285cc2;
+  --sector-stone: #9a8700;
+  --sector-chemicals: #673ba2;
+  --sector-electronics: #009084;
+  --sector-vehicles: #c5353e;
+  --sector-metals: #2d8ab8;
+  --sector-minerals: #723776;
+  --sector-other: #8f98a6;
+}
+}

@@ -200,6 +200,7 @@ export function growthUniverse({ series, countries, params, snapshotYear }) {
     if (!isNum(y) || !isNum(p) || p <= 0) continue;
     rows.push({ iso3: c.iso3, y, x: Math.log(p), region: c.region || '(none)' });
   }
+  /** @type {{ok: boolean, n: number, reason?: string, [key: string]: any}} */
   let convergence = { ok: false, n: rows.length, reason: 'too_few_countries' };
   if (rows.length >= params.icr.min_countries) {
     const counts = {};

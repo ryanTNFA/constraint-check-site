@@ -1,10 +1,11 @@
 // Evidence page (evidence-viz-prd): a node rail with the C9 evidence strip, C4 growth record, C7 firm obstacles and C11
 // composition (views in evidence_node.mjs); under a node, its tests C5, C6 and C8 (evidence_tests.mjs); then C1 income-trend
 // scatter, C2 peer comparison and C3 over time for one indicator; the year player (player.mjs) animates C1 and C2.
-import { refreshNav } from './nav.mjs';
-import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, qs, unitHint, shortName, sourceLink, sourceLabel, dataBase, withData, downloadText, tierLabel, tierClass } from './common.mjs';
+import { refreshNav } from './shell.mjs';
+import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, qs, unitHint, shortName, sourceLink, sourceLabel, dataBase, withData, downloadText, tierLabel, tierClass, HASH, readHash, writeHash, currentHash } from './common.mjs';
 import { INCOME_ID, refSpan, scatterRows, structureFit, linearFit, lowessFit, lineAndBand, peerRank, residualPercentile, backTransform, referenceTable, viableYears, peerSummary, seriesRows, coverage, changeSinceStart, peerBand, slope, endpoints, stripRows, playerFrames, playerDomains, raceFrames } from './evidence_math.mjs';
-import { createControls, bubbleChart, barRace, reducedMotion } from './player.mjs';
+import { createControls, bubbleChart, barRace } from './player.mjs';
+import { reducedMotion } from './motion.mjs';
 import { renderRail, renderNodeHead, drawStrip, drawGrowth, drawObstacles, drawComposition, nodeScope, VIEWS } from './evidence_node.mjs';
 import { pqChoices, drawPriceQty, drawComove, drawBypass, drawCamels, CAMEL_VECTORS, CAMEL_FACTOR } from './evidence_tests.mjs';
 
@@ -33,8 +34,8 @@ const state = {
   current: null,
 };
 
-function readHash() {
-  const p = new URLSearchParams(location.hash.replace(/^#/, ''));
+function readHashState() {
+  const p = readHash();
   if (p.get('set') && SET_LABEL[p.get('set')]) state.set = p.get('set');
   if (['linear', 'lowess', 'structure'].includes(p.get('fit'))) state.fit = p.get('fit');
   if (p.get('asof')) state.asOf = Number(p.get('asof'));
@@ -58,8 +59,8 @@ function writeUrl(push = false) {
   const p = new URLSearchParams();
   if (state.set !== 'structural') p.set('set', state.set);
   // keep the country pages' state (peers, overrides, evidence setting) so the top bar carries it on
-  const prev = new URLSearchParams(location.hash.replace(/^#/, ''));
-  for (const k of ['peers', 'o', 'setting']) if (prev.get(k) != null) p.set(k, prev.get(k));
+  const prev = readHash();
+  for (const k of [HASH.peers, HASH.overrides, HASH.setting]) if (prev.get(k) != null) p.set(k, prev.get(k));
   if (state.fit !== 'structure') p.set('fit', state.fit);
   if (state.asOf && state.asOf !== snapYear()) p.set('asof', String(state.asOf));
   if (state.added.length) p.set('add', state.added.join(','));
@@ -71,9 +72,7 @@ function writeUrl(push = false) {
   if (state.c5price) p.set('pqp', state.c5price);
   if (state.c5qty) p.set('pqq', state.c5qty);
   if (state.c5axes !== 'resid') p.set('pqaxes', state.c5axes);
-  const hs = p.toString();
-  const url = `${location.pathname}?${q.toString()}${hs ? `#${hs}` : ''}`;
-  if (push && url !== location.pathname + location.search + location.hash) history.pushState(null, '', url); else history.replaceState(null, '', url);
+  writeHash(p, { push, query: `?${q.toString()}` });
 }
 
 const snapYear = () => (state.index && state.index.snapshot_year) || 2026;
@@ -108,7 +107,7 @@ function indOption(i, also = []) {
   const base = indText(i, also);
   if (!state.coverage) return h('option', { value: i.id }, base);
   const cov = covOf(i.id), asOf = state.asOf || snapYear();
-  if (!cov) return h('option', { value: i.id, class: 'ev-opt-none', disabled: i.id !== state.ind ? '' : null }, `${base} · no data for ${nameOf(state.iso)}`);
+  if (!cov) return h('option', { value: i.id, disabled: i.id !== state.ind ? '' : null }, `${base} · no data for ${nameOf(state.iso)}`);
   if (cov[1] < asOf - windowOf(i)) return h('option', { value: i.id, class: 'ev-opt-old' }, `${base} · outside the window`);
   return h('option', { value: i.id }, base);
 }
@@ -683,7 +682,7 @@ async function render() {
 }
 
 // ---------- node view (rail, C9, C4, C7) ----------
-const hrefFor = (view) => withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(view)}${location.hash}`);
+const hrefFor = (view) => withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(view)}${currentHash()}`);
 
 function nodeControls() {
   const box = $('node-controls');
@@ -1479,7 +1478,7 @@ function exportCSV(key) {
 
 // ---------- start ----------
 async function main() {
-  readHash();
+  readHashState();
   try {
     const [registry, countries, fits, index] = await Promise.all([loadRegistry(), getJSON(`${DATA}/countries.json`), getJSON(`${DATA}/fits.json`), getJSON(`${DATA}/index.json`)]);
     Object.assign(state, { registry, countries, fits, index });

@@ -1,7 +1,7 @@
 // Methods page (front-door PRD W3, level 3): about the prototype, how it is tested, and the method documents,
 // rendered from the Markdown in docs/ that build_site.py publishes (DOCS there must list the same files).
-import './nav.mjs';
-import { initTheme, h, qs } from './common.mjs';
+import './shell.mjs';
+import { initTheme, h, qs, readHash, writeHash } from './common.mjs';
 
 initTheme();
 
@@ -24,11 +24,11 @@ async function show(id, scroll) {
     const r = await fetch(`/constraint-check-site/docs/${id}.md`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const md = await r.text();
-    // our own documents, rendered as written; marked is loaded from cdnjs in methods.html
+    // our own documents, rendered as written; marked is vendored (desk/vendor/marked-12.0.2.min.js, loaded by methods.html)
     body.innerHTML = window.marked ? window.marked.parse(md) : `<pre>${md.replace(/[&<]/g, (c) => (c === '&' ? '&amp;' : '&lt;'))}</pre>`;
     for (const t of body.querySelectorAll('table')) t.outerHTML = `<div class="table-wrap">${t.outerHTML.replace('<table', '<table class="data"')}</div>`;
     const q = new URLSearchParams(location.search); q.set('doc', id);
-    history.replaceState(null, '', `${location.pathname}?${q}${location.hash}`);
+    writeHash(readHash(), { query: `?${q}` });
     if (scroll) body.scrollIntoView({ block: 'start' });
   } catch (e) {
     body.replaceChildren(h('p', { class: 'note alert' }, `${doc.title} could not be loaded (${e.message}).`));

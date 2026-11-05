@@ -1,4 +1,5 @@
-/* Evidence page (evidence-viz-prd C1). Uses the Desk tokens from desk.css. */
+/* Constraint Check Desk: the Analyst View (evidence.html): the control bar, the rail, the charts, the tests and the year player (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+@layer pages {
 .ev { padding-bottom: 64px; }
 .ev-head { padding-top: 28px; }
 .ev-head h1 { margin: 6px 0 8px; font-family: var(--serif); font-weight: 500; font-size: clamp(1.75rem, 3.4vw, 2.6rem); line-height: 1.1; max-width: 30ch; }
@@ -224,4 +225,5 @@ html:has(.ev-toolbar) { scroll-padding-top: calc(var(--tb-h, 84px) + 12px); }
   main.ev.ev-split { max-width: 1880px; }
   .ev-split .ev-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
   .ev-split #view-ind { border-left: 1px solid var(--rule); padding-left: 28px; position: sticky; top: var(--ev-toolbar-h, 72px); max-height: calc(100vh - var(--ev-toolbar-h, 72px)); overflow-y: auto; overscroll-behavior: contain; }
+}
 }

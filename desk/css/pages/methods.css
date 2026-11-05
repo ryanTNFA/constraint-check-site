@@ -1,0 +1,17 @@
+/* Constraint Check Desk: the Methods page: the prose, the document list and the rendered documents (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+@layer pages {
+/* ---------- Methods page ---------- */
+.methods-prose { max-width: 46rem; }
+.methods-prose ol { padding-left: 1.3em; display: grid; gap: 6px; }
+.doc-list { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 6px; }
+.doc-list a { font-weight: 600; }
+.doc-list a[aria-current="true"] { color: var(--text); text-decoration-color: var(--brand-amber); text-decoration-thickness: 2px; }
+.doc-body { max-width: 52rem; border-top: 1px solid var(--rule); padding-top: 8px; }
+.doc-body:empty { display: none; }
+.doc-body h1 { font-family: var(--serif); font-weight: 500; font-size: 1.8rem; }
+.doc-body h2 { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; margin-top: 1.6em; }
+.doc-body h3 { font-size: 1.05rem; margin-top: 1.3em; }
+.doc-body code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); padding: 0 3px; }
+.doc-body pre { overflow-x: auto; background: var(--surface-2); padding: 10px; }
+.doc-body .table-wrap { margin: 10px 0; }
+}

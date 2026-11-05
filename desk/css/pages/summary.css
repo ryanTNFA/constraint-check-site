@@ -1,4 +1,5 @@
-/* Diagnostic summary page (C10): the MCC-style heat map. Builds on desk.css tokens. */
+/* Constraint Check Desk: the Heat map (summary.html) (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+@layer pages {
 .sm-head { margin: 28px 0 12px; }
 .sm-head h1 { margin: 4px 0 6px; }
 .sm-q { margin: 0 0 6px; font-family: var(--serif); font-size: 1.1875rem; color: var(--muted); }
@@ -40,3 +41,4 @@
 .sm-readout { margin: 14px 0 6px; font-family: var(--serif); font-size: 1.0625rem; max-width: 80ch; }
 .sm-foot { max-width: 100ch; }
 .sm-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 40px; }
+}

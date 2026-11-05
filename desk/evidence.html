@@ -8,19 +8,17 @@
 <script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <link rel="preload" href="/constraint-check-site/desk/fonts/newsreader-normal-400600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/constraint-check-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/constraint-check-site/desk/css/desk.css">
-<link rel="stylesheet" href="/constraint-check-site/desk/css/evidence.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+<link rel="stylesheet" href="/constraint-check-site/desk/css/tokens.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/base.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/components.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/motion.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/pages/evidence.css">
+<script src="/constraint-check-site/desk/vendor/d3-7.9.0.min.js"></script>
+<script src="/constraint-check-site/desk/vendor/plot-0.6.16.min.js"></script>
 </head>
 <body data-page="charts">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="topbar">
-  <div class="nav-row nav-global"><div class="wrap">
-    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>prototype</span></a>
-  </div></div>
-</header>
-
+<header class="topbar"></header>
 <main id="main" class="wrap ev" tabindex="-1">
   <header class="ev-head">
     <span class="kicker">Evidence</span>
@@ -28,7 +26,7 @@
     <script>(function(){var i=(new URLSearchParams(location.search).get('iso')||'').toUpperCase();if(i){document.getElementById('page-title').textContent=i+': the evidence, node by node';document.title=i+' · '+document.title;}})();</script>
     <p class="ev-sub" id="page-sub">Pick a node on the left. Each node shows every piece of evidence the verdict layer weighed; pick any indicator to chart it against the income trend, its comparators and its own history.</p>
     <p class="ev-sub small">This is the analyst view: the evidence behind each verdict, chart by chart. For the plain answer, see the <a href="/constraint-check-site/desk/country.html" data-keep-iso>Bottom line</a>.</p>
-    <p class="ev-pack"><button class="btn small" id="pack" type="button" title="One HTML file with every chart on this page, its readout and footnote; open it and print to PDF">Download chart pack</button>
+    <p><button class="btn small" id="pack" type="button" title="One HTML file with every chart on this page, its readout and footnote; open it and print to PDF">Download chart pack</button>
       <button class="btn small" id="pins" type="button" hidden title="One HTML file with every chart you added with “+ Pack”, from any node or indicator, each with its own settings">Download my pack (<span id="pins-n">0</span>)</button>
       <button class="btn small" id="pins-clear" type="button" hidden>Clear my pack</button>
       <span class="small muted" id="pins-status" role="status"></span></p>
@@ -92,7 +90,7 @@
   <div class="ev-main">
   <div id="view-node">
   <section class="ev-section ev-nodeview" id="sec-node" aria-labelledby="h-node">
-    <h2 class="ev-h2 ev-node-title" id="h-node"></h2>
+    <h2 class="ev-h2" id="h-node"></h2>
     <p class="ev-node-q" id="node-q"></p>
     <p class="ev-node-verdict" id="node-verdict"></p>
     <form class="ev-subcontrols" id="node-controls" onsubmit="return false" aria-label="Settings for this view"></form>
@@ -215,7 +213,7 @@
       <div class="ev-chart" id="chart" role="img" aria-describedby="readout"></div>
       <figcaption>
         <p class="ev-readout" id="readout"></p>
-        <p class="ev-direction small muted" id="direction"></p>
+        <p class="small muted" id="direction"></p>
         <p class="ev-foot small muted" id="foot"></p>
       </figcaption>
     </figure>
@@ -283,6 +281,7 @@
   </div>
 </main>
 
+<footer class="foot"></footer>
 <script type="module" src="/constraint-check-site/desk/js/evidence.mjs"></script>
 </body>
 </html>

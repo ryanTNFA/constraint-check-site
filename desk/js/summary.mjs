@@ -2,9 +2,10 @@
 // benchmarking (the median binding-side distance of the node's indicators, as in C9) and the verdict layer's four
 // test scores as columns; then the verdict layer's tier and the analyst's own conclusion. Conclusions are stored in
 // the URL with the same `o=` encoding the Bottom line and Areas use for overrides, so the two pages and the memo share them.
-import { refreshNav } from './nav.mjs';
-import { nodeCode, getJSON, loadRegistry, initTheme, h, fmtSigned, qs, withData, dataBase, downloadText, tierLabel, tierClass, parseHash, writeHash, missingTestReason, USER_TIERS } from './common.mjs';
-import { plainTier, tierBySetLine, reasonTag, robustChip } from './card.mjs';
+import { refreshNav } from './shell.mjs';
+import { nodeCode, getJSON, loadRegistry, initTheme, h, fmtSigned, qs, withData, dataBase, downloadText, tierLabel, tierClass, parseHash, writeState, readHash, writeHash, currentHash, missingTestReason, USER_TIERS } from './common.mjs';
+import { plainTier, tierBySetLine } from './card.mjs';
+import { reasonTag, robustChip } from './components/marks.mjs';
 import { currentSetting, SETTING_LABEL } from './common.mjs';
 import { heatRow, TEST_ORDER } from './evidence_math.mjs';
 import { railModel, nodeScope, VIEWS } from './evidence_node.mjs';
@@ -152,12 +153,12 @@ function renderText() {
   ].filter(Boolean).join(' ');
   const active = activeSet();
   $('foot').textContent = `Benchmarking: the median, across the node's indicators with a value, of each one's distance from what income and structure predict, in standard deviations, turned so positive is the binding side (the C9 evidence strip's dots). Tests 1 to 4: the verdict layer's test scores (T), from −2 (evidence against the constraint binding) to +2 (for). Colour saturates at ±${LIM}. Comparators: benchmarking measures against every economy with data, not a comparator set; the test scores are computed with the verdict layer's ${active} comparators${state.set !== active ? `` : ''}. The rating column follows the comparators chosen above (the verdict layer computes a rating under each set; hover a rating to see where the sets disagree). "Not computed": the prototype has no specification or data connector for that test; "no data": it has one, but this economy has no usable value; "no indicator": nothing in the registry measures it. Hover a cell for details. Snapshot ${sc.meta ? sc.meta.snapshot_id : ''}, rubric ${sc.meta ? sc.meta.rubric_version : ''}. Your conclusions are yours, not the tool's; they live in this page's link, which the Bottom line and its memo read too.`;
-  const hash = location.hash;
+  const hash = currentHash();
   $('to-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
   refreshNav();
 }
 
-function save() { writeHash({ set: state.set, overrides: state.overrides }); renderText(); }
+function save() { writeState({ set: state.set, overrides: state.overrides }); renderText(); }
 
 // ---------- export ----------
 const fileBase = () => `${state.iso}-c10-summary-${state.scorecard.meta ? state.scorecard.meta.snapshot_id : ''}`.replace(/[^A-Za-z0-9._-]/g, '_');
@@ -261,7 +262,7 @@ async function main() {
     cs.addEventListener('change', async () => {
       state.iso = cs.value; state.overrides = {};
       const q = new URLSearchParams(location.search); q.set('iso', state.iso);
-      history.replaceState(null, '', `${location.pathname}?${q}`);
+      writeHash(readHash(), { query: `?${q}` });
       save(); await loadCountry(); render();
     });
     $('c-set').addEventListener('change', () => { state.set = $('c-set').value; save(); render(); });

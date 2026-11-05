@@ -8,17 +8,15 @@
 <script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <link rel="preload" href="/constraint-check-site/desk/fonts/newsreader-normal-400600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/constraint-check-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/constraint-check-site/desk/css/desk.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<link rel="stylesheet" href="/constraint-check-site/desk/css/tokens.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/base.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/components.css">
+<link rel="stylesheet" href="/constraint-check-site/desk/css/motion.css">
+<script src="/constraint-check-site/desk/vendor/d3-7.9.0.min.js"></script>
 </head>
 <body data-page="areas">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="topbar">
-  <div class="nav-row nav-global"><div class="wrap">
-    <a class="brand" href="/constraint-check-site/desk/"><img class="brand-logo" src="/constraint-check-site/desk/img/tnfa-logo.webp" alt="The New Foreign Assistance" width="72" height="36"><strong>Constraint Check</strong><span>prototype</span></a>
-  </div></div>
-</header>
-
+<header class="topbar"></header>
 <main id="main" class="wrap" tabindex="-1">
   <header class="country-head" id="head">
     <span class="kicker">Areas</span>
@@ -92,10 +90,7 @@
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true" tabindex="-1"></aside>
 
-<footer class="foot"><div class="wrap">
-  <p id="versions"></p>
-  <p>Constraint Check Desk, prototype. Overrides and comparator edits live in the page URL and are never sent anywhere. This tool never recommends funding; it states what the public evidence can and cannot support.</p>
-</div></footer>
+<footer class="foot"></footer>
 <script type="module" src="/constraint-check-site/desk/js/country.mjs"></script>
 </body>
 </html>
