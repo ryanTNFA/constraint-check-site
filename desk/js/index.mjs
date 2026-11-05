@@ -20,7 +20,7 @@ function legend() {
     if (t === 'desk_undiagnosable') continue;
     el.append(h('span', {}, h('span', { class: `swatch ${tierClass(t)}`, 'aria-hidden': 'true' }), PLAIN_TIER[t]));
   }
-  el.append(h('span', {}, h('span', { class: 'swatch t-context', 'aria-hidden': 'true' }), 'Context, needs sector study, or judged by elimination'));
+  el.append(h('span', {}, h('span', { class: 'swatch t-context', 'aria-hidden': 'true' }), 'Context, or needs a sector study'));
   el.append(h('span', { class: 'strip-key' }, 'On each card: one square per area, in the order of the decision tree on each country’s Areas page (the first decision, then finance, then low returns), coloured by its rating. Hover a square for its name. More amber does not mean a worse country, and there is no total.'));
 }
 

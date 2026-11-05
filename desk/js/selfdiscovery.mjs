@@ -1,15 +1,15 @@
-// Self-discovery page (front-door PRD W9): the idea in plain words, the country's N12 measures and lean, the
-// elimination test spelled out, and the nearby products (ingest/nearby_products.py) when they pass the stability check.
+// Self-discovery page (front-door PRD W9): the idea in plain words, the country's N12 rating and measures, the
+// other low-return areas as context (the elimination gate until rubric 0.2.7), and the nearby products (ingest/nearby_products.py) when they pass the stability check.
 import { tabHref, refreshNav } from './nav.mjs';
 import { getJSON, loadRegistry, initTheme, h, qs, dataBase, withData, currentSetting, SETTING_LABEL } from './common.mjs';
-import { plainTier, factText, eliminationSentence } from './card.mjs';
+import { plainTier, factText, plainSummary } from './card.mjs';
 import { renderSpace } from './selfdiscovery_space.mjs';
 
 initTheme();
 const iso = (qs('iso') || '').toUpperCase();
 const DATA = dataBase();
 const $ = (id) => document.getElementById(id);
-// the other low-return areas that must be set aside first (front-door PRD W7, the elimination rule)
+// the other low-return areas, shown as context (front-door PRD W7's elimination rule, a gate until rubric 0.2.7)
 const OTHERS = ['N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11'];
 let state = null;
 
@@ -39,17 +39,17 @@ function render() {
   $('versions').textContent = `Public data snapshot ${m.snapshot_id} · rubric ${m.rubric_version} · engine ${m.engine_version}.`;
   const n12 = sc.nodes.find((n) => n.id === 'N12');
 
-  // the measures, in plain words, with the lean
-  $('sd-lean').textContent = n12 ? eliminationSentence(n12) : '';
-  const ctx = { setKey: 'structural', fallbackSet: 'structural', country: c, registry, snapshotYear: m.snapshot_year };
+  // the rating in plain words, then the measures
+  const ctx = { setKey: 'structural', fallbackSet: 'structural', country: c, registry, nodes: sc.nodes, snapshotYear: m.snapshot_year };
+  $('sd-lean').textContent = n12 ? plainSummary(n12, ctx) : '';
   const rows = sc.indicators.filter((r) => (r.nodes || []).includes('N12'));
   const sig = Object.fromEntries((n12 ? n12.families : []).flatMap((f) => (f.indicators || []).map((id) => [id, f.signal])));
   const way = (s) => (s == null ? '' : s > 0 ? 'points toward a problem' : s < 0 ? 'points away from a problem' : 'points neither way');
-  $('evidence-sub').textContent = `${rows.filter((r) => r.value_ref != null).length} measures with a recent value for ${c}. Each is a quantity, not a price, so none votes on its own.`;
+  $('evidence-sub').textContent = `${rows.filter((r) => r.value_ref != null).length} measures with a recent value for ${c}. Each is a quantity, not a price; the discovery gap votes with the weight of its class (rubric 0.2.8), the rest inform the lean.`;
   const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
   $('sd-measures').replaceChildren(...rows.map((r) => h('li', {}, r.value_ref != null ? `${cap(factText(r, ctx))}.` : `${r.name}: no recent value.`, sig[r.id] != null ? h('span', { class: 'sd-way' }, ` It ${way(sig[r.id])}.`) : null)));
 
-  // the elimination test
+  // the other causes of low returns: context, not a gate
   const setting = currentSetting();
   const tierOf = (n) => (setting !== 'standard' && n.tier_by_setting && n.tier_by_setting[setting]) || n.tier;
   const short = (id) => (registry.nodeById[id] ? registry.nodeById[id].short : id);
@@ -64,9 +64,10 @@ function render() {
   const done = others.filter((n) => cleared(tierOf(n))).length;
   const ts = sc.top_split || {};
   const lowReturns = ts.row === 'low_demand';
+  const open = others.length - done;
   $('sd-elim-verdict').textContent = `${done} of ${others.length} set aside. ${done === others.length
-    ? `With the others set aside${lowReturns ? ' and the first statistics pointing to low returns' : ''}, self-discovery deserves a closer look in ${c}.`
-    : `Self-discovery can’t be called for ${c} yet: ${others.length - done} other ${others.length - done === 1 ? 'cause is' : 'causes are'} still open.`} The tool will use this test in its ratings only if a check against published expert diagnoses supports it.`;
+    ? `With the others set aside${lowReturns ? ' and the first statistics pointing to low returns' : ''}, a self-discovery reading in ${c} stands alone.`
+    : `${open} other ${open === 1 ? 'cause is' : 'causes are'} still open, so a self-discovery problem in ${c} would sit beside ${open === 1 ? 'it' : 'them'}, not instead.`} The rating above comes from self-discovery's own evidence; this table is context for it.`;
 
   // nearby products
   const host = $('sd-nearby'); host.replaceChildren();

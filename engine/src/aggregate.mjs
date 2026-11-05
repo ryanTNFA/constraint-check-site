@@ -242,9 +242,12 @@ export function assignTier(stats, ctx) {
   //    here but not toward E_min in steps 3 and 4; "all_families" is v0.1.1 (nodeStats then
   //    already counts every family in E).
   const gap = P.cannot_tell_data_gap;
+  // engine 0.1.8: a node may carry its own evidence floor (nodes.json `evidence_floor`), for a node whose one validated
+  // family is by design its only direct test (N12, the discovery gap, rubric 0.2.8); the extreme tiers' E_min is untouched
+  const eBelow = isNum(ctx.evidenceFloor) ? ctx.evidenceFloor : gap.E_below;
   const Egap = P.evidence_count_rule === 'voting_for_extreme_tiers' && isNum(stats.E_all) ? stats.E_all : E;
   const recentAB = AB_count > 0 && age !== null && age <= gap.staleness_limit_years;
-  if (Egap < gap.E_below || !recentAB) {
+  if (Egap < eBelow || !recentAB) {
     let subreason = 'data_gap';
     let reason;
     const fams = (ctx.connectorFamilies || []).join(', ');
@@ -263,20 +266,20 @@ export function assignTier(stats, ctx) {
       // can ever leave cannot_tell here: a registry coverage statement, not a data gap.
       subreason = 'no_ab_family';
       reason = `cannot_tell (no class A/B family in registry): ${Einf + E} class C/D famil${Einf + E === 1 ? 'y' : 'ies'} inform; registry v0.1 computes no class A or B evidence family for this node${fams ? `; the Workbook's families (${fams}) need connectors that the prototype does not build` : ''}`;
-    } else if (stats.price_not_observed && Array.isArray(ctx.registryABPrice) && ctx.registryABPrice.length === 0 && Egap < gap.E_below) {
+    } else if (stats.price_not_observed && Array.isArray(ctx.registryABPrice) && ctx.registryABPrice.length === 0 && Egap < eBelow) {
       // A/B evidence exists on other tests but the registry has no class A/B price for the node:
       // the price is never observed here under this registry (Workbook P1).
       subreason = 'no_ab_price_family';
-      reason = `cannot_tell (no class A/B price in registry): the price test is not observed because registry v0.1 computes no class A or B price family for this node (${Einf} quantity famil${Einf === 1 ? 'y informs' : 'ies inform'} without voting); E = ${E} voting famil${E === 1 ? 'y' : 'ies'} < ${gap.E_below}${fams ? `; the Workbook's families (${fams}) need connectors that the prototype does not build` : ''}`;
-    } else if (Egap < gap.E_below && regMax !== null && regMax < gap.E_below && !down.length) {
+      reason = `cannot_tell (no class A/B price in registry): the price test is not observed because registry v0.1 computes no class A or B price family for this node (${Einf} quantity famil${Einf === 1 ? 'y informs' : 'ies inform'} without voting); E = ${E} voting famil${E === 1 ? 'y' : 'ies'} < ${eBelow}${fams ? `; the Workbook's families (${fams}) need connectors that the prototype does not build` : ''}`;
+    } else if (Egap < eBelow && regMax !== null && regMax < eBelow && !down.length) {
       // The registry cannot supply E_below voting families for this node for any economy.
       subreason = 'registry_coverage';
-      reason = `cannot_tell (registry coverage): registry v0.1 can supply at most ${regMax} voting evidence famil${regMax === 1 ? 'y' : 'ies'} for this node, below E_below = ${gap.E_below}, so no economy can leave cannot_tell here until more class A/B evidence is connected; this economy: E = ${E}${infTxt}${fams ? `; the Workbook's families (${fams}) need connectors that the prototype does not build` : ''}`;
+      reason = `cannot_tell (registry coverage): registry v0.1 can supply at most ${regMax} voting evidence famil${regMax === 1 ? 'y' : 'ies'} for this node, below E_below = ${eBelow}, so no economy can leave cannot_tell here until more class A/B evidence is connected; this economy: E = ${E}${infTxt}${fams ? `; the Workbook's families (${fams}) need connectors that the prototype does not build` : ''}`;
     } else if (AB_count > 0 && !recentAB) {
       subreason = 'stale';
       reason = `cannot_tell (stale): E = ${E}${infTxt}; the newest class A/B family dates from ${R}, ${age} years old, beyond the ${gap.staleness_limit_years}-year staleness limit`;
-    } else if (Egap < gap.E_below) {
-      reason = `cannot_tell (data gap): E = ${E} < ${gap.E_below} voting evidence families${AB_count === 0 ? '; no class A or B family' : ''}${infTxt}${priceWhy}`;
+    } else if (Egap < eBelow) {
+      reason = `cannot_tell (data gap): E = ${E} < ${eBelow} voting evidence families${AB_count === 0 ? '; no class A or B family' : ''}${infTxt}${priceWhy}`;
     } else {
       reason = `cannot_tell (data gap): E = ${E} but no class A or B family (only class C/D evidence)${infTxt}${priceWhy}`;
     }
@@ -567,11 +570,12 @@ export function evaluateNode({
   registryABPrice = null,
   registryVotingMax = null,
   ruledOutRequires = [],
+  evidenceFloor = null,
   thresholdFactor = 1,
   fragility = 'full',
 }) {
   const p = thresholdFactor === 1 ? params : { ...params, tiers: scaleThresholds(params.tiers, thresholdFactor) };
-  const ctx = { params: p, snapshotYear, nodeId, connectorsNotBuilt, connectorFamilies, registryAB, registryABPrice, registryVotingMax, ruledOutRequires };
+  const ctx = { params: p, snapshotYear, nodeId, connectorsNotBuilt, connectorFamilies, registryAB, registryABPrice, registryVotingMax, ruledOutRequires, evidenceFloor };
   const setNames = Object.keys(familiesBySet);
   const stats = {};
   for (const s of setNames) stats[s] = nodeStats(familiesBySet[s] || [], p);
@@ -838,14 +842,15 @@ export function statements(records, ranking) {
  * rollups: {rollupNodeId: {def, subIds}}; topLevelIds: node ids that rank (sub-nodes excluded).
  * Each draw: thresholds scaled by a uniform factor in [1 − p, 1 + p]; a random comparator set
  * among those with members; a random bootstrap_subset_share of each node's VOTING families
- * (v0.1.2: never fewer than E_below of them, so a node with E_below voting families is kept
+ * (v0.1.2: never fewer than E_below of them, or the node's own evidence floor, so a node with E_below voting families is kept
  * whole and reported under `not_resampled`; informing families are always kept); tiers
  * evaluated (fragility across sets); candidates ranked by N.
  * Returns {draws, modal_rank, p_top_k, p_ranked, rank_counts, not_resampled}.
  */
-export function bootstrapRanks({ nodeInputs, rollups, topLevelIds, params, snapshotYear, connectorsNotBuilt, connectorFamiliesByNode, registryABByNode = null, registryABPriceByNode = null, registryVotingMaxByNode = null, ruledOutRequiresByNode = null, seed }) {
+export function bootstrapRanks({ nodeInputs, rollups, topLevelIds, params, snapshotYear, connectorsNotBuilt, connectorFamiliesByNode, registryABByNode = null, registryABPriceByNode = null, registryVotingMaxByNode = null, ruledOutRequiresByNode = null, evidenceFloorByNode = null, seed }) {
   const rk = params.ranking;
-  const eBelow = params.tiers.cannot_tell_data_gap.E_below;
+  const eBelowDefault = params.tiers.cannot_tell_data_gap.E_below;
+  const floorOf = (id) => (evidenceFloorByNode && isNum(evidenceFloorByNode[id]) ? evidenceFloorByNode[id] : eBelowDefault);
   const rng = mulberry32(seed >>> 0);
   const draws = rk.bootstrap_draws;
   const counts = {};
@@ -872,6 +877,7 @@ export function bootstrapRanks({ nodeInputs, rollups, topLevelIds, params, snaps
       const set = pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))];
       const famIds = votingBySet[id][set] || [];
       const n = famIds.length;
+      const eBelow = floorOf(id);
       const keepN = n <= eBelow ? n : Math.max(eBelow, Math.round(rk.bootstrap_subset_share * n));
       if (keepN < n) resampled[id] = true;
       const keep = new Set(shuffle(famIds, rng).slice(0, keepN));
@@ -891,6 +897,7 @@ export function bootstrapRanks({ nodeInputs, rollups, topLevelIds, params, snaps
         registryABPrice: registryABPriceByNode ? registryABPriceByNode[id] || [] : null,
         registryVotingMax: registryVotingMaxByNode ? registryVotingMaxByNode[id] ?? null : null,
         ruledOutRequires: ruledOutRequiresByNode ? ruledOutRequiresByNode[id] || [] : [],
+        evidenceFloor: evidenceFloorByNode && isNum(evidenceFloorByNode[id]) ? evidenceFloorByNode[id] : null,
         thresholdFactor: factor,
         fragility: 'sets',
       });

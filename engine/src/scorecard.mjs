@@ -20,7 +20,7 @@ import { evaluateNode, rollupNode, rankNodes, statements, bootstrapRanks, applyT
 import { topSplit, RATE_SOURCES } from './topsplit.mjs';
 import { growthUniverse, growthProblem } from './growth.mjs';
 
-export const ENGINE_VERSION = '0.1.7';
+export const ENGINE_VERSION = '0.1.8';
 export const DEFAULT_SETS = ['structural', 'regional', 'aspirational'];
 export const DESK_SERIES = ['NY.GDP.PCAP.KD', 'NY.GDP.PCAP.KD.ZG', 'NE.GDI.FTOT.ZS', 'FR.INR.RINR', 'FS.AST.PRVT.GD.ZS', 'FP.CPI.TOTL.ZG'];
 export const RATIONING_INDICATOR = 'IC.FRM.CRDC.FL.ZS';
@@ -525,6 +525,9 @@ export function assembleVerdicts({ indicators, comovement: cm, setMembers, activ
   // Evidence families a node needs before it can be ruled out (nodes.json, v0.1.2).
   const ruledOutRequiresByNode = {};
   for (const d of leafDefs) ruledOutRequiresByNode[d.id] = Array.isArray(d.ruled_out_requires_families) ? d.ruled_out_requires_families.slice() : [];
+  // A node's own evidence floor (engine 0.1.8): nodes.json `evidence_floor` replaces E_below for that node
+  const evidenceFloorByNode = {};
+  for (const d of leafDefs) if (Number.isFinite(d.evidence_floor)) evidenceFloorByNode[d.id] = d.evidence_floor;
   // The most voting families the registry can supply per node (class A/B on the price test, any
   // class on the other tests, plus the co-movement specs): below E_below the node is a registry
   // coverage statement, not a data gap (sub-reason registry_coverage).
@@ -552,6 +555,7 @@ export function assembleVerdicts({ indicators, comovement: cm, setMembers, activ
         registryABPrice: registryABPriceByNode[d.id] || [],
         registryVotingMax: registryVotingMaxByNode[d.id] ?? null,
         ruledOutRequires: ruledOutRequiresByNode[d.id] || [],
+        evidenceFloor: evidenceFloorByNode[d.id] ?? null,
         thresholdFactor,
       });
     }
@@ -597,7 +601,7 @@ export function assembleVerdicts({ indicators, comovement: cm, setMembers, activ
   for (const d of rollupDefs) rollups[d.id] = { def: d, subIds: d.rollup_of };
   const topLevelIds = topLevelScored.map((r) => r.id);
   const bs = bootstrap
-    ? bootstrapRanks({ nodeInputs, rollups, topLevelIds, params, snapshotYear, connectorsNotBuilt, connectorFamiliesByNode, registryABByNode, registryABPriceByNode, registryVotingMaxByNode, ruledOutRequiresByNode, seed })
+    ? bootstrapRanks({ nodeInputs, rollups, topLevelIds, params, snapshotYear, connectorsNotBuilt, connectorFamiliesByNode, registryABByNode, registryABPriceByNode, registryVotingMaxByNode, ruledOutRequiresByNode, evidenceFloorByNode, seed })
     : null;
   const likely = topLevelScored.filter((r) => r.tier === 'likely_binding').map((r) => r.id);
   const rk = params.ranking;
