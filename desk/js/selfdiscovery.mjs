@@ -40,7 +40,7 @@ function render() {
   const n12 = sc.nodes.find((n) => n.id === 'N12');
 
   // the rating in plain words, then the measures
-  const ctx = { setKey: 'structural', fallbackSet: 'structural', country: c, registry, nodes: sc.nodes, snapshotYear: m.snapshot_year };
+  const ctx = { setKey: 'structural', fallbackSet: 'structural', country: c, registry, nodes: sc.nodes, indicators: sc.indicators, snapshotYear: m.snapshot_year };
   $('sd-lean').textContent = n12 ? plainSummary(n12, ctx) : '';
   const rows = sc.indicators.filter((r) => (r.nodes || []).includes('N12'));
   const sig = Object.fromEntries((n12 ? n12.families : []).flatMap((f) => (f.indicators || []).map((id) => [id, f.signal])));

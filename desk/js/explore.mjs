@@ -8,7 +8,7 @@ import { PLAIN_TIER } from './card.mjs';
 const SVG = 'http://www.w3.org/2000/svg';
 const W = 960, H = 470;
 // the rated areas only: context (N9, N11.policy) and sector-study (N13) areas carry no rating
-const AREAS = ['N0', 'N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11', 'N11.property', 'N11.corruption', 'N11.taxes', 'N11.regulation', 'N11.crime'];
+const AREAS = ['N0', 'N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11', 'N11.property', 'N11.corruption', 'N11.taxes', 'N11.regulation', 'N11.crime', 'N12'];
 const GROUPS = [
   { key: 'look', label: 'Worth a closer look', tiers: ['likely_binding', 'candidate'] },
   { key: 'not', label: 'Probably not the main constraint', tiers: ['probably_not', 'ruled_out'] },

@@ -49,7 +49,7 @@ export const LESSONS = [
   },
   {
     n: 7, page: '/constraint-check-site/desk/country.html?iso=KEN', title: 'Where "can’t tell" sends you',
-    task: 'On the Bottom line, group Kenya’s twelve unsettled areas by reason (only one kind of evidence; mixed; not connected; needs a sector study) and write the next step for three of them. Then follow "Read more" to self-discovery and read why one kind of evidence leaves it unclear, and why coordination needs sector work.',
+    task: 'On the Bottom line, group Kenya’s twelve unsettled areas by reason (only one kind of evidence; mixed; not connected; needs a sector study) and write the next step for three of them. Then open Self-discovery from the "Only one kind of evidence" group, follow its card's "Self-discovery explained, with nearby products" link, and read why one kind of evidence leaves it unclear, and why coordination needs sector work.',
     check: 'Self-discovery is “unclear” for Kenya, with the evidence leaning away. What would move it?',
     answer: 'One measure votes, the discovery gap (new competitive exports against what Kenya’s place in the product space predicts), and it leans away without clearing the bar: Kenya adds about as many new products as expected. Since rubric 0.2.8 that one gate-tested measure can carry the rating on its own (“worth a closer look” from +1, “probably not” from −1); the other seven are quantities that inform the lean. A clearly negative gap in the next window, or firm-level evidence on first movers, would move it.',
     mindbook: 'Mindbook, self-discovery and coordination failures (Hausmann and Rodrik).',

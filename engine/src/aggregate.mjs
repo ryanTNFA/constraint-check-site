@@ -266,9 +266,11 @@ export function assignTier(stats, ctx) {
       // can ever leave cannot_tell here: a registry coverage statement, not a data gap.
       subreason = 'no_ab_family';
       reason = `cannot_tell (no class A/B family in registry): ${Einf + E} class C/D famil${Einf + E === 1 ? 'y' : 'ies'} inform; registry v0.1 computes no class A or B evidence family for this node${fams ? `; the Workbook's families (${fams}) need connectors that the prototype does not build` : ''}`;
-    } else if (stats.price_not_observed && Array.isArray(ctx.registryABPrice) && ctx.registryABPrice.length === 0 && Egap < eBelow) {
+    } else if (stats.price_not_observed && Array.isArray(ctx.registryABPrice) && ctx.registryABPrice.length === 0 && Egap < eBelow && !isNum(ctx.evidenceFloor)) {
       // A/B evidence exists on other tests but the registry has no class A/B price for the node:
-      // the price is never observed here under this registry (Workbook P1).
+      // the price is never observed here under this registry (Workbook P1). Not for a node with its own
+      // evidence floor (engine 0.1.8): its validated family is not a price family by design, so a shortfall
+      // there is this economy's gap (the family absent or downgraded), not the registry's.
       subreason = 'no_ab_price_family';
       reason = `cannot_tell (no class A/B price in registry): the price test is not observed because registry v0.1 computes no class A or B price family for this node (${Einf} quantity famil${Einf === 1 ? 'y informs' : 'ies inform'} without voting); E = ${E} voting famil${E === 1 ? 'y' : 'ies'} < ${eBelow}${fams ? `; the Workbook's families (${fams}) need connectors that the prototype does not build` : ''}`;
     } else if (Egap < eBelow && regMax !== null && regMax < eBelow && !down.length) {

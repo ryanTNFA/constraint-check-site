@@ -582,6 +582,9 @@ export function reasonTag(n) {
 }
 
 /** One plain paragraph that leads every card and tree hover. */
+/** The voting families a node needs before it can be rated: its own floor (nodes.json evidence_floor, engine 0.1.8) or E_below. */
+const floorOf = (ctx, id) => { const d = ctx.registry && ctx.registry.nodeById && ctx.registry.nodeById[id]; return d && Number.isFinite(d.evidence_floor) ? d.evidence_floor : ctx.registry.params.tiers.cannot_tell_data_gap.E_below; };
+
 export function plainSummary(node, ctx, { brief = false } = {}) {
   if (!node) return 'Not scored in this snapshot.';
   const P = ctx.registry.params.tiers; const t = node.tier; const c = ctx.country;
@@ -616,7 +619,7 @@ export function plainSummary(node, ctx, { brief = false } = {}) {
     } else if (code === 'no_recent_data') {
       const sub = ev.tier_subreason || node.tier_subreason;
       if (sub === 'stale' && ev.R != null) s.push(`Unclear: ${c} has no recent high-quality data on this; the newest is from ${ev.R}, more than ${P.cannot_tell_data_gap.staleness_limit_years} years ago.`);
-      else s.push(`Unclear: ${c} has too few recent measures on this (${plural(ev.E ?? 0, 'independent source', 'independent sources')}; ${P.cannot_tell_data_gap.E_below} needed).`);
+      else s.push(`Unclear: ${c} has too few recent measures on this (${plural(ev.E ?? 0, 'independent source', 'independent sources')}; ${floorOf(ctx, ev.id)} needed).`);
       whatThereIs();
     } else if (code === 'one_kind') {
       const lean = leanOf(ev);
@@ -683,7 +686,7 @@ export function whatWouldMove(node, ctx) {
     else {
       const absent = [...new Set((ctx.indicators || []).filter((r) => (r.nodes || []).includes(ev.id) && (r.class === 'A' || r.class === 'B') && (r.value_ref == null || r.stale_year != null)).map((r) => shortName(r)))].slice(0, 3);
       if (sub === 'stale') out.push(`A newer observation of the main high-quality measure would let the tool rate this area${absent.length ? `: ${englishList(absent)}` : ''}.`);
-      else out.push(`A second recent high-quality measure for ${c} would let the tool rate this area (today ${ev.E ?? 0} of ${P.cannot_tell_data_gap.E_below})${absent.length ? `. Missing or out of date: ${englishList(absent)}` : ''}.`);
+      else { const need = floorOf(ctx, ev.id); out.push(`${need === 1 ? 'A recent high-quality measure' : 'A second recent high-quality measure'} for ${c} would let the tool rate this area (today ${ev.E ?? 0} of ${need})${absent.length ? `. Missing or out of date: ${englishList(absent)}` : ''}.`); }
     }
   } else if (ev.N != null) {
     if (cannotTellCode(ev) === 'one_kind') {

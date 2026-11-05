@@ -7,7 +7,7 @@
 - **Retrospective, development set** (35 published diagnoses, rubric 0.2.0, Standard, pooled): false rule-out 6.0% (6 of 100; Wilson 2.8–12.5%); hit 4.0% (4 of 100; Wilson 1.6–9.8%); false alarm 5.1% (12 of 237; Wilson 2.9–8.6%); cannot tell 87.5% (295 of 337; Wilson 83.6–90.6%). Verdict: split. See section 5.
 - **Retrospective, holdout set** (22 published diagnoses, rubric 0.2.0, Standard, pooled): false rule-out 4.0% (3 of 75; Wilson 1.4–11.1%); hit 12.0% (9 of 75; Wilson 6.4–21.3%); false alarm 5.3% (7 of 131; Wilson 2.6–10.6%); cannot tell 86.4% (178 of 206; Wilson 81.1–90.4%). Verdict: inconclusive (12 BINDING pairs in rule-out or flag; the protocol needs 20). See section 5.
 - **The protocol is complete.** No rubric parameter was tuned to these labels (the one round of fixes was forgone, amendment 4). The ratings are neither validated nor killed: the test was too small to pass or fail its own primary bar, so they stay uncalibrated.
-- **Internal checks pass:** 111 of 111 engine tests; the statsmodels re-estimate of the residuals agrees (largest gap in t 0.030); 1681 of 1904 outputs reproduce from the release.
+- **Internal checks pass:** 111 of 111 engine tests; the statsmodels re-estimate of the residuals agrees (largest gap in t 0.030); 1894 of 1904 outputs reproduce from the release.
 - **Verdicts:** of 3,689 scored node rows (217 economies), 3,192 (87 percent) are a "cannot tell"; 5 reach an extreme tier.
 - **Test 4 kill criterion:** 1 of 6 vectors pass (CH.SKILL); CH.FIN, CH.TIME, CH.CONTRACT, CH.INTANG, CH.ELEC fail and are shown but not counted.
 
@@ -54,7 +54,7 @@ By node:
 |---|---|---|
 | Engine unit and integration tests | 111 passed, 0 failed, of 111 | `engine/test/` |
 | statsmodels re-estimate of the income-conditional residuals (RLM, HuberT, MAD scale) | 10 indicators, 48 economy-indicator pairs; largest gap in t 0.030 (SLE, FP.CPI.TOTL.ZG); coefficients on log income within 5.8 percent | `engine/xcheck/icr_xcheck.py`, `tests/test_engine_parity.py` |
-| Replication | 1681 of 1904 outputs identical to the release manifest | `replicate.py`, `REPLICATION.md` |
+| Replication | 1894 of 1904 outputs identical to the release manifest | `replicate.py`, `REPLICATION.md` |
 | Synthetic run with planted constraints | Covered by the engine tests (`synthetic.test.mjs`) | `engine/test/fixtures/make_synthetic.mjs` |
 
 ## 3. Test 4 kill criterion
@@ -154,3 +154,4 @@ See `docs/CHANGELOG-rubric.md`. Entries for this rubric version:
 - Engine 0.1.4 (29 October 2026): informing test 4 families no longer count in E
 - Engine 0.1.5: a plain reason for every "cannot tell"
 - Engine 0.1.7 (3 November 2026): "mixed" when two tests speak and disagree
+- v0.2.8 and engine 0.1.8 (5 November 2026): self-discovery is rated; the product space is coloured by sector

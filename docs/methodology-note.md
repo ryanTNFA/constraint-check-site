@@ -32,10 +32,10 @@ The registry (`registry/nodes.json`) encodes the HRV tree as used by MCC and by 
 | N9 | Geography, natural capital, market size | social returns | context only, never scored | n/a |
 | N10 | Macroeconomic risk | appropriability: government failure | scored; cannot be ruled out without a sovereign-spread family | 44 |
 | N11 | Microeconomic risks (roll-up of five sub-nodes: property, corruption, taxes, regulation, crime; policy uncertainty is context from rubric 0.1.7) | appropriability: government failure | each sub-node scored; N11 takes the most binding (section 4.10). N11.policy is described, not scored (decision D5) | 51 |
-| N12 | Self-discovery and information externalities | appropriability: market failure | rated like the other areas from rubric 0.2.8 (the discovery gap votes, class B; ruling it out needs that family); judged by elimination from rubric 0.1.7 to 0.2.7 (decision D1) | camels (the discovery gap); the rest inform the lean |
+| N12 | Self-discovery and information externalities | appropriability: market failure | rated like the other areas from rubric 0.2.8 (the discovery gap votes on the camels test, class B; the other families inform the lean; ruling it out needs that family); judged by elimination from rubric 0.1.7 to 0.2.7 (decision D1) | 58 |
 | N13 | Coordination failures | appropriability: market failure | never scored: "needs sector study" | n/a |
 
-Counts are from `out/engine-report.json`, generated 2026-10-29T14:53:46Z. Rubric 0.1.7 (31 October) changed only the status of N12 and N11.policy; no count in the last column moved (`docs/CHANGELOG-rubric.md`).
+Counts are from `out/engine-report.json`, generated 2026-10-29T14:53:46Z, except N12, which is from the rubric 0.2.8 run of 5 November (24 worth a closer look, 34 probably not; `out/sweep-028.json`). Rubric 0.1.7 (31 October) changed only the status of N12 and N11.policy; rubrics 0.2.2 and 0.2.6 moved a handful of N11 cells (`docs/CHANGELOG-rubric.md`).
 
 ### 1.3 The four tests
 
