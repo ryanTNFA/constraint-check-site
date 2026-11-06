@@ -51,7 +51,10 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
   drawer.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { e.preventDefault(); close(); return; }
     if (e.key === 'Tab') {
-      const f = Array.from(/** @type {NodeListOf<any>} */ (drawer.querySelectorAll(FOCUSABLE))).filter((el) => !el.disabled && el.offsetParent !== null);
+      // the tour's sheet sits outside the drawer (fixed on the body) while a stop is inside it: Tab reaches it too
+      const f = [...Array.from(/** @type {NodeListOf<any>} */ (drawer.querySelectorAll(FOCUSABLE))),
+        ...Array.from(/** @type {NodeListOf<any>} */ (document.querySelectorAll(FOCUSABLE))).filter((el) => el.closest('.tour-sheet'))]
+        .filter((el) => !el.disabled && el.offsetParent !== null);
       if (!f.length) return;
       const first = f[0], last = f[f.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -87,7 +90,8 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
           href: withData(`/growth-test-site/desk/selfdiscovery.html?iso=${new URLSearchParams(location.search).get('iso') || ''}`) + currentHash() },
           'Self-discovery explained, with nearby products →') : null,
         h('a', { class: 'small',
-          href: withData(`/growth-test-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) },
+          href: withData(`/growth-test-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) +
+            currentHash() },
           'Analyst View for this area →')),
       h('button', { class: 'btn quiet small drawer-close', type: 'button', 'aria-label': 'Close evidence card', onclick: close }, 'Close')));
 

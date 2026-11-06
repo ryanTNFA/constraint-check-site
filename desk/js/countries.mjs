@@ -3,7 +3,7 @@
 // country's bottom line; "pick up where you left off" shows the three lists for the last country viewed (browser storage,
 // written by the flagged country page); the map (explore.mjs, the home page's own) with the distribution of ratings for
 // the chosen area beside its picker; and the economies, alphabetical or by region, never by score.
-import { lastIso } from './shell.mjs';
+import { lastIso, carriedHash } from './shell.mjs';
 import { getJSON, initTheme, h, dataBase, withData, loadRegistry, englishList, FORK } from './common.mjs';
 import { strip } from './components/strip.mjs';
 import { plainTierOf, fcsStatus, bottomLine } from './card.mjs';
@@ -19,7 +19,7 @@ let index = null;
 let registry = null;
 let fcs = null;
 const shortOf = (id) => (id === FORK ? 'First decision: finance or returns' : registry && registry.nodeById[id] ? registry.nodeById[id].short.replace(/\?$/, '') : id);
-const bottomHref = (iso) => withData(`/growth-test-site/desk/country.html?iso=${encodeURIComponent(iso)}`);
+const bottomHref = (iso) => withData(`/growth-test-site/desk/country.html?iso=${encodeURIComponent(iso)}`) + carriedHash(); // the tour and the reading follow
 
 // ---------- the search: the list fills the datalist once the index is here; Enter opens the bottom line ----------
 function wireSearch() {
