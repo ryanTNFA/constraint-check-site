@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How a country gets read · The Growth Test</title>
-<meta name="description" content="Lesson one of the guided path: the growth-diagnostics method walked once on Kenya, from the question to the three lists.">
+<title>Learn · The Growth Test</title>
+<meta name="description" content="Learn to read The Growth Test on the live pages: a guided tour of fifteen stops on Indonesia, each on the chart or control it explains.">
 <script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <link rel="preload" href="/growth-test-site/desk/fonts/newsreader-normal-400600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/growth-test-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
@@ -19,119 +19,52 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="topbar"></header>
 <main id="main" class="wrap learn" tabindex="-1" data-rubric="0.2.9">
+  <!-- The tour's front door (docs/learn-tour-plan.md): the start, what it teaches, the stops, the exit test. The stops
+       themselves live in js/tour_stops.mjs and are drawn on the live pages by js/tour.mjs. -->
   <header class="learn-head">
-    <span class="kicker">Learning the method · lesson 1 of 8</span>
-    <h1>How a country gets read</h1>
-    <p class="answer">One country, Kenya, read the way the tool reads it, in nine short steps and about fifteen minutes.</p>
-    <gt-fold><details class="k-fold"><summary class="gt-fold-sum">About this lesson</summary><div class="gt-fold-body"><p class="prose">The growth-diagnostics method, walked once on one country, Kenya, as the tool reads it. Nine short steps; scroll. About fifteen minutes. It teaches the desk half of the method: what the data can say before anyone goes to the country.</p><p class="small muted" id="learn-meta">Rubric 0.2.1 · public data snapshot <span id="snapshot">…</span> · the numbers below are the tool's reading of Kenya on that date.</p></div></details></gt-fold>
+    <span class="kicker">Learn · the tour</span>
+    <h1>Learn to read The Growth Test</h1>
+    <p class="answer">A guided tour over the live pages: one country, Indonesia, <span id="stop-count">15</span> stops, about an hour, each stop on the chart or control it explains.</p>
+    <p class="learn-start"><a class="btn primary" data-start href="/growth-test-site/desk/countries.html#tour=1">Start the tour →</a> <span class="small muted">Back and next in the bar; ← and → on the keyboard; the stop travels in the link, so you can stop and come back.</span></p>
+    <gt-fold><details class="k-fold"><summary class="gt-fold-sum">About the tour</summary><div class="gt-fold-body"><p class="prose">The tour opens the tool’s own pages, rings the one thing each stop is about and says how to read it: the Bottom line and its three lists, the first decision, the growth problem, the four tests on one area and who votes, a chart in the Analyst View read as a surprise rather than a level, what leaning away looks like, the changes and camels tests, one strong test that flags and stops there, the three readings, the comparison countries as hypotheses, and the memo. It teaches the desk half of the method: what the public data can say before anyone goes to the country.</p><p class="small muted" id="learn-meta">Rubric 0.2.9 · the stops quote the tool’s reading of Indonesia on the snapshot date, and a test checks every number they quote against the data.</p></div></details></gt-fold>
   </header>
 
-  <section class="step" id="step-question">
-    <div class="step-text">
-      <span class="kicker">1 · The question</span>
-      <h2>What limits private investment in this country, now?</h2>
-      <p>Not "what is wrong with the economy". Many things are wrong with every economy. The question is which one or few problems bind: the ones that, relaxed, would let investment follow, while fixing the others changes little.</p>
-      <p>The one analogy worth keeping is a doctor's differential diagnosis. A patient with a fever has a hundred possible causes. The doctor does not treat all hundred; they run the tests that rule causes out, narrow to a few, and treat those. The method does the same with the standard explanations for weak investment: it works by elimination.</p>
-      <p>Kenya's question, as the tool states it: <em id="q-growth">…</em></p>
+  <section class="learn-sec" id="ideas" aria-labelledby="ideas-h">
+    <h2 id="ideas-h">What you will be able to say afterwards</h2>
+    <ol class="learn-ideas">
+      <li><strong>The question.</strong> What limits private investment in this country, now? One or a few constraints bind; relaxing the others changes little.</li>
+      <li><strong>Surprise is the unit of evidence.</strong> Each number is read against what the country’s income predicts, in standard deviations, and against comparison countries.</li>
+      <li><strong>Price before quantity.</strong> Scarcity shows as a high price or rationing. Quantities and expert indices inform and never decide.</li>
+      <li><strong>Four tests, and concordance.</strong> A binding constraint has a high price, investment moves when it moves, firms work around it, and activities that need little of it do best. Several kinds of evidence must agree.</li>
+      <li><strong>Asymmetry.</strong> Flagging is easy, clearing is hard. A clear needs a low price <em>and</em> no workarounds. “Probably not” is not “ruled out”.</li>
+      <li><strong>“Can’t tell” is a finding,</strong> with one of four reasons and a next step.</li>
+      <li><strong>Walk the tree top down, and treat comparators as hypotheses.</strong> The first decision is a direction read from the price of finance; a verdict that changes with the comparison set is weaker.</li>
+    </ol>
+  </section>
+
+  <section class="learn-sec" id="stops" aria-labelledby="stops-h">
+    <h2 id="stops-h">The stops</h2>
+    <p class="small muted">Each opens the page it is about, with Indonesia and the state it needs in the link. Take them in order the first time.</p>
+    <ol class="learn-stops" id="stop-list"></ol>
+  </section>
+
+  <section class="learn-sec" id="keys" aria-labelledby="keys-h">
+    <h2 id="keys-h">Four words the pages use</h2>
+    <div class="learn-keys">
+      <div><strong>Class A, B, C, D</strong>A measures the cost of a constraint directly (a price). B is behaviour that only makes sense if it binds (a generator, self-financing). C is a quantity or a survey answer that cannot tell cause from effect; it informs and does not vote on the price test. D is an expert rating; it never decides.</div>
+      <div><strong>The four tests</strong>Price (is it expensive or rationed?), changes (did investment move with it?), workarounds (do firms pay to get around it?) and camels (do activities that need little of it do best?). Each scores from −2 to +2.</div>
+      <div><strong>The readings</strong>Standard is the only reading to cite. Exploratory makes it easier to flag an area for a closer look, never easier to rule one out. Cautious asks for more and stronger evidence before rating anything.</div>
+      <div><strong>The first decision</strong>Costly finance or low returns is the fork at the root of the tree, read as a direction (leans to finance, leans to low returns, cannot tell which side), never as “constraint or not”: both sides are constraints.</div>
     </div>
   </section>
 
-  <section class="step" id="step-surprise">
-    <div class="step-text">
-      <span class="kicker">2 · Surprise is the unit of evidence</span>
-      <h2>Not the level: the gap from what income predicts</h2>
-      <p>Almost everything improves with income. Richer countries have fewer bribes, more schooling, better roads. So a number read against the world says mostly how rich a country is. The method reads each number against what a country at the same income would show, and counts the gap in standard deviations.</p>
-      <p id="surprise-text">…</p>
-    </div>
-    <figure class="step-fig" id="fig-surprise"><figcaption class="small muted" id="fig-surprise-cap"></figcaption></figure>
-  </section>
-
-  <section class="step" id="step-growth">
-    <div class="step-text">
-      <span class="kicker">3 · The growth problem</span>
-      <h2>Kenya's growth and investment, against expectation</h2>
-      <p id="growth-text">…</p>
-      <p>This is the symptom the tree explains. If investment were where income predicts, the method would have little to say.</p>
-    </div>
-    <figure class="step-fig" id="fig-growth"></figure>
-  </section>
-
-  <section class="step" id="step-split">
-    <div class="step-text">
-      <span class="kicker">4 · The first fork</span>
-      <h2>Costly finance, or low returns?</h2>
-      <p>The tree's first question. If investment is low because finance is scarce, finance should be dear: a high real lending rate, credit not growing. If finance is cheap and investment is still low, the problem is on the other side: the returns to investing are low, or cannot be kept. A price tells you which side the shortage is on. A quantity alone cannot.</p>
-      <p id="split-text">…</p>
-      <p>The word "provisional" matters. The top split is a reading of three numbers, not a verdict; the branches below have to agree with it.</p>
-    </div>
-    <figure class="step-fig" id="fig-split"></figure>
-  </section>
-
-  <section class="step" id="step-tests">
-    <div class="step-text">
-      <span class="kicker">5 · Four tests on one area</span>
-      <h2>Finance in Kenya: two tests pull against each other</h2>
-      <p>A binding constraint shows in four ways. Its <strong>price</strong> is high. Investment <strong>moves</strong> when it moves. Firms pay to <strong>work around</strong> it. And activities that need little of it do unusually well (the <strong>camels and hippos</strong> test: in a desert, camels thrive). One test can be fooled. The method asks several kinds of evidence to agree.</p>
-      <p id="tests-text">…</p>
-    </div>
-    <figure class="step-fig" id="fig-tests"></figure>
-  </section>
-
-  <section class="step" id="step-tree">
-    <div class="step-text">
-      <span class="kicker">6 · The tree, filled in</span>
-      <h2>Every area, with its rating and, where it can't tell, why</h2>
-      <p>The tool walks the whole tree. Most areas end as "can't tell", and each one says which kind: only one kind of evidence speaks; the measure isn't connected yet; the data are too old; or the evidence is mixed. That is not a shrug. Each kind sends fieldwork somewhere different.</p>
-      <p id="tree-text">…</p>
-    </div>
-    <figure class="step-fig" id="fig-tree"><div class="tree-wrap" id="tree-wrap"></div><div class="tooltip" id="tooltip" role="tooltip"></div></figure>
-  </section>
-
-  <section class="step" id="step-asymmetry">
-    <div class="step-text">
-      <span class="kicker">7 · The asymmetry</span>
-      <h2>Flagging is easy. Clearing is hard.</h2>
-      <p>The tool's verdicts are used to stop work. A wrong "look closer" costs a field visit. A wrong "ruled out" sends attention away from a constraint that binds, and that is the costliest mistake the method can make. So the ladders are not symmetric. A "voting family" below is one independent source of price or workaround evidence; quantities and indices inform but do not vote.</p>
-    </div>
-    <figure class="step-fig ladders">
-      <div class="ladder"><h3>To flag an area</h3><ol><li>One strong test pointing toward a problem, or</li><li>Two tests agreeing, each pointing toward a problem</li></ol><p class="small muted">Result: "worth a closer look". A flag asks a question; it does not answer one.</p></div>
-      <div class="ladder"><h3>To lean away</h3><ol><li>The mirror of a flag: two tests agreeing on a net score of −0.5 or below, or one test alone at −1.0</li></ol><p class="small muted">Result: "probably not". A lean, never a clear: it sits at a flag's low bar and never closes a debate alone.</p></div>
-      <div class="ladder"><h3>To rule out</h3><ol><li>A low price, <em>and</em></li><li>No workarounds, <em>and</em></li><li>A net score of −1 or below, five voting families, three tests agreeing, recent evidence, no high-quality measure pointing toward a problem, no quantity measure dissenting, and the same answer across comparison sets</li></ol><p class="small muted">Result: "ruled out". Two areas reach it today: regulation in Uzbekistan and property rights in New Zealand.</p></div>
-    </figure>
-  </section>
-
-  <section class="step" id="step-lists">
-    <div class="step-text">
-      <span class="kicker">8 · The three lists</span>
-      <h2>What the page says at the end</h2>
-      <p>Every country page ends with three lists, each for a different decision. <strong>Stop arguing about</strong>: areas whose evidence leans away, so a program should not be built around them without new evidence. <strong>Look closer</strong>: where a field visit, a diagnostic or a threshold program should start. <strong>Can't settle</strong>: what to measure first.</p>
-      <p>For Kenya, on the snapshot date:</p>
-    </div>
-    <figure class="step-fig" id="fig-lists"></figure>
-  </section>
-
-  <section class="step" id="step-check">
-    <div class="step-text">
-      <span class="kicker">9 · Check yourself</span>
-      <h2>Why does the tool clear an area more carefully than it flags one?</h2>
-      <details class="lesson-answer"><summary>Show the answer</summary><p>Because its verdicts are used to stop work. A false clear sends attention away from a constraint that binds, so "ruled out" needs a low price, no workarounds, five voting families and three agreeing tests, while one strong test can flag. "Probably not" sits at a flag's low bar, so it never closes a debate alone. The Mindbook puts it as the asymmetry of errors.</p></details>
-      <p class="learn-next"><a class="btn primary" id="start-2" href="/growth-test-site/desk/country.html?iso=KEN#lesson=2&amp;predict=1">Start lesson 2: the Bottom line, predicted first →</a></p>
-    </div>
-  </section>
-
-  <section class="learn-index" id="lessons" aria-labelledby="lessons-h">
-    <h2 id="lessons-h">The eight lessons</h2>
-    <p class="small muted">About three hours in all, on the pages that already exist, worked on Kenya with one card borrowed from Senegal. Each lesson's bar carries its task, a check question and the next step. Nothing is stored; the lesson travels in the link.</p>
-    <ol id="lesson-list"></ol>
-  </section>
-
-  <section class="learn-index" id="exit" aria-labelledby="exit-h">
+  <section class="learn-sec" id="exit" aria-labelledby="exit-h">
     <h2 id="exit-h">The exit test</h2>
-    <p>After lesson 8: a second country, drawn from Ghana, Bangladesh and Uganda, with the verdicts hidden. Sixty minutes, no help. For the first decision (finance, low returns, or can't tell) and each of the twelve areas: your verdict, which tests speak, which is missing, and for every "can't tell", the next step. Then reveal, and write a line on each disagreement. A pass needs no false clear anywhere, ten of the thirteen verdicts (the first decision counts as one) matching or soundly argued, four in five explanations naming the right tests, and a top split read from the price of finance.</p>
-    <p class="small muted">The tool is a check on your reading, not the answer: a disagreement argued in the method's terms counts.</p>
+    <p>After the tour: a second country, drawn from Ghana, Bangladesh and Uganda, with the verdicts hidden (Predict first on). Sixty minutes, no help. For the first decision (finance, low returns, or can't tell) and each of the twelve areas: your verdict, which tests speak, which is missing, and for every "can't tell", the next step. Then reveal, and write a line on each disagreement. A pass needs no false clear anywhere, ten of the thirteen verdicts (the first decision counts as one) matching or soundly argued, four in five explanations naming the right tests, and a first decision read from the price of finance.</p>
+    <p class="small muted">The tool is a check on your reading, not the answer: a disagreement argued in the method's terms counts. The rubric is <code>docs/teaching-exit-rubric.md</code>.</p>
   </section>
 
-  <p class="small muted">Lesson one of the guided path (teaching plan, W12). Kenya at rubric 0.2.9; the tiers quoted here are checked by a test against the data, so a rubric change cannot silently break the lesson. The method: Hausmann, Rodrik and Velasco (2005) and the Mindbook; the tool's own rules are on the Methods page.</p>
+  <p class="small muted">The tour speaks in the tool’s voice only and quotes Indonesia at rubric 0.2.9; the tiers and numbers it quotes are checked by a test against the data, so a rubric change cannot silently break a stop. The method: Hausmann, Rodrik and Velasco (2005) and the Mindbook; the tool’s own rules are on the Methods page.</p>
 </main>
 
 <footer class="foot"></footer>

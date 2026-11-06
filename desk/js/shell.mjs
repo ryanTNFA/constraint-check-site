@@ -193,5 +193,5 @@ function mount() {
   });
 }
 mount();
-// teaching mode (docs/teaching-plan.md): the lesson bar and Predict first mount after the bar, when the hash asks
-import('./lesson.mjs').catch((e) => console.error(e));
+// the tour (docs/learn-tour-plan.md): its bar, ring and callout mount after the site bar, when the hash asks
+import('./tour.mjs').catch((e) => console.error(e));

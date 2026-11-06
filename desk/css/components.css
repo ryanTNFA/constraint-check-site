@@ -1,5 +1,5 @@
 /* The Growth Test: components layer (C5). Everything shared by more than one page or drawn by a shared module
-   (shell.mjs, card.mjs, tree.mjs, common.mjs, lesson.mjs, longview.mjs). Cap: 1,200 lines (tests/test_desk_css.py).
+   (shell.mjs, card.mjs, tree.mjs, common.mjs, tour.mjs, longview.mjs). Cap: 1,200 lines (tests/test_desk_css.py).
    One page's own rules go in pages/<page>.css; durations and easings go in motion.css; tokens in tokens.css. */
 @layer components {
 /* ---------- kicker labels ---------- */
@@ -490,22 +490,36 @@ button.robust[aria-expanded="true"]::after { content: ' ▴'; }
 .lv-controls { display: inline-flex; align-items: center; gap: 10px; }
 @media (max-width: 700px) { .lv-svg { min-width: 640px; } .longview { overflow-x: auto; } }
 
-/* ---------- Teaching mode (docs/teaching-plan.md): the lesson bar, Predict first, the why-not lines ---------- */
-.lesson-bar { background: var(--surface); border-bottom: 3px solid var(--text); }
-.lesson .tnfa-view, .lesson #assistance-box { display: none; }
-.lesson-bar .wrap { padding-block: 12px 14px; }
-.lesson-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 20px; flex-wrap: wrap; }
-.lesson-head .kicker { margin: 0; }
-.lesson-nav { display: flex; gap: 16px; font-size: var(--fs-caption); }
-.lesson-nav .lesson-next { font-weight: 600; }
-.lesson-title { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; margin: 4px 0 2px; }
-.lesson-task { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.5; max-width: 90ch; margin: 0 0 8px; }
-.lesson-tools { display: flex; gap: 10px 16px; align-items: flex-start; flex-wrap: wrap; }
-.lesson-check { font-size: 0.9375rem; max-width: 70ch; }
-.lesson-check > summary, .lesson-answer > summary { cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
-.lesson-q { font-weight: 600; margin: 6px 0 4px; }
-.lesson-answer { margin-top: 4px; }
-.lesson-answer p { margin: 6px 0 0; }
+/* ---------- The tour (docs/learn-tour-plan.md): the bar, the ring, the callout; Predict first; the why-not lines ---------- */
+.tour-bar { background: var(--surface); border-bottom: 3px solid var(--text); }
+.tour .tnfa-view, .tour #assistance-box { display: none; }
+.tour-bar .wrap { padding-block: 12px 14px; }
+.tour-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 20px; flex-wrap: wrap; }
+.tour-head .kicker { margin: 0; }
+.tour-links { display: flex; gap: 16px; font-size: var(--fs-caption); }
+.tour-title { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; margin: 4px 0 6px; }
+.tour-away { margin: 0 0 8px; }
+.tour-tools { display: flex; gap: 10px 16px; align-items: center; flex-wrap: wrap; }
+.tour-nav { display: flex; gap: 10px 18px; flex-wrap: wrap; font-size: 0.9375rem; }
+.tour-nav .tour-next { font-weight: 600; }
+.tour-check { font-size: 0.9375rem; max-width: 70ch; flex-basis: 100%; }
+.tour-check > summary, .tour-answer > summary { cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.tour-q { font-weight: 600; margin: 6px 0 4px; }
+.tour-answer { margin-top: 4px; }
+.tour-answer p { margin: 6px 0 0; }
+.tour-dock:empty { display: none; }
+/* the ring: its own inert element over the anchor, never a class on it, no transition (nothing animates on a rating) */
+.tour-ring { position: absolute; z-index: 48; pointer-events: none; outline: 3px solid var(--accent); outline-offset: 5px; }
+#drawer .tour-ring { z-index: 1; }
+.tour-callout { position: absolute; z-index: 51; background: var(--surface); color: var(--text); border: 1px solid var(--text); border-left: 4px solid var(--accent); padding: 12px 14px 10px; box-shadow: var(--elev-2); font-size: 0.9375rem; line-height: 1.5; }
+#drawer .tour-callout { position: static; margin: 12px 0; box-shadow: none; }
+.tour-callout.docked { position: static; width: auto !important; margin-top: 10px; box-shadow: none; }
+.tour-callout .tour-kicker { margin: 0 0 6px; }
+.tour-callout p { margin: 0 0 8px; }
+.tour-callout .tour-look { margin: 0 0 8px; padding-left: 1.1em; }
+.tour-callout .tour-look li { margin: 2px 0; }
+.tour-callout .tour-nav { border-top: 1px solid var(--rule); padding-top: 8px; margin-top: 4px; }
+.tour-missing { margin: 0 0 6px; }
 .why-not-lines { margin-top: 8px; display: grid; gap: 2px; font-size: 0.9375rem; }
 .why-not strong { font-weight: 600; }
 .predict-note { background: var(--surface-2); padding: 8px 10px; font-size: 0.9375rem; margin: 0 0 10px; }
@@ -522,11 +536,11 @@ button.robust[aria-expanded="true"]::after { content: ' ▴'; }
 .predict .drawer:not(.revealed) .tests .val::after { content: ''; }
 .predict .statements, .predict #statements-body, .predict .bl-lists .tnfa-view { position: relative; }
 .predict .statements:not(.revealed) > *, .predict #statements-body:not(.revealed) > * { visibility: hidden; }
-.predict #statements-body:not(.revealed)::before, .predict .statements:not(.revealed)::before { content: 'Predict first is on: write down what you expect in each list, then reveal. Use "Reveal everything on this page" in the lesson bar.'; visibility: visible; position: absolute; inset: 0; padding: 16px; background: var(--surface-2); font-family: var(--serif); font-size: 1.0625rem; }
+.predict #statements-body:not(.revealed)::before, .predict .statements:not(.revealed)::before { content: 'Predict first is on: write down what you expect in each list, then reveal. Use "Reveal everything on this page" in the tour bar.'; visibility: visible; position: absolute; inset: 0; padding: 16px; background: var(--surface-2); font-family: var(--serif); font-size: 1.0625rem; }
 .predict-all #statements-body::before, .predict-all .statements::before { display: none; }
 .predict-all #statements-body > *, .predict-all .statements > * { visibility: visible !important; }
 .predict .hm-cell:not(.revealed), .predict td.cell:not(.revealed) { background: var(--surface-2) !important; color: transparent; }
-@media (max-width: 700px) { .lesson-head { flex-direction: column; } }
+@media (max-width: 700px) { .tour-head { flex-direction: column; } }
 
 /* the compact tree's square size (the tree itself is pages/country.css) */
 .strip-md .sq { width: 24px; height: 24px; font-size: 13px; }

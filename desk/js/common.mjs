@@ -361,14 +361,14 @@ export function robustDetail(n, plain) {
 // own event, for back and forward) to redraw.
 /** The hash keys, by what they hold. The country pages' state, the top bar's setting, teaching mode, the Analyst View's chart choices. */
 export const HASH = {
-  set: 'set', peers: 'peers', overrides: 'o', setting: 'setting', lesson: 'lesson', predict: 'predict',
+  set: 'set', peers: 'peers', overrides: 'o', setting: 'setting', tour: 'tour', predict: 'predict',
   fit: 'fit', asof: 'asof', add: 'add', label: 'label', yrs: 'yrs', view: 'view', peerlines: 'peerlines', since: 'since', measure: 'measure',
   pqp: 'pqp', pqq: 'pqq', pqaxes: 'pqaxes',
 };
 /** The keys that follow the user from tab to tab (shell.mjs): only what every country page understands. */
-export const CARRIED_KEYS = [HASH.set, HASH.peers, HASH.overrides, HASH.setting, HASH.lesson, HASH.predict];
-/** Teaching mode's keys (lesson.mjs): a page rewriting its state must not drop them. */
-export const TEACHING_KEYS = [HASH.lesson, HASH.predict];
+export const CARRIED_KEYS = [HASH.set, HASH.peers, HASH.overrides, HASH.setting, HASH.tour, HASH.predict];
+/** The tour's keys (tour.mjs): a page rewriting its state must not drop them. */
+export const TEACHING_KEYS = [HASH.tour, HASH.predict];
 /** The hash as URLSearchParams. */
 export function readHash() { return new URLSearchParams(location.hash.replace(/^#/, '')); }
 /** The hash as a string to append to a link ('' when empty). */

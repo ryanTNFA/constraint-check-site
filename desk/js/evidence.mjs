@@ -2,7 +2,7 @@
 // composition (views in evidence_node.mjs); under a node, its tests C5, C6 and C8 (evidence_tests.mjs); then C1 income-trend
 // scatter, C2 peer comparison and C3 over time for one indicator; the year player (player.mjs) animates C1 and C2.
 import { refreshNav } from './shell.mjs';
-import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, qs, unitHint, shortName, sourceLink, sourceLabel, dataBase, withData, downloadText, tierLabelOf, tierClass, HASH, readHash, writeHash, currentHash } from './common.mjs';
+import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, qs, unitHint, shortName, sourceLink, sourceLabel, dataBase, withData, downloadText, tierLabelOf, tierClass, HASH, TEACHING_KEYS, readHash, writeHash, currentHash } from './common.mjs';
 import { INCOME_ID, refSpan, scatterRows, structureFit, linearFit, lowessFit, lineAndBand, peerRank, residualPercentile, backTransform, referenceTable, viableYears, peerSummary, seriesRows, coverage, changeSinceStart, peerBand, slope, endpoints, stripRows, playerFrames, playerDomains, raceFrames } from './evidence_math.mjs';
 import { createControls, bubbleChart, barRace } from './player.mjs';
 import { reducedMotion } from './motion.mjs';
@@ -58,9 +58,9 @@ function writeUrl(push = false) {
   if (state.test) q.set('test', state.test); else q.delete('test');
   const p = new URLSearchParams();
   if (state.set !== 'structural') p.set('set', state.set);
-  // keep the country pages' state (peers, overrides, evidence setting) so the top bar carries it on
+  // keep the country pages' state (peers, overrides, evidence setting) and the tour's keys, so the top bar and the tour carry on
   const prev = readHash();
-  for (const k of [HASH.peers, HASH.overrides, HASH.setting]) if (prev.get(k) != null) p.set(k, prev.get(k));
+  for (const k of [HASH.peers, HASH.overrides, HASH.setting, ...TEACHING_KEYS]) if (prev.get(k) != null) p.set(k, prev.get(k));
   if (state.fit !== 'structure') p.set('fit', state.fit);
   if (state.asOf && state.asOf !== snapYear()) p.set('asof', String(state.asOf));
   if (state.added.length) p.set('add', state.added.join(','));

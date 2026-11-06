@@ -1,40 +1,16 @@
-/* The Growth Test: lesson one (learn.html): the steps, the figures, the ladders and the lesson index (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+/* The Growth Test: the Learn page (learn.html), the tour's front door and index (pages layer; cap 300 lines). Shared rules belong in components.css. */
 @layer pages {
-/* ---------- Lesson one, "How a country gets read" (V6 / teaching plan section 4) ---------- */
-.learn-head { padding-block: 28px 8px; max-width: 70ch; }
-.step { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px 40px; align-items: start; padding-block: 36px; border-top: 1px solid var(--rule); }
-.step:first-of-type { border-top: 0; }
-.step-text p { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; max-width: 60ch; }
-.step-text h2 { margin-top: 2px; }
-.step-fig { margin: 0; min-width: 0; }
-.step-fig figcaption { margin-top: 6px; }
-.learn-svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
-.learn-dot { fill: var(--chart-other); opacity: 0.7; }
-.learn-dot.focus { fill: var(--chart-focus); opacity: 1; stroke: var(--text); stroke-width: 1; }
-.learn-fit { fill: none; stroke: var(--chart-fit); stroke-width: 2; }
-.learn-gap { stroke: var(--chart-focus); stroke-width: 2; stroke-dasharray: 4 3; }
-.learn-rowlab { font-size: 12px; fill: var(--text); }
-.learn-val { font-size: 12px; fill: var(--muted); }
-.learn-bar { fill: var(--chart-peer-fill); stroke: var(--chart-peer); stroke-width: 1; }
-.learn-bar.focus, .learn-bar.toward { fill: var(--chart-focus); stroke: var(--chart-focus-ink); }
-.learn-bar.away { fill: var(--chart-peer); }
-.learn-bar.none { fill: none; stroke-dasharray: 3 3; }
-.lv-axis { stroke: var(--rule-strong); }
-.ladders { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-.ladder { border-top: 3px solid var(--rule-strong); padding-top: 8px; }
-.ladder:last-child { border-top-color: var(--tier-probnot); }
-.ladder h3 { font-size: 1.1rem; margin-bottom: 6px; }
-.ladder ol { padding-left: 1.2em; margin: 0 0 6px; display: grid; gap: 4px; }
-.learn-list h3 { font-size: 1.05rem; margin: 0 0 4px; padding-left: 10px; border-left: 4px solid var(--rule-strong); }
-.learn-list + .learn-list { margin-top: 14px; }
-.learn-list ul { margin: 0; padding-left: 1.2em; }
-.learn-next { margin-top: 14px; }
-.learn-index { padding-block: 28px; border-top: 1px solid var(--rule); max-width: 80ch; }
-.learn-index ol { padding-left: 1.3em; display: grid; gap: 6px; }
-@media (max-width: 860px) { .step { grid-template-columns: 1fr; } }
-
-/* the lesson page borrows these classes on a light ground */
-.learn .lv-grid { stroke: var(--rule); } .learn .lv-tick { font-size: 11px; fill: var(--muted); }
-.learn .lv-label { font-family: var(--sans); font-weight: 400; font-size: 11px; fill: var(--text); }
-.learn .lv-label.world { font-weight: 600; fill: var(--chart-peer); }
+.learn-head { padding-block: 28px 8px; max-width: 72ch; }
+.learn-start { display: flex; gap: 12px 18px; align-items: center; flex-wrap: wrap; margin: 14px 0 6px; }
+.learn-sec { padding-block: 26px; border-top: 1px solid var(--rule); max-width: 80ch; }
+.learn-sec h2 { margin-top: 0; }
+.learn-ideas { padding-left: 1.2em; display: grid; gap: 8px; margin: 10px 0 0; }
+.learn-ideas li { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.5; }
+.learn-ideas strong { font-weight: 600; }
+.learn-stops { padding-left: 1.3em; display: grid; gap: 8px; margin: 10px 0 0; }
+.learn-stops li { line-height: 1.45; }
+.learn-stops a { font-weight: 600; }
+.learn-keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 20px; margin: 10px 0 0; }
+.learn-keys div { border-top: 3px solid var(--rule-strong); padding-top: 6px; font-size: 0.9375rem; }
+.learn-keys strong { display: block; font-weight: 600; }
 }

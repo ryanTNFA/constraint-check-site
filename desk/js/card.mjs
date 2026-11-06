@@ -683,9 +683,9 @@ export function whyNotLines(node) {
     items.length > 3 ? ` (and ${items.length - 3} more in the rule detail)` : '', '.') : null);
   return h('div', { class: 'why-not-lines' }, line('Why not higher:', up), line('Why not lower:', down));
 }
-// Predict first helpers (the set lives in lesson.mjs; read it lazily so this module stays importable without it)
+// Predict first helpers (the set lives in tour.mjs; read it lazily so this module stays importable without it)
 let lessonMod = null;
-import('./lesson.mjs').then((m) => { lessonMod = m; }).catch(() => {});
+import('./tour.mjs').then((m) => { lessonMod = m; }).catch(() => {});
 const revealedSet = () => (lessonMod ? lessonMod.revealed : new Set());
 const revealArea = (id) => { if (lessonMod) lessonMod.reveal(id); };
 
