@@ -1,0 +1,28 @@
+/* The Growth Test: the standard's page (standard.html; PRD R3, D9), behind the growth-test flag (C5, pages layer; cap 300 lines).
+   One column of prose on the paper ground, the claim in larger type, the three links as a numbered list with icons, the
+   tool's part on a quiet surface. Durations live in motion.css; shared pieces in components.css. */
+@layer pages {
+main.standard { --gutter: clamp(16px, 4vw, 60px); }
+.std { max-width: 46rem; padding-block: 36px 24px; }
+.std-head h1 { font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem); margin-bottom: 18px; }
+.std-head .kicker { margin-bottom: 14px; }
+/* the claim: the one paragraph, in the answer size (D1) */
+.std-claim { font-family: var(--serif); font-size: var(--fs-answer); line-height: 1.32; margin: 0; max-width: 32ch; text-wrap: pretty; }
+.std-sec { margin-top: 44px; }
+.std-sec h2 { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); margin-bottom: 12px; }
+.std .prose { font-size: 1.125rem; line-height: 1.6; max-width: 62ch; }
+.std-quote { font-family: var(--serif); font-size: clamp(1.25rem, 1rem + 1vw, 1.625rem); line-height: 1.35; margin: 18px 0 0; padding-left: 18px;
+  border-left: 4px solid var(--brand-amber); max-width: 34ch; }
+.std-links { list-style: none; counter-reset: l; margin: 18px 0 0; padding: 0; display: grid; gap: 14px; }
+.std-links li { counter-increment: l; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 14px; row-gap: 4px;
+  padding: 16px 18px; background: var(--surface); box-shadow: var(--elev-1); }
+.std-links li .icon { grid-row: 1 / span 2; color: var(--accent); margin-top: 2px; }
+.std-links li strong { font-family: var(--serif); font-weight: 500; font-size: 1.25rem; line-height: 1.25; }
+.std-links li strong::before { content: counter(l) ' · '; font-family: var(--mono); font-size: var(--fs-label); letter-spacing: 0.05em; color: var(--muted); vertical-align: 0.2em; }
+.std-links li span { font-size: 1rem; line-height: 1.5; color: var(--muted); }
+.std-tool { padding: 22px 24px 18px; background: var(--surface-2); }
+.std-tool .prose { max-width: none; }
+.std-tool .small a { margin-right: 14px; }
+.std-cites { padding-left: 18px; display: grid; gap: 6px; max-width: 70ch; }
+@media (max-width: 600px) { .std-links li { grid-template-columns: 1fr; } .std-links li .icon { grid-row: auto; } }
+}

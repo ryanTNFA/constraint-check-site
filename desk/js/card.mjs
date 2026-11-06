@@ -3,11 +3,14 @@
 // the tree, Proposal Check and the memo share, so every surface says the same thing.
 import { nodeCode, h, fmt, fmtSigned, fmtSignal, fmtValue, tierLabel, tierClass, isCannotTell, unitHint, shortName, sourceLink, sourceLabel, missingTestReason,
   subreasonLabel, TEST_ORDER, TEST_NUM, USER_TIERS, isStale, withData, TIER_ORD, englishList, isRegistryGap, DATA_GAP_KINDS, cannotTellCode, leanOf,
-  CANNOT_TELL_PLAIN, ROBUST_PLAIN, robustDetail, currentHash } from './common.mjs';
+  CANNOT_TELL_PLAIN, ROBUST_PLAIN, robustDetail, currentHash, missingTestKind, MISSING_TEST_LABEL } from './common.mjs';
 import { robustChip, reasonTag } from './components/marks.mjs';
 export { robustChip, reasonTag }; // moved to components/marks.mjs (C7); re-exported for one release
 
 const FOCUSABLE = 'button, [href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"])';
+/** A <gt-fold> disclosure (D2, D8): the heading stays, the body folds; animated by motion.mjs, instant under reduced motion. */
+const fold = (label, ...body) => h('gt-fold', {}, h('details', { class: 'k-fold' }, h('summary', { class: 'gt-fold-sum' }, label),
+  h('div', { class: 'gt-fold-body' }, ...body)));
 
 /**
  * The node card in its side drawer. getState() supplies the current view; onOverride(id, override | null) records the
@@ -85,7 +88,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
           'Self-discovery explained, with nearby products →') : null,
         h('a', { class: 'small',
           href: withData(`/growth-test-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) },
-          'Charts for this area (analyst view) →')),
+          'Analyst View for this area →')),
       h('button', { class: 'btn quiet small drawer-close', type: 'button', 'aria-label': 'Close evidence card', onclick: close }, 'Close')));
 
     if (!node) { drawer.append(h('p', { class: 'note' }, 'This area is not scored in the snapshot.')); return; }
@@ -109,7 +112,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
     if (setLine) plainSec.append(h('p', { class: 'small', style: 'margin-top:6px' }, setLine));
     // "why not higher, why not lower" (teaching plan, Q23): the engine's blockers in plain words, for every user
     const why = whyNotLines(node);
-    if (why) plainSec.append(why);
+    if (why) plainSec.append(fold('Why not higher, why not lower', why)); // D8: the reasons fold under a heading
     // Predict first (teaching plan, Q22): the verdict stays hidden until the learner commits and reveals it
     drawer.dataset.node = nodeId;
     drawer.classList.toggle('revealed', revealedSet().has(nodeId));
@@ -191,7 +194,12 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
           cell.append(h('span', { class: 'val na' }, 'no price measure'), h('span', { class: 'fams' },
             `No high-quality (class A/B) price for ${country}; ${(tv.informing || []).length} quantit${(tv.informing || []).length === 1 ? 'y ' +
               'informs' : 'ies inform'} (${(tv.informing || []).map(prettyFamily).join(', ')}) but do not vote.`));
-        } else cell.append(h('span', { class: 'val na' }, 'could not be run'), h('span', { class: 'fams' }, missingTestReason(t, ev.id, registry)));
+        } else { // D7: a test the tool has not defined for this area is shown apart from one this economy lacks the data for
+          const kind = missingTestKind(t, ev.id, registry);
+          cell.append(h('span', { class: 'val na' }, MISSING_TEST_LABEL[kind]), h('span', { class: 'fams' },
+            `${kind === 'not_defined' ? 'A gap in the tool, the same for every economy: ' : `For ${country}: `}` +
+              missingTestReason(t, ev.id, registry).replace(/^Not computed: /, '')));
+        }
         if (t === 'price' && ev.price_test_note) cell.append(h('span', { class: 'fams', style: 'margin-top:6px' }, ev.price_test_note));
         grid.append(cell);
       }
@@ -338,7 +346,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
         `${ev.informing_dissent.map(prettyFamily).join(', ')}.`)));
 
     // hand-off: what would change this, in-country checks, data gaps
-    const nsec = h('section', { class: 'narr' }, h('h3', {}, 'What would change this, what to check in-country, data gaps'));
+    const nsec = h('div', { class: 'narr' }); // D8: folds under its heading below
     const nn = narrative && narrative.nodes && narrative.nodes[nodeId];
     if (nn) {
       const meta = narrative.meta || {};
@@ -372,7 +380,7 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
         `${f.source}` : fam; });
       nsec.append(h('h4', { class: 'small' }, 'Measures the tool does not collect yet'), h('ul', { class: 'small' }, items.map((x) => h('li', {}, x))));
     }
-    drawer.append(nsec);
+    drawer.append(h('section', {}, fold('What would change this, what to check in-country, data gaps', nsec)));
 
     // override
     if (node.tier === 'context_only') { drawer.append(h('section', {}, h('p', { class: 'small muted' },

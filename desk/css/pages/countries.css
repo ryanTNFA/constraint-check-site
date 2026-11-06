@@ -1,0 +1,83 @@
+/* The Growth Test: the Countries page (countries.html; PRD D5, D1, D2, D9), behind the growth-test flag (C5, pages layer; cap 300
+   lines). The search first, the last country's three lists, the map with the distribution of ratings, the economies as lines.
+   The map's own rules (.ex-*) are the home page's, repeated here because pages/home.css loads on index.html only; when the
+   home page retires they move to components.css. Durations live in motion.css. */
+@layer pages {
+main.countries { --gutter: clamp(16px, 4vw, 60px); }
+
+/* ---------- the head: the question, the one sentence, the search (D1) ---------- */
+.c-head { padding-block: 26px 10px; max-width: 60rem; }
+.c-head h1 { font-size: clamp(2rem, 1.3rem + 2.4vw, 3rem); margin-bottom: 10px; }
+.c-answer { font-family: var(--serif); font-size: var(--fs-answer); line-height: 1.32; margin: 0 0 18px; max-width: 34ch; text-wrap: pretty; }
+.c-ask .gt-ask-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.c-ask .icon { color: var(--accent); }
+.c-ask input[type="search"] { flex: 1 1 18rem; min-width: 0; font-size: 1.0625rem; padding: 10px 12px; }
+
+/* ---------- pick up where you left off ---------- */
+.c-resume { margin-top: 24px; padding: 18px 22px 16px; background: var(--surface); box-shadow: var(--elev-1); max-width: 60rem; }
+.c-resume-head { display: flex; align-items: baseline; gap: 6px 18px; flex-wrap: wrap; margin-bottom: 10px; }
+.c-resume-head .kicker { margin: 0; }
+.c-resume-head h2 { margin: 0; font-size: 1.5rem; }
+.c-resume-head h2 a { color: var(--text); text-decoration: none; }
+.c-resume-head h2 a:hover { color: var(--accent); }
+.c-resume-body { display: grid; gap: 10px; }
+.c-resume-lists { display: grid; gap: 4px; }
+.c-resume-line { margin: 0; font-size: 1rem; }
+.c-resume-line strong { font-weight: 600; }
+
+/* ---------- the map and the distribution ---------- */
+.explore { margin: 36px 0 32px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.explore h2 { font-size: 1.75rem; margin: 0 0 10px; }
+.c-dist { margin: 0 0 12px; max-width: 60rem; }
+.c-dist:empty { display: none; }
+.c-dist-words { margin: 0 0 6px; font-size: 0.9375rem; }
+.c-dist-bar { display: flex; height: 10px; width: 100%; max-width: 40rem; gap: 2px; }
+.c-dist-seg { display: block; height: 100%; flex-basis: 0; }
+.c-dist-unclear { background: var(--tier-cannot-tint); border: 1px solid var(--tier-cannot-hatch); }
+.c-dist-none { background: transparent; border: 1px dashed var(--rule-strong); }
+.ex-controls { margin-bottom: 6px; }
+.ex-caveat { margin: 0 0 12px; font-size: 0.875rem; color: var(--muted); }
+.ex-body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(240px, 3fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .ex-body { grid-template-columns: 1fr; } }
+.ex-fig { margin: 0; }
+.ex-map { display: block; width: 100%; height: auto; }
+.ex-shape { stroke: var(--bg); stroke-width: 0.6; cursor: pointer; }
+.ex-dot { stroke: var(--text); stroke-width: 0.6; }
+.ex-map a:hover .ex-shape, .ex-map a:focus .ex-shape { stroke: var(--text); stroke-width: 1.4; }
+.ex-out { opacity: 0.18; }
+.ex-none { fill: none; stroke: var(--rule-strong); stroke-width: 0.5; stroke-dasharray: 2 2; }
+.ex-gap { stroke: var(--tier-cannot-hatch); stroke-width: 0.7; }
+.ex-legend { margin: 6px 0 4px; }
+.ex-swatch-none { background: transparent; border: 1px dashed var(--rule-strong); }
+.ex-swatch-tint { background: var(--tier-cannot-tint); border-color: var(--rule); }
+.ex-swatch-gap { background: var(--tier-cannot-tint); border-color: var(--tier-cannot-hatch); }
+.ex-list { display: grid; gap: 6px; }
+.ex-group { border: 1px solid var(--rule); background: var(--surface); padding: 6px 10px; }
+.ex-group > summary { cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.ex-names { margin: 6px 0 2px; font-size: 0.875rem; line-height: 1.5; }
+.ex-which { margin: 0 0 6px; font-size: 0.9375rem; font-weight: 600; }
+.ex-skeleton { aspect-ratio: 960 / 470; max-height: 470px; background: var(--surface-2); }
+
+/* ---------- the economies, one line each ---------- */
+.c-econ { margin-top: 8px; }
+.c-econ-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 12px; }
+.c-econ-head h2 { margin: 0; font-size: 1.75rem; }
+.c-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px 28px; }
+.c-region { grid-column: 1 / -1; font-family: var(--display); font-weight: 400; font-size: var(--fs-eyebrow); letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent);
+  margin: 18px 0 4px; }
+.c-econ-line { display: flex; align-items: center; gap: 10px; padding: 5px 0; color: var(--text); text-decoration: none; border-bottom: 1px solid var(--rule); min-width: 0; }
+.c-econ-line:hover .c-econ-name { color: var(--accent); }
+.c-econ-line .strip { flex: none; }
+.c-econ-name { font-size: 0.9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-fcs { font-size: 0.72rem; border: 1px solid var(--accent); color: var(--accent); padding: 0 5px; white-space: nowrap; }
+.empty { color: var(--muted); padding: 24px 0; }
+.c-econ .strip-key { margin-top: 14px; }
+@media (max-width: 700px) {
+  .c-head { padding-block: 18px 6px; }
+  .c-grid { grid-template-columns: 1fr; }
+  /* phones: the last country's strip takes the small squares, and an economy's name and tag wrap under its strip */
+  .c-resume { padding: 14px 16px 12px; }
+  .c-resume-body .strip-md .sq { width: 17px; height: 17px; font-size: 10px; }
+  .c-econ-line { flex-wrap: wrap; row-gap: 2px; }
+}
+}

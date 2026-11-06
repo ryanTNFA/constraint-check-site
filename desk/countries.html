@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Countries · The Growth Test</title>
+<meta name="description" content="The Growth Test, 217 economies: find a country for its bottom line, or pick one area to see where the public data argue against it, where it deserves a closer look, and where no one can tell.">
+<script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<link rel="preload" href="/growth-test-site/desk/fonts/newsreader-normal-400600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/growth-test-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/growth-test-site/desk/css/tokens.css">
+<link rel="stylesheet" href="/growth-test-site/desk/css/base.css">
+<link rel="stylesheet" href="/growth-test-site/desk/css/components.css">
+<link rel="stylesheet" href="/growth-test-site/desk/css/motion.css">
+<link rel="stylesheet" href="/growth-test-site/desk/css/pages/countries.css">
+</head>
+<body data-page="countries">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar"></header>
+<main id="main" class="wrap countries" tabindex="-1">
+  <!-- The Countries page (Growth Test PRD, D5, D1, D2): the analyst's home.
+       The search at the top, the map below with its area picker and the distribution of ratings for that area (so nobody is
+       surprised by "unclear"), the three lists for the last country viewed as "pick up where you left off" (browser storage),
+       and the economies, in alphabetical order, never ranked. -->
+  <header class="c-head">
+    <p class="kicker">Countries · The Growth Test, part of Getting to Growth</p>
+    <h1>Which country?</h1>
+    <p class="c-answer">Pick a country for its bottom line, or an area to see it across 217 economies. Never a ranking.</p>
+    <form class="c-ask" id="ask" role="search" aria-label="Find a country">
+      <label class="visually-hidden" for="ask-q">Country name or ISO code</label>
+      <div class="gt-ask-row">
+        <svg class="icon" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#search"/></svg>
+        <input id="ask-q" type="search" list="gt-countries" placeholder="Country name or ISO code…" autocomplete="off" data-ask>
+        <button class="btn primary small" type="submit">Open its bottom line</button>
+      </div>
+      <datalist id="gt-countries"></datalist>
+    </form>
+  </header>
+
+  <section class="c-resume" id="resume" aria-labelledby="resume-h" hidden>
+    <div class="c-resume-head"><p class="kicker">Pick up where you left off</p><h2 id="resume-h">Country</h2></div>
+    <div id="resume-body" class="c-resume-body"></div>
+  </section>
+
+  <section class="explore" id="explore-sec" aria-labelledby="explore-h">
+    <h2 id="explore-h">One area across countries</h2>
+    <div id="dist" class="c-dist" aria-live="polite"></div>
+    <div id="explore"><div class="ex-skeleton" aria-hidden="true"></div></div>
+  </section>
+
+  <section class="c-econ" id="economies" aria-labelledby="econ-h">
+    <div class="c-econ-head">
+      <h2 id="econ-h">Economies</h2>
+      <div class="controls" aria-label="Filter and sort economies">
+        <div class="field"><label for="q">Filter</label><input id="q" type="search" placeholder="Name, ISO3, region or income group" autocomplete="off" size="30"></div>
+        <div class="field"><label for="sort">Sort by</label><select id="sort"><option value="name">Name</option><option value="region">Region</option></select></div>
+        <div class="field"><span class="small muted" id="count" aria-live="polite"></span></div>
+      </div>
+    </div>
+    <div id="grid" class="c-grid" role="region" aria-labelledby="econ-h"></div>
+    <p id="status" class="empty" hidden></p>
+    <p class="small muted strip-key">On each line: one square per area, in the order of the decision tree, coloured by its rating. Hover a square for its name. More amber does not mean a worse country, and there is no total.</p>
+  </section>
+</main>
+
+<footer class="foot"></footer>
+<script type="module" src="/growth-test-site/desk/js/countries.mjs"></script>
+</body>
+</html>

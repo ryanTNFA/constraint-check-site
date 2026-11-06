@@ -23,6 +23,7 @@
     <div class="title-row"><h1 id="country-name" data-country-title>Country</h1><span class="iso" id="country-iso"></span></div>
     <script>(function(){var i=(new URLSearchParams(location.search).get('iso')||'').toUpperCase();if(i){document.getElementById('country-name').textContent=i;document.title=i+' · '+document.title;}})();</script>
     <ul class="meta-list" id="meta-list"></ul>
+    <p class="answer" id="areas-answer"></p>
     <p id="fcs-note" class="note alert fcs-note" role="note" hidden></p>
     <nav class="subnav" aria-label="Sections">
       <a href="#tree">Tree</a><a href="#growth">Growth</a><a href="#overrides">Your overrides</a><a href="#analysts">Comparison countries and every number</a>
@@ -32,12 +33,11 @@
   <p id="page-error" class="note alert" hidden></p>
 
   <section class="panel" id="tree" aria-labelledby="tree-h">
-    <div class="panel-head"><div><span class="kicker">The tree</span><h2 id="tree-h">Where the evidence points</h2></div><p id="tree-sub">It starts from the symptom and the first decision, finance or low returns; the finance branch is at the top, low returns below. Hover an area for a plain reading; click or press Enter to open its evidence. Tab moves between areas.</p></div>
+    <div class="panel-head"><div><span class="kicker">The tree</span><h2 id="tree-h">Where the evidence points</h2></div><gt-fold><details class="k-fold"><summary class="gt-fold-sum">How to read the tree</summary><div class="gt-fold-body"><p id="tree-sub">It starts from the symptom and the first decision, finance or low returns; the finance branch is at the top, low returns below. Hover an area for a plain reading; click or press Enter to open its evidence. Tab moves between areas.</p><p class="small muted">Under each area: the number of independent sources that count toward its rating (quantities and opinions inform but do not count) and the span of years they cover. Grey labels such as Finance and Social returns are branches, not ratings.</p></div></details></gt-fold></div>
     <p id="setting-note" class="note setting-note" role="status" hidden></p>
     <div class="legend" id="tree-legend"></div>
     <div class="tree-wrap" id="tree-wrap"></div>
     <div class="tooltip" id="tooltip" role="tooltip"></div>
-    <p class="small muted" style="margin-top:8px">Under each area: the number of independent sources that count toward its rating (quantities and opinions inform but do not count) and the span of years they cover. Grey labels such as Finance and Social returns are branches, not ratings.</p>
   </section>
 
   <section class="panel" id="growth" aria-labelledby="growth-h">
@@ -91,6 +91,6 @@
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true" tabindex="-1"></aside>
 
 <footer class="foot"></footer>
-<script type="module" src="/growth-test-site/desk/js/country.mjs"></script>
+<script type="module" src="/growth-test-site/desk/js/areas.mjs"></script>
 </body>
 </html>

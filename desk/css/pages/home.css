@@ -1,69 +1,106 @@
-/* The Growth Test: the home page: the picker cards, the one-area map, TNFA's band and the "How to read" disclosure (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+/* The Growth Test: the root page, the story (Growth Test PRD, Part 10; D9) (C5, pages layer; cap 300 lines).
+   Six beats, one screen each on a laptop; the two dark bands (beats 1 and 5) bleed to the window's edges; everything else
+   sits on the paper ground with generous white space. Durations and easings live in motion.css; shared pieces (.gt-band,
+   .icon, .elev-1) in components.css. */
 @layer pages {
-.econ-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 18px; }
-.econ-card { display: block; text-decoration: none; color: inherit; border: 1px solid var(--rule); background: var(--surface); padding: 14px 16px; }
-.econ-card:hover { border-color: var(--accent); }
-.econ-card h3 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.econ-card .iso { font-family: var(--mono); color: var(--muted); font-size: 0.8125rem; font-weight: 400; }
-.econ-card .where { font-size: 0.8125rem; color: var(--muted); }
-.econ-card .counts { display: flex; gap: 14px; margin-top: 10px; font-size: 0.8125rem; color: var(--muted); flex-wrap: wrap; }
-.econ-card .counts strong { color: var(--text); }
-.empty { color: var(--muted); padding: 24px 0; }
+/* the page runs edge to edge; each beat's inner column is the wrap (phones: a 16 px gutter) */
+main.story { max-width: none; padding-inline: 0; }
+.beat { display: grid; align-content: center; padding-block: 56px; }
+.beat-in { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: clamp(16px, 4vw, 60px); min-width: 0; }
+/* grid items never widen past the column, so a wide chart scrolls inside its figure instead of widening the page (phones) */
+.beat-hero-grid > *, .beat-hero-text, .gt-entry > *, .gt-entries > * { min-width: 0; }
+@media (min-width: 900px) and (min-height: 640px) { .beat { min-height: calc(100vh - 56px); } }
+.beat .kicker { margin-bottom: 14px; }
+.beat h2 { font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem); line-height: 1.04; letter-spacing: -0.012em; max-width: 20ch; margin-bottom: 18px; }
+.beat .prose { font-size: 1.1875rem; line-height: 1.55; max-width: 62ch; }
+.beat .prose.lede { font-size: 1.375rem; line-height: 1.45; }
+.gt-cite { max-width: 70ch; margin-top: 18px; }
+.gt-cite a { color: inherit; }
 
-.howto { border: 1px solid var(--rule); background: var(--surface); padding: 14px 18px; margin-top: 14px; max-width: 80ch; }
-.howto ol { margin: 6px 0 0; padding-left: 20px; font-size: 0.9375rem; line-height: 1.5; }
-.howto .howto-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.econ-card .summary-lines { margin: 10px 0 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.45; }
-.econ-card .summary-lines li { margin-bottom: 2px; }
-.econ-card .summary-lines .lab { color: var(--muted); }
-.econ-card .fcs-tag { display: inline-block; margin-top: 8px; font-size: 0.75rem; border: 1px solid var(--accent); color: var(--accent); padding: 0 6px; }
-.idea-hint { font-size: 0.9375rem; margin-top: 10px; }
+/* ---------- beat 1: the hero band ---------- */
+.beat-hero { background: linear-gradient(180deg, color-mix(in srgb, var(--band) 92%, white) 0%, var(--band) 38%, var(--band) 100%); padding-block: 40px 44px; }
+.beat-hero h1 { font-size: clamp(2.5rem, 1.6rem + 4.4vw, 4.5rem); line-height: 1.02; letter-spacing: -0.015em; max-width: 16ch; color: var(--band-text); margin-bottom: 14px; }
+/* on a laptop the headline, the standfirst and the entries sit left and the chart right, so beat 1 is one screen (D5: a country one click away without scrolling) */
+@media (min-width: 1100px) and (min-height: 640px) {
+  .beat-hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 20px 44px; align-items: center; }
+  .beat-hero h1 { font-size: clamp(2.25rem, 1.2rem + 2.4vw, 3.4rem); max-width: 14ch; }
+  .beat-hero .stand { font-size: 1.125rem; }
+  .beat-hero .gt-ask { margin-top: 20px; }
+}
+.beat-hero .stand { font-family: var(--serif); font-size: clamp(1.125rem, 1rem + 0.6vw, 1.375rem); line-height: 1.45; color: var(--band-soft); max-width: 58ch; margin: 0 0 22px; }
+/* the chart's box is reserved before the data arrive, so nothing moves after first paint (D9 budget) */
+.lv-stage { position: relative; min-height: 0; }
+.lv-stage .lv-skeleton { aspect-ratio: 960 / 400; max-height: 400px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--band-rule); }
+.lv-stage.ready .lv-skeleton { display: none; }
+.lv-stage .longview { margin: 0; }
+.lv-stage .longview figcaption { min-height: 3.2em; }
+.gt-ask { margin-top: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+.gt-ask-row { display: flex; align-items: center; gap: 8px; }
+.gt-ask-row .icon { color: var(--band-soft); }
+.gt-ask input[type="search"] { background: rgba(255, 255, 255, 0.06); color: var(--band-text); border: 1px solid var(--band-rule); min-width: 18rem; font-size: 1rem;
+  padding: 9px 12px; }
+.gt-ask input[type="search"]::placeholder { color: var(--band-dim); }
+.gt-ask-map { display: inline-flex; align-items: center; gap: 6px; color: var(--band-text); text-decoration: none; border-bottom: 1px solid var(--band-link); }
+.gt-ask-map:hover { color: var(--band-link); }
+@media (max-width: 700px) {
+  .beat-hero { padding-block: 28px 32px; }
+  .gt-ask input[type="search"] { min-width: 0; flex: 1 1 auto; width: 100%; }
+  .gt-ask-row { width: 100%; }
+}
 
-/* ---------- Explore one area across countries (front-door PRD W3, section 3.4) ---------- */
-.explore { margin: 8px 0 32px; padding-top: 18px; border-top: 1px solid var(--rule); }
-.explore h2, .econ-title { font-family: var(--serif); font-weight: 500; font-size: 1.75rem; margin: 0 0 10px; }
-.ex-controls { margin-bottom: 6px; }
-.ex-caveat { margin: 0 0 12px; font-size: 0.875rem; color: var(--muted); }
-.ex-body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(240px, 3fr); gap: 20px; align-items: start; }
-@media (max-width: 860px) { .ex-body { grid-template-columns: 1fr; } }
-/* V1: the map sits on the page without a box; "can't tell" is one quiet tint there, outlined for a data gap (V-D1) */
-.ex-fig { margin: 0; }
-.ex-map { display: block; width: 100%; height: auto; }
-.ex-shape { stroke: var(--bg); stroke-width: 0.6; cursor: pointer; }
-.ex-dot { stroke: var(--text); stroke-width: 0.6; }
-.ex-map a:hover .ex-shape, .ex-map a:focus .ex-shape { stroke: var(--text); stroke-width: 1.4; }
-.ex-out { opacity: 0.18; }
-.ex-none { fill: none; stroke: var(--rule-strong); stroke-width: 0.5; stroke-dasharray: 2 2; }
-.ex-gap { stroke: var(--tier-cannot-hatch); stroke-width: 0.7; }
-.ex-legend { margin: 6px 0 4px; }
-.ex-swatch-none { background: transparent; border: 1px dashed var(--rule-strong); }
-.ex-swatch-tint { background: var(--tier-cannot-tint); border-color: var(--rule); }
-.ex-swatch-gap { background: var(--tier-cannot-tint); border-color: var(--tier-cannot-hatch); }
-.ex-list { display: grid; gap: 6px; }
-.ex-group { border: 1px solid var(--rule); background: var(--surface); padding: 6px 10px; }
-.ex-group > summary { cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-.ex-names { margin: 6px 0 2px; font-size: 0.875rem; line-height: 1.5; }
-.econ-title { margin-top: 8px; }
+/* ---------- beat 2: Pritchett's four questions ---------- */
+.gt-four { counter-reset: q; list-style: none; margin: 22px 0 22px; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 36px; max-width: 64rem; }
+.gt-four li { counter-increment: q; font-family: var(--serif); font-size: 1.375rem; line-height: 1.35; padding: 14px 0 0; border-top: 1px solid var(--rule-strong); text-wrap: balance; }
+.gt-four li::before { content: counter(q); display: block; font-family: var(--mono); font-size: var(--fs-label); letter-spacing: 0.05em; color: var(--accent); margin-bottom: 6px; }
+@media (max-width: 700px) { .gt-four { grid-template-columns: 1fr; gap: 10px; } .gt-four li { font-size: 1.2rem; } }
 
-/* TNFA's band is the site's own navy "Long View" section (thenewforeignassistance.org): its ground, type colours and
-   chart colours are the site's, fixed in both themes, so TNFA's voice looks like TNFA and the tool's like the tool. */
-.why { margin: 22px 0 6px; padding: 22px 28px 20px; background: #1c2e4a; color: #fff;
-  --why-soft: #be9a7a; --why-dim: #8a9bb5; --why-link: #6b9ae3; --why-grid: #3a4d6a; }
-.why .kicker { color: var(--why-soft); }
-.why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 28px; margin: 8px 0 10px; }
-.why-grid h3 { font-family: var(--serif); font-weight: 500; font-size: 1.15rem; margin: 0 0 4px; text-wrap: balance; color: #fff; }
-.why-grid p { margin: 0; font-size: 0.9375rem; color: var(--why-soft); max-width: 46ch; }
-.why .small a { margin-right: 14px; }
-.why a { color: var(--why-link); }
-.why .btn.quiet { border-color: var(--why-link); color: #fff; }
-.why .btn.quiet:hover { background: rgba(255, 255, 255, 0.08); }
-.why .btn:focus-visible { outline-color: #fff; }
+/* ---------- beat 3: the list, as composition ---------- */
+.beat-cols { display: grid; grid-template-columns: minmax(0, 7fr) minmax(260px, 5fr); gap: 32px 64px; align-items: center; }
+@media (max-width: 900px) { .beat-cols { grid-template-columns: 1fr; } }
+.gt-areas { margin: 0; }
+.gt-areas figcaption { font-family: var(--serif); font-size: 1rem; color: var(--muted); margin-bottom: 12px; max-width: 34ch; }
+.gt-areas ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.gt-areas li { font-family: var(--serif); font-size: 1.25rem; line-height: 1.3; padding: 7px 0; border-top: 1px solid var(--rule); color: var(--muted); }
+.gt-areas li:first-child { color: var(--text); font-weight: 500; }
+.gt-areas li:last-child { border-bottom: 1px solid var(--rule); }
 
-/* skeletons: the shape of what is coming, in place of "Loading…" */
-.ex-skeleton { aspect-ratio: 960 / 470; max-height: 470px; background: var(--surface-2); }
-#explore .ex-skeleton + p { margin-top: 6px; }
-/* "How to read" is collapsed by default, after the economies */
-details.howto { margin-top: 28px; }
-details.howto > summary { cursor: pointer; font-weight: 600; }
-details.howto[open] > summary { margin-bottom: 4px; }
+/* ---------- beat 4: the tool's voice, visibly apart (tenet 4): a rule in the brand amber at the left of the whole beat ---------- */
+.beat-tool > .beat-in { border-left: 4px solid var(--brand-amber); }
+.gt-tree { display: grid; gap: 10px; margin: 22px 0 26px; max-width: 64rem; font-size: 1rem; }
+.gt-tree-fork { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.gt-tree-branches { display: grid; gap: 8px; border-left: 1px solid var(--rule-strong); margin-left: 10px; padding-left: 18px; }
+.gt-tree-branch { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 12px; align-items: baseline; color: var(--muted); }
+.gt-tree-lab { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); }
+@media (max-width: 600px) { .gt-tree-branch { grid-template-columns: 1fr; gap: 2px; } }
+.gt-tests { list-style: none; margin: 0 0 26px; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.gt-test { background: var(--surface); padding: 18px 18px 16px; display: grid; gap: 6px; align-content: start; }
+.gt-test .icon { color: var(--accent); margin-bottom: 4px; }
+.gt-test strong { font-family: var(--serif); font-weight: 500; font-size: 1.2rem; line-height: 1.25; text-wrap: balance; }
+.gt-test span { font-size: 0.9375rem; color: var(--muted); line-height: 1.45; }
+@media (max-width: 1000px) { .gt-tests { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .gt-tests { grid-template-columns: 1fr; } }
+.gt-fast { margin: 22px 0 0; padding: 16px 20px; background: var(--surface-2); max-width: 64rem; }
+.gt-fast .prose { margin: 0; max-width: none; }
+.gt-fast .icon { color: var(--accent); }
+
+/* ---------- beat 5: the assistance band ---------- */
+.beat-assist { background: linear-gradient(180deg, var(--band) 0%, color-mix(in srgb, var(--band) 90%, black) 100%); }
+.beat-assist h2, .beat-assist .prose { color: var(--band-text); }
+.beat-assist .prose.lede { color: var(--band-text); }
+.beat-assist .prose:not(.lede) { color: var(--band-soft); }
+.gt-question { font-family: var(--serif); font-size: clamp(1.375rem, 1.1rem + 1.2vw, 1.875rem); line-height: 1.3; color: var(--band-text); max-width: 30ch; margin: 26px 0 18px; padding-left: 18px; border-left: 4px solid var(--brand-amber); display: flex; gap: 10px; align-items: flex-start; }
+.gt-question .icon { color: var(--brand-amber); margin-top: 0.2em; }
+.beat-assist .gt-cite { color: var(--band-dim); }
+.beat-assist .gt-cite a { color: var(--band-link); margin-right: 14px; }
+
+/* ---------- beat 6: the three entries ---------- */
+.beat-ask { padding-bottom: 40px; }
+.gt-entries { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin: 10px 0 22px; }
+.gt-entry { display: grid; gap: 8px; align-content: start; background: var(--surface); padding: 22px 22px 20px; color: inherit; text-decoration: none; }
+.gt-entry .icon { color: var(--accent); }
+.gt-entry strong { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; line-height: 1.2; }
+.gt-entry:hover { box-shadow: var(--elev-2); }
+.gt-entry .gt-ask-row input[type="search"] { flex: 1 1 0; min-width: 0; width: 100%; }
+@media (max-width: 900px) { .gt-entries { grid-template-columns: 1fr; } }
+.gt-sources { max-width: 80ch; }
 }

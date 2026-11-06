@@ -1,49 +1,24 @@
-/* The Growth Test: the Bottom line (country.html): the three lists, the compact head and the compact tree (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+/* The Growth Test: the Bottom line (country.html; PRD D1, D2, D3, D8, D9), C5 pages layer, cap 300 lines. The question
+   and its one sentence first, in larger type; the three lists in the first screen at 1366 × 768; the compact tree beside the
+   head; the area cards on two elevation steps; fewer rules and boxes. Durations live in motion.css. */
 @layer pages {
-/* ---------- Bottom line, the front door (front-door PRD W3, section 3.3) ----------
-   Three lists that fit one laptop screen for a typical country: stop arguing, look closer, can't settle. */
-.bl-head { padding-block: 12px 4px; }
-.bl-head .lede-question { margin: 10px 0 0; }
-.bl-lists { margin-top: 8px; }
-.bl-scope { margin: 0 0 8px; }
-/* V1: the three lists sit on the page, each under a rule, instead of in one box */
-#statements-body { display: grid; gap: 0 36px; }
-.bl-list { padding: 8px 0 10px; border-top: 1px solid var(--rule); font-size: 1rem; }
-.bl-list h2 { font-family: var(--serif); font-weight: 500; font-size: 1.2rem; margin: 0 0 2px; padding-left: 12px; border-left: 4px solid var(--rule-strong); }
-.bl-stop h2 { border-left-color: var(--tier-probnot); }
-.bl-look h2 { border-left-color: var(--brand-amber); }
-.bl-unclear h2 { border-left-color: var(--rule-strong); }
-.bl-sub { margin: 0 0 8px 16px; color: var(--muted); font-size: 0.875rem; }
-.bl-list ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 3px; }
-.bl-list li { line-height: 1.45; padding-left: 16px; }
-.bl-area { font-weight: 600; margin-right: 6px; }
-.bl-area a { color: var(--text); }
-.bl-grade { font-family: var(--mono); font-size: 0.68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--rule-strong); padding: 0 5px; margin-right: 6px; vertical-align: 1px; }
-.bl-reason { display: block; font-weight: 600; }
-.bl-next { color: var(--muted); }
-.bl-why { font-size: 0.8125rem; white-space: nowrap; }
-.bl-ov { margin-left: 6px; font-size: 0.8125rem; color: var(--accent); }
-.bl-none { margin: 6px 0 0 16px; }
-.bl-note { margin: 8px 0 0 16px; font-size: 0.875rem; color: var(--muted); }
-.bl #proposal, .bl #export { margin-top: 20px; }
-@media (max-width: 600px) { .bl-list { padding: 12px 12px 14px; } .bl-list li, .bl-sub, .bl-none, .bl-note { padding-left: 0; margin-left: 0; } }
+main.bottom { --gutter: clamp(16px, 4vw, 60px); }
 
-/* one laptop screen: a compact head, and on wide screens "stop" and "look" beside "can't settle" */
-.bl-head .kicker { display: none; }
-.bl-head h1 { font-size: clamp(2rem, 3.2vw, 2.75rem); margin: 0; }
-.bl-head .meta-list { margin-top: 4px; }
-.bl-head .lede-question { font-size: 1.125rem; margin: 6px 0 0; max-width: 70ch; }
-@media (min-width: 1000px) {
-  #statements-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); grid-template-rows: auto 1fr; }
-  .bl-stop { grid-column: 1; grid-row: 1; }
-  .bl-look { grid-column: 1; grid-row: 2; }
-  .bl-unclear { grid-column: 2; grid-row: 1 / span 2; }
-  #statements-body > .note { grid-column: 1 / -1; }
-}
+/* ---------- the head ---------- */
+.k-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px 40px; padding-block: 26px 10px; }
+@media (min-width: 1000px) { .k-head { grid-template-columns: minmax(0, 1fr) auto; align-items: center; } .k-head > .ctree-host { margin-top: 0; } }
+.k-head-text { min-width: 0; }
+.k-meta { margin: 0 0 8px; font-size: 0.9375rem; color: var(--muted); }
+.k-meta strong { color: var(--text); font-weight: 600; }
+.k-question { font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem); line-height: 1.06; letter-spacing: -0.012em; margin: 0 0 12px; max-width: 24ch; }
+/* D1: the one sentence, larger than the body and the standfirst, above every control */
+.k-answer { font-family: var(--serif); font-size: var(--fs-answer); line-height: 1.32; margin: 0 0 12px; max-width: 46ch; min-height: 2.6em; text-wrap: pretty; }
+.k-peers { margin: 0; max-width: 80ch; color: var(--muted); }
+.k-head .note { margin: 10px 0 0; max-width: 80ch; }
+.k-head .ctree-host .k-fold { margin-top: 6px; }
+.k-head .ctree-key { margin: 4px 0 0; }
 
-#statements-body:empty { min-height: 220px; background: repeating-linear-gradient(180deg, var(--surface-2) 0 14px, transparent 14px 32px); }
-
-/* ---------- V4: the compact tree beside the Bottom line title (below it on narrow screens) ---------- */
+/* ---------- the compact tree (country.css draws it there; the same rules here, untouched by motion) ---------- */
 .ctree { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: center; }
 .ctree-fork { display: grid; gap: 3px; justify-items: start; }
 .ctree-branches { display: grid; gap: 6px; border-left: 1px solid var(--rule-strong); padding-left: 12px; position: relative; }
@@ -53,11 +28,80 @@
 .ctree-lab { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
 .ctree-side { font-size: var(--fs-caption); color: var(--muted); }
 .ctree-host { margin-top: 10px; }
-.ctree-key { font-size: var(--fs-caption); color: var(--muted); margin: 5px 0 0; max-width: 60ch; }
-.bl-head { display: grid; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 1000px) {
-  .bl-head { grid-template-columns: minmax(0, 1fr) auto; column-gap: 36px; }
-  .bl-head > * { grid-column: 1; }
-  .bl-head > .ctree-host { grid-column: 2; grid-row: 1 / span 6; align-self: center; margin-top: 0; }
+.ctree-key { font-size: var(--fs-caption); color: var(--muted); max-width: 60ch; }
+
+/* ---------- the three lists: three columns on a laptop, no boxes, one rule each ---------- */
+.k-lists { margin-top: 10px; }
+.k-three { display: grid; gap: 0 36px; }
+@media (min-width: 1000px) { .k-three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr); } .k-three > .note { grid-column: 1 / -1; } }
+.bl-list { padding: 10px 0 12px; border-top: 1px solid var(--rule-strong); font-size: 1rem; }
+.bl-list h2 { font-family: var(--serif); font-weight: 500; font-size: 1.3rem; margin: 0 0 4px; }
+.bl-stop h2::before, .bl-look h2::before, .bl-unclear h2::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 10px; vertical-align: 1px; }
+.bl-stop h2::before { background: var(--tier-probnot); }
+.bl-look h2::before { background: var(--brand-amber); }
+.bl-unclear h2::before { border: 1px dashed var(--tier-cannot-hatch); }
+.bl-sub { margin: 0 0 8px; color: var(--muted); font-size: 0.875rem; }
+.bl-list ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 6px; }
+.bl-list li { line-height: 1.45; }
+.bl-area { font-weight: 600; margin-right: 6px; }
+.bl-area a { color: var(--text); }
+.bl-grade { font-family: var(--mono); font-size: 0.68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--rule-strong); padding: 0 5px; margin-right: 6px; vertical-align: 1px; }
+.bl-reason { display: block; font-weight: 600; }
+.bl-next { color: var(--muted); }
+.bl-why { font-size: 0.8125rem; white-space: nowrap; }
+.bl-ov { margin-left: 6px; font-size: 0.8125rem; color: var(--accent); }
+.bl-none { margin: 6px 0 0; }
+.bl-note { margin: 8px 0 0; font-size: 0.875rem; color: var(--muted); }
+.k-list { min-width: 0; }
+.k-lists-help { margin-top: 6px; }
+.k-lists-help:empty { display: none; }
+#statements-body:empty { min-height: 200px; background: repeating-linear-gradient(180deg, var(--surface-2) 0 14px, transparent 14px 32px); }
+#overrides-box .note { margin-top: 14px; }
+
+/* ---------- the folds (D2, D8): a quiet summary; the body in the caption size ---------- */
+
+/* ---------- the area cards (D8): elevation is the border; the plain sentence leads ---------- */
+.k-cards { margin-top: 36px; }
+.k-cards-fold > .k-sec-head { display: flex; align-items: baseline; gap: 10px 16px; flex-wrap: wrap; cursor: pointer; list-style: none; padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule-strong); }
+.k-cards-fold > .k-sec-head::-webkit-details-marker { display: none; }
+.k-sec-head h2 { margin: 0; font-size: 1.6rem; }
+.k-sec-head::after { content: 'Open'; margin-left: auto; font-family: var(--display); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.8125rem; color: var(--accent);
+  border: 1px solid var(--accent); padding: 4px 12px; }
+.k-cards-fold[open] > .k-sec-head::after { content: 'Close'; }
+.k-sec-head:focus-visible { outline: 2px solid var(--brand-amber); outline-offset: 4px; }
+.k-sec-note { margin: 12px 0 14px; max-width: 70ch; }
+.k-card-h { font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; margin: 8px 0 4px; color: var(--muted); }
+.k-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.k-card { background: var(--surface); padding: 16px 18px 14px; display: grid; gap: 8px; align-content: start; }
+.k-card:hover { box-shadow: var(--elev-2); }
+.k-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.k-card-head h3 { margin: 0; font-size: 1.2rem; flex: 1 1 100%; }
+.k-card-head h3 a { color: var(--text); text-decoration: none; }
+.k-card-head h3 a:hover { color: var(--accent); }
+.k-card-plain { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.5; margin: 0; }
+.k-card-list { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.9375rem; }
+.k-card .why-not-lines { font-size: 0.9375rem; margin-top: 0; }
+
+/* ---------- TNFA's view and the tools ---------- */
+.k-tnfa { margin-top: 36px; }
+.k-tnfa .k-fold { margin-top: 2px; }
+.k-tools { margin-top: 28px; }
+.k-tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.k-tool { background: var(--surface); padding: 20px 22px 18px; display: grid; gap: 8px; align-content: start; }
+.k-tool .icon { color: var(--accent); }
+.k-tool strong { font-family: var(--serif); font-weight: 500; font-size: 1.3rem; line-height: 1.2; }
+.k-tool-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+.k-tool .briefing-form { margin-top: 6px; }
+
+@media (max-width: 700px) {
+  .k-head { padding-block: 18px 6px; }
+  /* the compact tree is wider than a phone: the fork sits above the branches and the host scrolls sideways on its own, never the page */
+  .ctree { grid-template-columns: 1fr; }
+  .ctree-branches::before { display: none; }
+  .k-head > .ctree-host { overflow-x: auto; max-width: 100%; padding-bottom: 4px; }
+  .k-question { max-width: none; }
+  .k-card-grid { grid-template-columns: 1fr; }
+  .bl-why { white-space: normal; }
 }
 }

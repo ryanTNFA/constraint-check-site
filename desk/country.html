@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bottom line · The Growth Test</title>
-<meta name="description" content="The Growth Test, a country’s bottom line: what the public data can rule out as a constraint on private investment, what deserves a closer look, and where they cannot tell.">
+<meta name="description" content="The Growth Test, a country's bottom line: which standard explanations for weak private investment the public data argue against, which deserve a closer look, and which no one can settle yet, with what would.">
 <script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <link rel="preload" href="/growth-test-site/desk/fonts/newsreader-normal-400600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/growth-test-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
@@ -18,36 +18,47 @@
 <body data-page="bottom">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="topbar"></header>
-<main id="main" class="wrap bl" tabindex="-1">
-  <header class="country-head bl-head" id="head">
-    <span class="kicker">Bottom line</span>
-    <div class="title-row"><h1 id="country-name" data-country-title>Country</h1><span class="iso" id="country-iso"></span></div>
-    <script>(function(){var i=(new URLSearchParams(location.search).get('iso')||'').toUpperCase();if(i){document.getElementById('country-name').textContent=i;document.title=i+' · '+document.title;}})();</script>
-    <ul class="meta-list" id="meta-list"></ul>
-    <p id="fcs-note" class="note alert fcs-note" role="note" hidden></p>
-    <p class="lede-question" id="growth-question"></p>
+<main id="main" class="wrap bottom bl" tabindex="-1">
+  <!-- The Bottom line (Growth Test PRD D1, D2, D3, D8, D9; shipped 6 November 2026): the question and its one sentence first,
+       the three lists in the first screen, the caveats never folded. The economy comes from ?iso=; the inline line below writes
+       its code before any module runs, so the shell's country row and the page agree. An old country.html?…&node= link opens
+       the Areas level (the script in the head). -->
+  <header class="k-head" id="head">
+    <div class="k-head-text">
+      <p class="k-meta" id="k-meta"><strong id="country-name" data-country-title>KEN</strong></p>
+      <script>(function(){var i=(new URLSearchParams(location.search).get('iso')||'').toUpperCase();document.body.dataset.iso=i;document.getElementById('country-name').textContent=i;document.title=i+' · '+document.title;})();</script>
+      <h1 class="k-question" id="k-question">What holds back private investment here?</h1>
+      <p class="k-answer" id="k-answer" aria-live="polite"></p>
+      <p class="k-peers small" id="k-peers"></p>
+      <p id="fcs-note" class="note alert fcs-note" role="note" hidden></p>
+      <p id="setting-note" class="note setting-note" role="status" hidden></p>
+    </div>
     <div class="ctree-host" id="ctree-host"></div>
   </header>
 
   <p id="page-error" class="note alert" hidden></p>
 
-  <section class="bl-lists" id="statements" aria-label="Bottom line">
-    <p class="small muted bl-scope">What holds back private investment here, judged from public data against other economies. Not a ranking of countries, and not about household needs. <span id="peers-line"></span></p>
-    <p id="setting-note" class="note setting-note" role="status" hidden></p>
-    <div id="statements-body"></div>
+  <section class="k-lists" id="statements" aria-label="Bottom line">
+    <div id="statements-body" class="k-three"></div>
+    <div id="lists-help" class="k-lists-help"></div>
     <div id="overrides-box"></div>
   </section>
 
-  <aside class="tnfa-view" id="assistance-box" aria-label="What this means for U.S. assistance"></aside>
-
-  <section class="panel" id="proposal" aria-labelledby="proposal-h">
-    <div class="panel-head"><div><span class="kicker">With your own AI assistant</span><h2 id="proposal-h">Check a program idea against the evidence</h2></div><p>Describe your idea and download one file: this country's evidence, the growth-diagnostics method, and instructions for an AI. Give the file to the AI assistant you already use. The Growth Test runs no AI and sends nothing anywhere.</p></div>
-    <div id="proposal-body"></div>
+  <!-- D8 cards, under one plain <details> (no motion: the cards carry tier badges, and nothing animates a rating, tenet 6);
+       closed by default so the words visible without interaction stay within D2's budget, half the current Bottom line -->
+  <section class="k-cards" id="areas" aria-labelledby="areas-h">
+    <details class="k-cards-fold" id="areas-fold">
+      <summary class="k-sec-head"><h2 id="areas-h">Each area in one sentence</h2></summary>
+      <p class="small muted k-sec-note">The plain sentence leads each card; its reasons, what would move the rating and the questions for two days in-country fold under it. Click an area’s name for its full evidence card.</p>
+      <div id="cards-body" class="k-card-grid"></div>
+    </details>
   </section>
 
-  <section class="panel" id="export" aria-labelledby="export-h">
-    <div class="panel-head"><div><span class="kicker">Share</span><h2 id="export-h">Download the memo</h2></div><p>The bottom line, a short evidence box per rated area, caveats and an appendix, with your overrides labelled as yours.</p></div>
-    <div id="export-body"></div>
+  <aside class="tnfa-view k-tnfa" id="assistance-box" aria-label="What this means for U.S. assistance"></aside>
+
+  <section class="k-tools" id="tools" aria-labelledby="tools-h">
+    <h2 id="tools-h" class="visually-hidden">Take it further</h2>
+    <div id="tools-body" class="k-tool-grid"></div>
   </section>
 </main>
 

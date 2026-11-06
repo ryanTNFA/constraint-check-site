@@ -1,9 +1,9 @@
 // @ts-check
 // The page shell (Growth Test PRD, Part 6C, C2): the two-row top bar and the footer, the same on every page,
 // rendered into the empty <header class="topbar"> and <footer class="foot"> hosts of desk/_template.html.
-// Row 1, global: brand, Home, Methods, About this prototype, and a small Display menu (front-door PRD W3, 3.2).
-// Row 2, once a country is chosen: the country with a type-to-search switcher; the tabs
-// Bottom line · Areas · (For analysts) Charts · Heat map; and the comparison set in use.
+// Row 1, global: the brand mark (the story), Countries, Analyst View, Self-discovery, Learn, Method, The argument, and a small Display
+// menu. Row 2, once a country is chosen: the country with a type-to-search switcher; the tabs Bottom line · Areas · Analyst View ·
+// Heat map · Self-discovery; the evidence setting; and the comparison set in use.
 // State travels in the URL: every tab link carries the comparison set, edited peers and overrides
 // (#set=, #peers=, #o=) read at click time, because the pages rewrite their hash as the user works.
 // Import this module first on every page: it mounts synchronously, before initTheme looks for its button.
@@ -13,16 +13,15 @@ import { h, withData, qs, getJSON, dataBase, SETTINGS, SETTING_LABEL, SETTING_HI
 import './components/elements.mjs'; // <gt-term> and <gt-fold>, on every page (C7)
 
 const PAGE = document.body.dataset.page || '';
-// The Growth Test prototypes (PRD Parts 4 and 10, D4): a page whose <body data-flag="growth-test"> gets the new bar shape
-// (Countries, Analyst View, Self-discovery, Learn, Method, The argument). Every other page keeps today's bar until the
-// redesign ships. The name is The Growth Test on every page since the rename (Part 5, 6 November 2026).
-const FLAG = document.body.dataset.flag === 'growth-test';
+// The bar (Growth Test PRD, Part 4, D4; shipped 6 November 2026): Countries, Analyst View, Self-discovery, Learn, Method,
+// The argument on every page; the brand mark opens the story (the root page).
 const NAME = 'The Growth Test';
 export const TABS = [
   { key: 'bottom', label: 'Bottom line', path: '/growth-test-site/desk/country.html' },
   { key: 'areas', label: 'Areas', path: '/growth-test-site/desk/areas.html' },
-  { key: 'charts', label: 'Charts', path: '/growth-test-site/desk/evidence.html', analyst: true },
+  { key: 'charts', label: 'Analyst View', path: '/growth-test-site/desk/evidence.html', analyst: true },
   { key: 'heat', label: 'Heat map', path: '/growth-test-site/desk/summary.html', analyst: true },
+  { key: 'selfdiscovery', label: 'Self-discovery', path: '/growth-test-site/desk/selfdiscovery.html' },
 ];
 const SET_WORDS = { structural: 'similar economies', regional: 'regional neighbours', aspirational: 'faster growers that were once as rich',
   custom: 'your own list' };
@@ -42,15 +41,15 @@ export function carriedHash() {
 export function tabHref(path, iso, extra = '') {
   return withData(`${path}?iso=${encodeURIComponent(iso)}${extra}`) + carriedHash();
 }
-// a flagged country page fixed to one economy (kenya.html) names it on the body before any module runs
+// a country page writes its economy's code on the body before any module runs (country.html)
 const currentIso = () => (qs('iso') || document.body.dataset.iso || '').toUpperCase();
 
-/** The last country viewed, recorded by the flagged country page; the flagged bar's Analyst View and Self-discovery open it (else Countries). */
+/** The last country viewed (every country page records it on mount); the bar's Analyst View and Self-discovery open it, else Countries. */
 export function lastIso() {
   try { return (localStorage.getItem('gt-last-iso') || '').toUpperCase() || null; } catch { return null; }
 }
-/** The Part 4 bar items, on the flagged pages only: every item names a flagged or existing page. */
-function flagItems(link) {
+/** The Part 4 bar items. */
+function barItems(link) {
   const last = lastIso();
   const withIso = (path) => (last ? `${path}?iso=${encodeURIComponent(last)}` : '/growth-test-site/desk/countries.html');
   return [link('/growth-test-site/desk/countries.html', 'Countries', 'countries'), link(withIso('/growth-test-site/desk/evidence.html'), 'Analyst View', 'charts'),
@@ -63,23 +62,18 @@ function row1() {
     h('summary', {}, 'Display'),
     h('div', { class: 'nav-menu-body' }, h('button', { id: 'theme-toggle', class: 'btn quiet small', type: 'button' }, 'Theme: Auto')));
   const link = (href, label, key) => h('a', { href: withData(href), 'aria-current': PAGE === key ? 'page' : null }, label);
-  const items = FLAG ? flagItems(link) : [
-    link('/growth-test-site/desk/', 'Home', 'home'),
-    link('/growth-test-site/desk/methods.html', 'Methods', 'methods'),
-    h('a', { href: withData('/growth-test-site/desk/methods.html#about') }, 'About', h('span', { class: 'nav-long' }, ' this prototype'))];
+  const items = barItems(link);
   return h('div', { class: 'nav-global' },
     h('div', { class: 'wrap' },
-      h('a', { class: 'brand', href: withData(FLAG ? '/growth-test-site/desk/story.html' : '/growth-test-site/desk/') }, h('img', { class: 'brand-logo', src: '/growth-test-site/desk/img/tnfa-logo.webp',
+      h('a', { class: 'brand', href: withData('/growth-test-site/desk/') }, h('img', { class: 'brand-logo', src: '/growth-test-site/desk/img/tnfa-logo.webp',
         alt: 'The New Foreign Assistance', width: '72', height: '36' }), h('strong', {}, NAME), h('span', {}, 'prototype')),
       h('nav', { class: 'topnav', 'aria-label': 'Site' }, ...items, menu)));
 }
 
-// the flagged country page (kenya.html) is a Bottom line; under the flag "Charts" is retired as a name (Part 4)
-const isCurrentTab = (key) => PAGE === key || (PAGE === 'kenya' && key === 'bottom');
-const tabLabel = (t) => (FLAG && t.key === 'charts' ? 'Analyst View' : t.label);
+const isCurrentTab = (key) => PAGE === key;
 function row2(iso) {
   const tab = (t) => {
-    const a = h('a', { class: 'tab', 'data-tab': t.key, href: tabHref(t.path, iso), 'aria-current': isCurrentTab(t.key) ? 'page' : null }, tabLabel(t));
+    const a = h('a', { class: 'tab', 'data-tab': t.key, href: tabHref(t.path, iso), 'aria-current': isCurrentTab(t.key) ? 'page' : null }, t.label);
     // the page may have changed its hash or its country since the bar was drawn
     a.addEventListener('click', () => { a.href = tabHref(t.path, currentIso() || iso); });
     return a;
@@ -108,10 +102,8 @@ function row2(iso) {
     h('div', { class: 'wrap' },
       h('div', { class: 'nav-country-id' }, h('span', { class: 'nav-country-name', id: 'nav-country-name' }, iso), input, list),
       h('nav', { class: 'tabs', 'aria-label': 'Country views' },
-        tab(TABS[0]), tab(TABS[1]),
-        // Part 4: under the flag "For analysts" is no longer a small label beside the tabs (the bar's first row carries the analyst's items)
-        FLAG ? [tab(TABS[2]), tab(TABS[3])] : h('span', { class: 'tab-group' }, h('span', { class: 'tab-group-label' }, 'For analysts'), tab(TABS[2]),
-          tab(TABS[3]))),
+        // Part 4: "For analysts" is no longer a label beside the tabs; the bar's first row carries the analyst's items
+        ...TABS.map(tab)),
       h('div', { class: 'nav-meta' }, settingSwitch(), setNote)));
 }
 
@@ -185,7 +177,8 @@ function mount() {
   const header = document.querySelector('header.topbar');
   if (!header) return;
   const iso = currentIso();
-  const showCountry = !!iso && (TABS.some((t) => t.key === PAGE) || PAGE === 'kenya');
+  const showCountry = !!iso && TABS.some((t) => t.key === PAGE);
+  if (showCountry) { try { localStorage.setItem('gt-last-iso', iso); } catch { /* the bar falls back to the Countries page */ } }
   header.replaceChildren(row1(), showCountry ? row2(iso) : '');
   header.classList.add('two-row');
   if (!showCountry) return;

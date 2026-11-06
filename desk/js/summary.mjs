@@ -45,17 +45,17 @@ function cellPaint(v) {
 }
 
 // ---------- model ----------
-/** Why a cell is empty: "not computed" (the test has no specification or connector), or "no data". */
+/** Why a cell is empty (D7): "no test defined" (the registry has no specification, vector or indicator for it on this area: a gap in the tool), "no data" (this economy), or "stale (year)". */
 function emptyReason(R, scope, test, sc) {
   // A measure with a value only outside the window says how old it is (Kenya's return to schooling: 2005).
   const stale = ((sc && sc.indicators) || []).filter((r) => r.test === test && (test === 'circumvention' || r.class === 'A' || r.class === 'B') && r.stale_value != null && !r.available && (r.nodes || []).some((n) => scope.includes(n)));
   if (stale.length) return `stale (${Math.max(...stale.map((r) => r.stale_year))})`;
   if (test === 'camels') {
     const has = R.indicators.indicators.some((i) => i.test === 'camels' && (i.nodes || []).some((n) => scope.includes(n)));
-    return has ? 'no data' : 'not computed';
+    return has ? 'no data' : 'no test defined';
   }
-  if (test === 'changes') return (R.indicators.comovement_specs || []).some((s) => scope.includes(s.node) || (s.also_nodes || []).some((x) => scope.includes(x))) ? 'no data' : 'not computed';
-  return R.indicators.indicators.some((i) => i.test === test && i.direction && (i.nodes || []).some((n) => scope.includes(n))) ? 'no data' : 'no indicator';
+  if (test === 'changes') return (R.indicators.comovement_specs || []).some((s) => scope.includes(s.node) || (s.also_nodes || []).some((x) => scope.includes(x))) ? 'no data' : 'no test defined';
+  return R.indicators.indicators.some((i) => i.test === test && i.direction && (i.nodes || []).some((n) => scope.includes(n))) ? 'no data' : 'no test defined';
 }
 
 function buildModel() {
@@ -80,7 +80,7 @@ function buildModel() {
       rows.push({
         ...hr, id: it.id, short: it.short, sub: !!it.sub, context: !!it.context, tier, bySet, tagNode,
         empty: Object.fromEntries(TEST_ORDER.map((t) => [t, hr.tests[t] == null ? emptyReason(R, scope, t, sc) : null])),
-        benchEmpty: hr.bench == null ? (R.indicators.indicators.some((i) => i.direction && (i.nodes || []).some((n) => scope.includes(n))) ? 'no data' : 'no indicator') : null,
+        benchEmpty: hr.bench == null ? (R.indicators.indicators.some((i) => i.direction && (i.nodes || []).some((n) => scope.includes(n))) ? 'no data' : 'no indicator') : null, // benchmarking: no indicator at all for the area
         why: Object.fromEntries(TEST_ORDER.map((t) => [t, hr.tests[t] == null ? missingTestReason(t, it.id, R) : null])),
       });
     }

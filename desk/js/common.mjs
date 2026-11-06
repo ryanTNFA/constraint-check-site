@@ -474,6 +474,29 @@ export function nodeShort(registry, id) { const n = registry.nodeById[id]; retur
 /** A node's label from the registry, or its id. @param {any} registry @param {string} id @returns {string} */
 export function nodeLabel(registry, id) { const n = registry.nodeById[id]; return n ? n.label : id; }
 
+/**
+ * D7: why a test was not computed, in two kinds: 'not_defined' when the registry has no specification, vector or
+ * class A/B measure for this test on this node (a gap in the tool, the same for every economy), 'no_data' when it has
+ * one but this economy has no usable value in the window.
+ * @param {string} test price | changes | circumvention | camels
+ * @param {string} nodeId
+ * @param {any} registry
+ * @returns {'not_defined' | 'no_data'}
+ */
+export function missingTestKind(test, nodeId, registry) {
+  const inds = registry.indicators.indicators;
+  const has = (pred) => inds.some((i) => (i.nodes || []).includes(nodeId) && pred(i));
+  if (test === 'changes') {
+    const specs = registry.indicators.comovement_specs || [];
+    return specs.some((s) => s.node === nodeId || (s.also_nodes || []).includes(nodeId)) ? 'no_data' : 'not_defined';
+  }
+  if (test === 'camels') return has((i) => i.test === 'camels') ? 'no_data' : 'not_defined';
+  if (test === 'circumvention') return has((i) => i.test === 'circumvention') ? 'no_data' : 'not_defined';
+  return has((i) => i.test === 'price' && (i.class === 'A' || i.class === 'B')) ? 'no_data' : 'not_defined';
+}
+/** Plain label for missingTestKind. */
+export const MISSING_TEST_LABEL = { not_defined: 'no test defined', no_data: 'no data' };
+
 /** Reason text for a test that was not computed for a node. */
 export function missingTestReason(test, nodeId, registry) {
   const specs = (registry.indicators.comovement_specs || []).filter((s) => s.node === nodeId || (s.also_nodes || []).includes(nodeId));

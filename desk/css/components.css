@@ -555,6 +555,13 @@ button.robust[aria-expanded="true"]::after { content: ' ▴'; }
   transform: rotate(45deg); margin-left: 2px; }
 details[open] > .gt-fold-sum::after { transform: rotate(-135deg); }
 .gt-fold-body { padding: 6px 0 2px; }
-/* the flagged bar has six items: on phones it wraps instead of overflowing (the existing bar's three items stay on one line) */
-@media (max-width: 760px) { body[data-flag="growth-test"] .nav-global .topnav { flex-wrap: wrap; row-gap: 2px; } }
+.k-fold { font-size: 0.9375rem; }
+.k-fold > .gt-fold-sum { font-size: 0.875rem; }
+.k-fold .gt-fold-body { color: var(--text); }
+.k-fold .gt-fold-body p { margin: 0 0 6px; }
+/* D1: every page opens with its question and one sentence, in the answer size, above any control */
+.answer { font-family: var(--serif); font-size: var(--fs-answer); line-height: 1.32; margin: 6px 0 14px; max-width: 46ch; text-wrap: pretty; }
+.answer:empty { display: none; }
+/* the bar has six items: on phones it wraps instead of overflowing */
+@media (max-width: 760px) { .nav-global .topnav { flex-wrap: wrap; row-gap: 2px; } }
 }

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Growth Test</title>
-<meta name="description" content="The Growth Test (prototype): which standard explanations for weak private investment the public data can rule out in a country, which deserve a closer look, and where the data cannot tell.">
+<title>Getting to Growth · The Growth Test</title>
+<meta name="description" content="The Growth Test, a TNFA tool: a first read on which standard explanations for weak private investment the public data argue against in a country, which deserve a closer look, and which no one can settle yet.">
 <script>(function(){try{var t=localStorage.getItem('desk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <link rel="preload" href="/growth-test-site/desk/fonts/newsreader-normal-400600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/growth-test-site/desk/fonts/inter-normal-300700.woff2" as="font" type="font/woff2" crossorigin>
@@ -17,61 +17,139 @@
 <body data-page="home">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="topbar"></header>
-<main id="main" class="wrap" tabindex="-1">
-  <!-- V2 (visual-upgrade PRD): the headline, then the map, before any paragraph of argument -->
-  <section class="picker-head">
-    <span class="kicker">The Growth Test (prototype)</span>
-    <h1>What holds back private investment?</h1>
-    <p class="prose">See which of a dozen standard explanations for weak private investment the public data can rule out in a country, which deserve a closer look, and where the data cannot tell. It uses growth diagnostics, the method of Hausmann, Rodrik and Velasco. It never recommends funding.</p>
-    <p class="small muted" id="mock-note"></p>
-  </section>
-  <section class="explore" aria-labelledby="explore-h">
-    <h2 id="explore-h">Explore one area across countries</h2>
-    <div id="explore"><div class="ex-skeleton" aria-hidden="true"></div><p class="small muted">Loading the map…</p></div>
+<main id="main" class="wrap story home" tabindex="-1">
+  <!-- The root page: the story in six beats (Growth Test PRD, Part 10; shipped 6 November 2026).
+       The copy below is a DRAFT: the final copy waits on Ryan's domain and trademark check (PRD Part 8, decision 1) and on
+       Ryan's and Daniel's edit. Beats 1 to 3 and 5 are in the voice of Getting to Growth, authored by TNFA and labelled so;
+       the tool's voice begins at beat 4. Sources: Daniel Handel's forthcoming CFR essay; Hausmann, Rodrik and Velasco (2005);
+       Pritchett's four-part test (CGD, 2014); Ryan's "recovering randomista" post; the Long View's data sources in its caption. -->
+
+  <!-- Beat 1: the Long View as the hero, drawing itself once per session (index.mjs); the country search and the map's entry inside the first screen (D5) -->
+  <section class="beat gt-band beat-hero" id="beat-1" aria-labelledby="b1-h">
+    <div class="beat-in beat-hero-grid">
+      <div class="beat-hero-text">
+      <p class="kicker">Getting to Growth · an initiative of The New Foreign Assistance</p>
+      <h1 id="b1-h">Most people were poor for most of history.</h1>
+      <p class="stand">Incomes were flat for centuries. Then, in a few places and later in most, they rose, and the share of people in extreme poverty fell. It closes in on zero near ten thousand dollars a head: about Jamaica, or Bolivia.</p>
+      <form class="gt-ask" id="ask-1" role="search" aria-label="Ask the growth test of a country">
+        <label class="visually-hidden" for="ask-q-1">Country</label>
+        <div class="gt-ask-row">
+          <svg class="icon" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#search"/></svg>
+          <input id="ask-q-1" type="search" list="gt-countries" placeholder="Ask the growth test of a country…" autocomplete="off" data-ask>
+          <button class="btn quiet small" type="submit">Open</button>
+        </div>
+        <a class="gt-ask-map" href="/growth-test-site/desk/countries.html#explore"><svg class="icon" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#map"/></svg> Or start from the map</a>
+      </form>
+      <datalist id="gt-countries"></datalist>
+      </div>
+      <div id="longview" class="longview-host lv-stage" aria-busy="true"><div class="lv-skeleton" aria-hidden="true"></div></div>
+    </div>
   </section>
 
-  <section class="why" aria-labelledby="why-h">
-    <span class="kicker">Why this exists · The New Foreign Assistance’s view</span>
-    <h2 id="why-h" class="visually-hidden">Why this exists</h2>
-    <div id="longview" class="longview-host"></div>
-    <div class="why-grid">
-      <div><h3>Growth is how countries leave poverty behind.</h3><p>Two centuries ago most people everywhere were poor (Maddison Project). Where incomes rose for decades, poverty fell. The New Foreign Assistance holds that sustained growth is the only proven cure for extreme poverty.</p></div>
-      <div><h3>Find what holds growth back before spending.</h3><p>In each economy a few problems hold private investment back the most: unreliable power in one, insecure land titles or a slow road to the port in another. Fixing one of those lets investment follow. Fixing one that isn’t holding anything back changes little, and programs that ignore what actually binds are unlikely to reduce poverty for long. That is the growth-diagnostics argument: find the binding constraint rather than work through a long list of reforms (Hausmann, Rodrik and Velasco, “Growth Diagnostics”, 2005).</p></div>
-      <div><h3>A public first read, for any country.</h3><p>This site applies that method to public data for 217 economies. A full diagnosis takes months of fieldwork with a government; this is an automated first read, often with thin data. It is a starting point for people on the ground, not a verdict.</p></div>
+  <!-- Beat 2: growth did that; Pritchett's four-part test as a pointer with a link, never a second check -->
+  <section class="beat" id="beat-2" aria-labelledby="b2-h">
+    <div class="beat-in">
+      <p class="kicker">2 · Getting to Growth</p>
+      <h2 id="b2-h">Growth did that, and nothing else has.</h2>
+      <p class="prose lede">Development is a change in the state of a whole system, not the sum of a thousand interventions. No one has intervened a country into development. So the question to ask of anything proposed is the one Lant Pritchett put as a four-part test:</p>
+      <ol class="gt-four">
+        <li>Do rich countries have more of it?</li>
+        <li>Did they get more of it as they grew?</li>
+        <li>Do the successes since 1950 have more of it than the failures?</li>
+        <li>Does a country have more of it in its fast decades than in its slow ones?</li>
+      </ol>
+      <p class="prose">Most things that fail that test are being evaluated with great rigour anyway: the wrong question, answered well.</p>
+      <p class="small muted gt-cite">The test is a pointer to the growth-diagnostics way of thinking, not a second check. Pritchett, L., <a href="https://www.cgdev.org/blog/your-impact-evaluation-asking-questions-matter-four-part-smell-test" target="_blank" rel="noopener">“Is your impact evaluation asking questions that matter? A four-part smell test”</a>, Center for Global Development, 2014.</p>
     </div>
-    <p class="small"><a href="/growth-test-site/desk/methods.html#mcc">Why this way of choosing →</a> <a href="https://thenewforeignassistance.org" target="_blank" rel="noopener">About The New Foreign Assistance →</a></p>
   </section>
 
-  <h2 class="econ-title">Choose an economy</h2>
-  <section class="controls" aria-label="Find and sort economies">
-    <div class="field">
-      <label for="q">Search</label>
-      <input id="q" type="search" placeholder="Name, ISO3, region or income group" autocomplete="off" size="34">
+  <!-- Beat 3: growth is not a list; recipes fail by design -->
+  <section class="beat" id="beat-3" aria-labelledby="b3-h">
+    <div class="beat-in beat-cols">
+      <div>
+        <p class="kicker">3 · Getting to Growth</p>
+        <h2 id="b3-h">Growth is not a list.</h2>
+        <p class="prose lede">In every economy a few things hold investment back far more than the rest. A reform that leaves them in place does little, however sound it is on its own.</p>
+        <p class="prose">Treating the symptoms of being poor is not stopping being poor. Reform recipes fail by design: the list is the same everywhere, and what binds is not.</p>
+        <p class="small muted gt-cite">Handel, D., forthcoming essay (Council on Foreign Relations), on treating the symptoms of being poor; Rodrik, D., <em>One Economics, Many Recipes</em>, 2007, on the reform lists of the 1990s.</p>
+      </div>
+      <figure class="gt-areas" aria-label="The thirteen standard explanations the method examines">
+        <figcaption>Thirteen standard explanations. The same list everywhere; which of them binds is the question.</figcaption>
+        <ul>
+          <li>Costly finance, or low returns?</li><li>International finance</li><li>Domestic savings</li><li>Bank lending</li>
+          <li>Skills</li><li>Electricity</li><li>Transport</li><li>ICT and water</li><li>Land</li>
+          <li>Macroeconomic risk</li><li>Microeconomic risk</li><li>Self-discovery</li><li>Coordination</li>
+        </ul>
+      </figure>
     </div>
-    <div class="field">
-      <label for="sort">Sort by</label>
-      <select id="sort">
-        <option value="name">Name</option>
-        <option value="region">Region</option>
-      </select>
-    </div>
-    <div class="field"><span class="small muted" id="count" aria-live="polite"></span></div>
   </section>
-  <div class="legend" id="legend" role="group" aria-label="Rating colours"></div>
-  <h2 class="visually-hidden" id="econ-h">Economies</h2>
-  <div id="grid" class="econ-grid" role="region" aria-labelledby="econ-h"></div>
-  <p id="status" class="empty" hidden></p>
-  <gt-fold><details class="howto" id="howto">
-    <summary>How to read a country page (five minutes)</summary>
-    <p><strong>Economist new to the method?</strong> <a href="/growth-test-site/desk/learn.html">Learn it in eight lessons on these pages</a>, about three hours, worked on Kenya.</p>
-    <p class="idea-hint"><strong>Have a program idea?</strong> Pick a country, then use “Test a program idea” on its Bottom line: The Growth Test packs the evidence into one file for the AI you already use.</p>
-    <ol>
-      <li><strong>Bottom line.</strong> Three lists: what you can stop arguing about, what deserves a closer look, and what the public data can’t settle, with what would. “Probably not” is weaker than “ruled out”. Each line has a “Why?” link.</li>
-      <li><strong>Areas.</strong> The decision tree and each area’s evidence card: what points each way, what would change the rating, and what to ask in two days in-country.</li>
-      <li><strong>Test a program idea</strong> (on the Bottom line). Describe it and download one file with the evidence and instructions; your own AI assistant does the assessment. The Growth Test runs no AI and never says “fund this”.</li>
-      <li><strong>For analysts:</strong> Charts and the Heat map hold every chart, test and number.</li>
-    </ol>
-  </details></gt-fold>
+
+  <!-- Beat 4: the tool's voice begins here, labelled; the tree, the four tests, "unclear" as an honest answer, fast not final (tenet 8) -->
+  <section class="beat beat-tool" id="beat-4" aria-labelledby="b4-h">
+    <div class="beat-in">
+      <p class="kicker">4 · The Growth Test · the tool’s voice: what the public data can and cannot support</p>
+      <h2 id="b4-h">Finding them is a discipline, not a guess.</h2>
+      <p class="prose lede">Growth diagnostics works down a tree. Is investment held back by the cost of finance, or by low returns? Then, for each candidate, four tests.</p>
+      <div class="gt-tree" role="img" aria-label="The decision tree: the first fork asks whether finance is costly or returns are low; the finance branch holds international finance, domestic savings and bank lending; the low-returns branch holds skills, electricity, transport, ICT and water, land, macroeconomic risk, microeconomic risk, self-discovery and coordination.">
+        <div class="gt-tree-fork"><svg class="icon" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#fork"/></svg> Costly finance, or low returns?</div>
+        <div class="gt-tree-branches">
+          <div class="gt-tree-branch"><span class="gt-tree-lab">Finance</span><span>international finance · domestic savings · bank lending</span></div>
+          <div class="gt-tree-branch"><span class="gt-tree-lab">Low returns</span><span>skills · electricity · transport · ICT and water · land · macroeconomic risk · microeconomic risk · self-discovery · coordination</span></div>
+        </div>
+      </div>
+      <ol class="gt-tests">
+        <li class="gt-test elev-1"><svg class="icon lg" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#price"/></svg><strong>Is it expensive or rationed?</strong><span>The price of the constraint, or the queue for it.</span></li>
+        <li class="gt-test elev-1"><svg class="icon lg" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#response"/></svg><strong>When it eases, does investment respond?</strong><span>Movement over time, not a level.</span></li>
+        <li class="gt-test elev-1"><svg class="icon lg" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#detour"/></svg><strong>Do firms pay to work around it?</strong><span>Generators, own wells, informal credit.</span></li>
+        <li class="gt-test elev-1"><svg class="icon lg" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#compare"/></svg><strong>Do the activities that need it most do worst?</strong><span>Camels thrive where water is scarce; hippos do not.</span></li>
+      </ol>
+      <p class="prose">The Growth Test runs those tests on public data for 217 economies and gives one of three answers for each area: the data argue against it; worth a closer look; or unclear, with the reason. Unclear is the honest answer more often than not, and it comes with what would settle it.</p>
+      <div class="gt-fast">
+        <p class="prose"><svg class="icon" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#clock"/></svg> <strong>Fast, not final.</strong> A first read in minutes instead of months, from public data that arrive with a lag, in a world that does not wait for them. It cuts the time to the first insight. The live insight still comes from the country, and a fix that is not on what binds does not unleash growth credibly or durably.</p>
+      </div>
+      <p class="small muted gt-cite">Hausmann, R., D. Rodrik and A. Velasco, <a href="https://growthlab.hks.harvard.edu/publications/growth-diagnostics-0" target="_blank" rel="noopener">“Growth Diagnostics”</a>, 2005. The tool never recommends funding; every rating shows its sources, its dates and the arguments against it. <a href="/growth-test-site/desk/methods.html">The method, in full →</a></p>
+    </div>
+  </section>
+
+  <!-- Beat 5: the corollary for assistance, one screen, TNFA's voice; the one sentence on the Millennium Challenge Corporation lives here and nowhere on the analytical pages -->
+  <section class="beat gt-band beat-assist" id="beat-5" aria-labelledby="b5-h">
+    <div class="beat-in">
+      <p class="kicker">5 · Getting to Growth · The New Foreign Assistance’s view</p>
+      <h2 id="b5-h">The corollary for assistance.</h2>
+      <p class="prose lede">Assistance that wants to be built to end has to work toward the one thing that ends the need for it. Under three percent of the old foreign-assistance budget went to growth.</p>
+      <p class="prose">Where assistance has focused on what binds, with the evidence published whatever it says, it has had a record the rest did not. The Millennium Challenge Corporation, which funds against a published constraints analysis and publishes its evaluations whatever they find, is the proof that focus works.</p>
+      <p class="gt-question"><svg class="icon" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#target"/></svg> The question before money moves: is there a reason to think this addresses what binds here?</p>
+      <p class="small gt-cite">Handel, D., forthcoming (Council on Foreign Relations), on the share of the budget that went to growth. <a href="/growth-test-site/desk/methods.html#mcc">Why this way of choosing →</a> <a href="https://thenewforeignassistance.org" target="_blank" rel="noopener">About The New Foreign Assistance →</a></p>
+    </div>
+  </section>
+
+  <!-- Beat 6: ask the growth test: the search, the map (the flagged Countries page), and the standard one click away -->
+  <section class="beat beat-ask" id="beat-6" aria-labelledby="b6-h">
+    <div class="beat-in">
+      <p class="kicker">6 · Ask the growth test</p>
+      <h2 id="b6-h">Ask the growth test.</h2>
+      <div class="gt-entries">
+        <form class="gt-entry elev-1" id="ask-6" role="search" aria-label="Find a country">
+          <svg class="icon lg" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#search"/></svg>
+          <strong>A country</strong>
+          <label class="visually-hidden" for="ask-q-6">Country name or ISO code</label>
+          <div class="gt-ask-row"><input id="ask-q-6" type="search" list="gt-countries" placeholder="Name or ISO code" autocomplete="off" data-ask><button class="btn small" type="submit">Open</button></div>
+          <span class="small muted">Its bottom line: what to stop arguing about, where to look, what no one can settle yet.</span>
+        </form>
+        <a class="gt-entry elev-1" href="/growth-test-site/desk/countries.html#explore">
+          <svg class="icon lg" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#map"/></svg>
+          <strong>The map</strong>
+          <span class="small muted">One area at a time across 217 economies. Never a ranking.</span>
+        </a>
+        <a class="gt-entry elev-1" href="/growth-test-site/desk/standard.html">
+          <svg class="icon lg" aria-hidden="true"><use href="/growth-test-site/desk/img/icons.svg#book"/></svg>
+          <strong>The standard: Growth-Grade Evidence</strong>
+          <span class="small muted">Evidence counts for development when it runs all the way to growth. The claim, the three links, and what the tool speaks to.</span>
+        </a>
+      </div>
+      <p class="small muted gt-sources">Sources on this page: Maddison Project Database 2023 and Moatsos (2021), via Our World in Data, CC BY 4.0 (the chart); Hausmann, Rodrik and Velasco (2005); Pritchett (2014); Handel (forthcoming); Moore, R. A., the “recovering randomista” post, The New Foreign Assistance. Draft copy, not yet edited.</p>
+    </div>
+  </section>
 </main>
 
 <footer class="foot"></footer>

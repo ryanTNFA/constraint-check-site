@@ -581,7 +581,7 @@ function renderText(c) {
   $('ev-sub').replaceChildren(`${ind.name}. Class ${cls}: ${CLASS_LONG[cls] || 'other'}${wt ? `, weight ${wt.toFixed(1)} in the verdict` : ''} (`, h('a', { href: '#class-key' }, 'what the classes mean'), `). Nodes ${(ind.nodes || []).join(', ') || 'context'}. Each point is an economy; the line is what income predicts.`);
   syncBack(c);
   $('tb-summary').textContent = `${country} · ${shortName(ind)} · ${state.set === 'custom' ? `${c.added.length} chosen comparators` : `${SET_LABEL[state.set]} comparators${c.added.length ? ` + ${c.added.length} added` : ''}`}${c.asOf !== snapYear() ? ` · as of ${c.asOf}` : ''}`;
-  document.title = `${country} · Charts · ${shortName(ind)} · The Growth Test`;
+  document.title = `${country} · Analyst View · ${shortName(ind)} · The Growth Test`;
   const unit = unitHint(ind);
   const parts = [];
   if (!c.target) {
