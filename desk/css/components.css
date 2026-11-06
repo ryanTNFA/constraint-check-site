@@ -562,6 +562,9 @@ details[open] > .gt-fold-sum::after { transform: rotate(-135deg); }
 /* D1: every page opens with its question and one sentence, in the answer size, above any control */
 .answer { font-family: var(--serif); font-size: var(--fs-answer); line-height: 1.32; margin: 6px 0 14px; max-width: 46ch; text-wrap: pretty; }
 .answer:empty { display: none; }
+/* the first decision's line above the three lists: a direction at the root's fork, never a rating */
+.k-fork { margin: 0 0 14px; max-width: 80ch; font-size: 0.9375rem; }
+.k-fork:empty { display: none; }
 /* the bar has six items: on phones it wraps instead of overflowing */
 @media (max-width: 760px) { .nav-global .topnav { flex-wrap: wrap; row-gap: 2px; } }
 }

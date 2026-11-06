@@ -3,7 +3,7 @@
 // the tree, Proposal Check and the memo share, so every surface says the same thing.
 import { nodeCode, h, fmt, fmtSigned, fmtSignal, fmtValue, tierLabel, tierClass, isCannotTell, unitHint, shortName, sourceLink, sourceLabel, missingTestReason,
   subreasonLabel, TEST_ORDER, TEST_NUM, USER_TIERS, isStale, withData, TIER_ORD, englishList, isRegistryGap, DATA_GAP_KINDS, cannotTellCode, leanOf,
-  CANNOT_TELL_PLAIN, ROBUST_PLAIN, robustDetail, currentHash, missingTestKind, MISSING_TEST_LABEL } from './common.mjs';
+  CANNOT_TELL_PLAIN, ROBUST_PLAIN, robustDetail, currentHash, missingTestKind, MISSING_TEST_LABEL, FORK, forkWords, forkSideOf } from './common.mjs';
 import { robustChip, reasonTag } from './components/marks.mjs';
 export { robustChip, reasonTag }; // moved to components/marks.mjs (C7); re-exported for one release
 
@@ -99,11 +99,11 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
     // the plain reading comes first; the rule string sits in a disclosure for analysts
     const plainSec = h('section', { class: 'plain-read' }, h('h3', {}, 'What the evidence says'));
     plainSec.append(h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
-      h('span', { class: `tier-badge lg ${tierClass(node.tier)}` }, h('span', {}, plainTier(node.tier))),
+      h('span', { class: `tier-badge lg ${tierClass(node.tier)}` }, h('span', {}, plainTierOf(nodeId, node.tier))),
       reasonTag(evidenceNode(node, view.nodes)),
       robustChip(node),
       ov ? h('span', { class: 'small' }, '→ your override: ', h('span', { class: `tier-badge ${tierClass(ov.tier)}` }, h('span', {},
-        plainTier(ov.tier)))) : null,
+        plainTierOf(nodeId, ov.tier)))) : null,
       node.F ? h('span', { class: 'flag warn small' }, 'sensitive to the choice of comparison countries') : null,
       node.top_split_override ? h('span', { class: 'flag warn small' },
         `first-decision cap applied${node.top_split_override_row ? ` (${node.top_split_override_row.replace(/_/g, ' ')})` : ''}`) : null));
@@ -155,9 +155,9 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
       const dl = h('div', { style: 'display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.875rem' });
       for (const [set, t] of Object.entries(node.tier_by_set)) { if (set === 'custom') continue; dl.append(h('span', {}, h('span', { class: 'muted' },
         `${set}${set === activeSet && !Array.isArray(st.peers) ? ' (active)' : ''}: `), h('span', { class: `tier-badge ${tierClass(t)}` }, h('span', {},
-        plainTier(t))))); }
+        plainTierOf(nodeId, t))))); }
       if (node.tier_by_set.custom) dl.append(h('span', {}, h('span', { class: 'muted' }, 'your edited set (active): '), h('span',
-        { class: `tier-badge ${tierClass(node.tier_by_set.custom)}` }, h('span', {}, plainTier(node.tier_by_set.custom)))));
+        { class: `tier-badge ${tierClass(node.tier_by_set.custom)}` }, h('span', {}, plainTierOf(nodeId, node.tier_by_set.custom)))));
       rule.append(h('h4', { class: 'small', style: 'margin-top:12px' }, 'Rating under each comparator set'), dl);
     }
     drawer.append(h('section', {}, rule));
@@ -386,10 +386,10 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
     if (node.tier === 'context_only') { drawer.append(h('section', {}, h('p', { class: 'small muted' },
       'Context areas carry no rating and cannot be overridden.'))); return; }
     const osec = h('section', {}, h('h3', {}, 'Your override'));
-    if (ov) osec.append(h('div', { class: 'override-current' }, h('strong', {}, plainTier(ov.tier)), ov.note ? ` — ${ov.note}` : '', h('div',
+    if (ov) osec.append(h('div', { class: 'override-current' }, h('strong', {}, plainTierOf(nodeId, ov.tier)), ov.note ? ` — ${ov.note}` : '', h('div',
       { class: 'small muted' }, 'Shown next to the tool\'s rating in the memo; lives in this page\'s URL.')));
     const sel = h('select', { id: 'ov-tier', 'aria-label': 'Your rating' }, h('option', { value: '' }, 'Choose a rating…'), USER_TIERS.map((t) => h('option',
-      { value: t, selected: ov && ov.tier === t ? true : null }, plainTier(t))));
+      { value: t, selected: ov && ov.tier === t ? true : null }, plainTierOf(nodeId, t))));
     const note = h('textarea', { id: 'ov-note', placeholder: 'Required: why you disagree, with the evidence you rely on.',
       'aria-label': 'Override note (required)' }, ov ? ov.note : '');
     const err = h('p', { class: 'small', role: 'alert', style: 'color:var(--tier-binding);margin:0', hidden: true });
@@ -437,6 +437,9 @@ export const PLAIN_TIER = {
 };
 /** The plain-language name of a tier (PLAIN_TIER), falling back to the engine's label. @param {string | null | undefined} t */
 export const plainTier = (t) => PLAIN_TIER[t] || tierLabel(t);
+/** A node's tier in plain words, with the first decision as a direction (FORK_WORDS), never a rating.
+ * @param {string} id @param {string | null | undefined} t */
+export const plainTierOf = (id, t) => (id === FORK ? forkWords(t) : plainTier(t));
 
 /** The area as a phrase that fits "whether ___ holds back private investment". */
 export const PLAIN_AREA = {
@@ -709,6 +712,7 @@ export function plainSummary(node, ctx, { brief = false } = {}) {
     : 'Context, not a constraint: geography, natural resources and market size enter every comparison as controls.';
   if (t === 'desk_undiagnosable') return 'Needs a sector study: this cannot be judged from national statistics.';
   if (t === 'elimination') return eliminationSentence(node);
+  if (node.id === FORK) return forkSummary(node, ctx, brief);
   const ev = evidenceNode(node, ctx.nodes);
   const evShort = ev !== node ? plainShort(ctx.registry, ev.id) : '';
   const toward = topFacts(ev, ctx, 1, brief ? 1 : 2), away = topFacts(ev, ctx, -1, 1);
@@ -765,6 +769,39 @@ export function plainSummary(node, ctx, { brief = false } = {}) {
       if (away.length) s.push(`Strongest away: ${away[0].text}.`);
       if (!brief) s.push(leanSentence(ev, P));
     }
+  }
+  return s.join(' ');
+}
+/**
+ * The first decision in words: the side of the fork its finance tests point to, with one fact each way. Never 'constraint',
+ * never 'worth a closer look': both sides of the fork are constraints, and the score only says which (FORK_WORDS).
+ * @param {any} node @param {any} ctx @param {boolean} brief
+ */
+function forkSummary(node, ctx, brief) {
+  const P = ctx.registry.params.tiers; const t = node.tier; const c = ctx.country;
+  const toward = topFacts(node, ctx, 1, brief ? 1 : 2), away = topFacts(node, ctx, -1, brief ? 1 : 2);
+  const side = forkSideOf(t);
+  const s = [];
+  if (side === 'finance') {
+    s.push(t === 'likely_binding' ? `Points to costly finance: the finance tests say credit is dear or rationed in ${c}, still to be confirmed ` +
+      'in-country.'
+      : `Leans to finance, not established: the finance tests lean toward dear or rationed credit in ${c}.`);
+    if (toward.length) s.push(`Toward finance: ${toward.map((x) => x.text).join('; ')}.`);
+    if (!brief) s.push(away.length ? `Toward low returns: ${away[0].text}.` : 'No scored measure points toward low returns.');
+    if (t === 'candidate' && !brief) { const w = whyNotLikely(node, P); if (w.length) s.push(`Not stronger because ${englishList(w)}.`); }
+  } else if (side === 'returns') {
+    s.push(t === 'ruled_out' ? `Points to low returns: the public evidence says finance is not what holds investment back in ${c}.`
+      : `Leans to low returns: finance looks cheap and available in ${c} (moderate confidence), so the shortage is of projects worth ` +
+        'financing.');
+    if (away.length) s.push(`Toward low returns: ${away.map((x) => x.text).join('; ')}.`);
+    if (!brief) s.push(toward.length ? `Toward finance: ${toward[0].text}.` : 'No scored measure points toward costly finance.');
+    if (t === 'probably_not' && !brief) { const w = whyNotRuledOut(node, P); if (w.length) s.push(`Not stronger because ${englishList(w)}.`); }
+  } else {
+    const code = cannotTellCode(node);
+    s.push(`Cannot tell which side${code ? `: ${CANNOT_TELL_PLAIN[code].label}` : ''}. The finance tests do not settle whether credit is dear in ` +
+      `${c} or projects are scarce.`);
+    if (toward.length) s.push(`Toward finance: ${toward[0].text}.`);
+    if (away.length) s.push(`Toward low returns: ${away[0].text}.`);
   }
   return s.join(' ');
 }
@@ -933,7 +970,7 @@ export function tierBySetLine(node, activeSet, edited) {
   if (!by) return '';
   const sets = Object.entries(by).filter(([k]) => k !== 'custom');
   if (new Set(sets.map(([, t]) => t)).size <= 1) return '';
-  return `Depends on the comparison countries: ${sets.map(([k, t]) => `${plainTier(t).toLowerCase()} with ` +
+  return `Depends on the comparison countries: ${sets.map(([k, t]) => `${plainTierOf(node.id, t).toLowerCase()} with ` +
     `${k} peers${k === activeSet && !edited ? ' (shown)' : ''}`).join('; ')}.`;
 }
 /** F in words, with the one-step moves the F flag does not count. */
@@ -943,7 +980,8 @@ export function sensitivityText(node, activeSet) {
   const moves = Object.entries(by).filter(([k, t]) => k !== 'custom' && k !== activeSet && t !== node.tier).map(([k, t]) => ({ k, t,
     steps: Math.abs(ord(t) - ord(node.tier)) }));
   const lofo = node.fragility && node.fragility.leave_one_family_out;
-  const moveTxt = moves.map((m) => `${m.k} peers move it ${m.steps <= 1 ? 'one step' : `${m.steps} steps`}, to ${plainTier(m.t).toLowerCase()}`).join('; ');
+  const moveTxt = moves.map((m) => `${m.k} peers move it ${m.steps <= 1 ? 'one step' : `${m.steps} steps`}, to ` +
+    `${plainTierOf(node.id, m.t).toLowerCase()}`).join('; ');
   if (node.F) return `${node.F}: the rating is sensitive${moves.length ? ` (${moveTxt})` : ''}${lofo ? '; dropping one measure changes it' : ''}.`;
   return `${node.F ?? 0}: no comparator set moves the rating two or more steps${moves.length ? ` (${moveTxt})` : ''}${lofo ? '; dropping one measure changes ' +
     'it' : ''}.`;
@@ -982,7 +1020,9 @@ export function bottomLine(ctx) {
   const { view, registry } = ctx;
   const st = view.statements || {};
   const nodeOf = (id) => view.nodes.find((n) => n.id === id);
-  const ids = [...new Set([...(st.stop_arguing || []), ...(st.look_hard || []), ...(st.cannot_tell || [])])].filter((id) => nodeOf(id));
+  // the first decision is a direction at the root's fork, not an area: it never sits on a list (FORK_WORDS in common.mjs)
+  const ids = [...new Set([...(st.stop_arguing || []), ...(st.look_hard || []), ...(st.cannot_tell || [])])]
+    .filter((id) => nodeOf(id) && id !== FORK);
   const by = (pred) => ids.filter((id) => pred(nodeOf(id).tier));
   const item = (id) => { const n = nodeOf(id); const ev = evidenceNode(n, view.nodes); return { id, node: n, ev, short: plainShort(registry, id),
     evShort: plainShort(registry, ev.id), years: yearsText(evidenceYears(ev)) }; };
@@ -1017,5 +1057,9 @@ export function bottomLine(ctx) {
     if (n && (isCannotTell(n.tier) || n.tier === 'desk_undiagnosable')) firmsTop = { r, id: nid, node: n,
       toolGap: n.tier === 'cannot_tell_data_gap' && isRegistryGap(n.tier_subreason) };
   }
-  return { ruled, probNot, look, groups, closest, towardLeans, awayLeans, firmsTop, nAreas: ids.length, nUnclear: unclearIds.length };
+  // the first decision, apart: the side it points to and the one fact each way
+  const fn = nodeOf(FORK);
+  const fork = fn ? { node: fn, side: forkSideOf(fn.tier), words: forkWords(fn.tier), toward: topFacts(fn, ctx, 1, 1)[0] || null,
+    away: topFacts(fn, ctx, -1, 1)[0] || null } : null;
+  return { ruled, probNot, look, groups, closest, towardLeans, awayLeans, firmsTop, fork, nAreas: ids.length, nUnclear: unclearIds.length };
 }

@@ -2,9 +2,9 @@
 // economy by its rating for that area under the default comparison set, and a list groups the economies by rating,
 // alphabetically within each group. Never a ranking: no list sorts by score, and nothing is summed across areas.
 // No map library: an Equal Earth projection (Šavrič, Patterson and Jenny 2018) drawn straight into SVG.
-import { h, tierPaint, withData, getJSON, dataBase } from './common.mjs';
+import { h, tierPaint, withData, getJSON, dataBase, FORK } from './common.mjs';
 import { highlightStrips } from './components/strip.mjs';
-import { PLAIN_TIER } from './card.mjs';
+import { plainTierOf } from './card.mjs';
 
 const SVG = 'http://www.w3.org/2000/svg';
 const W = 960, H = 470;
@@ -17,6 +17,9 @@ const GROUPS = [
   { key: 'weak', label: 'Unclear: evidence too weak', tiers: ['cannot_tell_weak'] },
   { key: 'gap', label: 'Unclear: data gap', tiers: ['cannot_tell_data_gap'] },
 ];
+// the first decision is a direction, not a rating (FORK_WORDS in common.mjs): its groups are the two sides and 'cannot tell'
+const FORK_GROUP = { look: 'Leans to finance', not: 'Leans to low returns', conflicting: 'Cannot tell which side: conflicting', weak: 'Cannot tell which side', gap: 'Cannot tell which side: data gap' };
+const groupLabel = (g, area) => (area === FORK ? FORK_GROUP[g.key] : g.label);
 
 function equalEarth(lon, lat) {
   const A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796, M = Math.sqrt(3) / 2;
@@ -44,7 +47,7 @@ export async function mountExplorer(host, { index, registry }) {
   const rob = await getJSON(`${dataBase()}/robustness.json`, { optional: true });
   const markOf = (iso, area) => (rob && rob.marks && rob.marks[iso] && rob.marks[iso][area]) || 'h';
   const byIso = Object.fromEntries(index.countries.map((c) => [c.iso3, c]));
-  const label = (id) => (registry.nodeById[id] ? (id.startsWith('N11.') ? `${registry.nodeById[id].short} (micro risk)` : registry.nodeById[id].short) : id);
+  const label = (id) => (id === FORK ? 'First decision: finance or returns?' : registry.nodeById[id] ? (id.startsWith('N11.') ? `${registry.nodeById[id].short} (micro risk)` : registry.nodeById[id].short) : id);
   const opt = (v, t) => h('option', { value: v }, t);
   const areaSel = h('select', { id: 'ex-area' }, AREAS.filter((id) => registry.nodeById[id]).map((id) => opt(id, label(id))));
   areaSel.value = 'N5';
@@ -86,7 +89,7 @@ export async function mountExplorer(host, { index, registry }) {
       s.p.style.fill = fillOf(tier);
       s.p.classList.toggle('ex-out', !inScope(c));
       s.p.classList.toggle('ex-gap', tier === 'cannot_tell_data_gap');
-      s.t.textContent = `${c.name}: ${(PLAIN_TIER[tier] || 'not rated').toLowerCase()}. Open its bottom line.`;
+      s.t.textContent = `${c.name}: ${(tier ? plainTierOf(area, tier) : 'not rated').toLowerCase()}. Open its bottom line.`;
     }
     // the reader test of 2 November: say which area the colours are about, or the lists read as verdicts on whole countries
     which.textContent = `Showing one area, ${label(area).toLowerCase()}: each colour is that area’s rating for the country, not a verdict on the country.`;
@@ -94,7 +97,7 @@ export async function mountExplorer(host, { index, registry }) {
     for (const g of GROUPS) {
       const members = index.countries.filter((c) => inScope(c) && c.tiers && g.tiers.includes(c.tiers[area])).sort((a, b) => a.name.localeCompare(b.name));
       const det = h('details', { class: `ex-group ex-${g.key}`, open: g.key === 'look' || g.key === 'not' ? true : null },
-        h('summary', {}, h('span', { class: `swatch ${g.key === 'look' ? 't-candidate' : g.key === 'not' ? 't-probably_not' : `t-cannot_tell_${g.key === 'gap' ? 'data_gap' : g.key}`}`, 'aria-hidden': 'true' }), `${label(area)}: ${g.label.toLowerCase()} (${members.length})`),
+        h('summary', {}, h('span', { class: `swatch ${g.key === 'look' ? 't-candidate' : g.key === 'not' ? 't-probably_not' : `t-cannot_tell_${g.key === 'gap' ? 'data_gap' : g.key}`}`, 'aria-hidden': 'true' }), `${label(area)}: ${groupLabel(g, area).toLowerCase()} (${members.length})`),
         ...namesByMark(members, area, g.key === 'look' || g.key === 'not'));
       listHost.append(det);
     }

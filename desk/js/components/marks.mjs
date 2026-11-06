@@ -4,7 +4,7 @@
 // Analyst View's node head and the heat map, so they are the same everywhere. card.mjs imports this module and this
 // module imports plainTier from card.mjs; the cycle is harmless because neither uses the other at load time.
 import { h, ROBUST_PLAIN, robustDetail, cannotTellCode, leanOf, CANNOT_TELL_PLAIN } from '../common.mjs';
-import { plainTier } from '../card.mjs';
+import { plainTierOf } from '../card.mjs';
 
 /**
  * W4: one robustness mark per rated area, with the readings on hover (Q7). Null for unrated areas.
@@ -14,7 +14,7 @@ import { plainTier } from '../card.mjs';
 export function robustChip(n) {
   if (!n || !n.robustness) return null;
   const m = n.robustness.mark;
-  const detail = robustDetail(n, plainTier);
+  const detail = robustDetail(n, (t) => plainTierOf(n.id, t)); // the first decision reads as a direction under each reading too
   const note = h('span', { class: 'robust-detail', hidden: true }, detail);
   const btn = h('button', { type: 'button', class: `robust robust-${m}`, title: detail, 'aria-expanded': 'false' }, ROBUST_PLAIN[m]);
   btn.addEventListener('click',

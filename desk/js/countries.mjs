@@ -4,9 +4,9 @@
 // written by the flagged country page); the map (explore.mjs, the home page's own) with the distribution of ratings for
 // the chosen area beside its picker; and the economies, alphabetical or by region, never by score.
 import { lastIso } from './shell.mjs';
-import { getJSON, initTheme, h, dataBase, withData, loadRegistry, englishList } from './common.mjs';
+import { getJSON, initTheme, h, dataBase, withData, loadRegistry, englishList, FORK } from './common.mjs';
 import { strip } from './components/strip.mjs';
-import { PLAIN_TIER, fcsStatus, bottomLine } from './card.mjs';
+import { plainTierOf, fcsStatus, bottomLine } from './card.mjs';
 import { mountExplorer } from './explore.mjs';
 import { itemName } from './country_text.mjs';
 
@@ -18,7 +18,7 @@ let index = null;
 /** @type {any} */
 let registry = null;
 let fcs = null;
-const shortOf = (id) => (registry && registry.nodeById[id] ? registry.nodeById[id].short.replace(/\?$/, '') : id);
+const shortOf = (id) => (id === FORK ? 'First decision: finance or returns' : registry && registry.nodeById[id] ? registry.nodeById[id].short.replace(/\?$/, '') : id);
 const bottomHref = (iso) => withData(`/growth-test-site/desk/country.html?iso=${encodeURIComponent(iso)}`);
 
 // ---------- the search: the list fills the datalist once the index is here; Enter opens the bottom line ----------
@@ -50,8 +50,9 @@ async function renderResume() {
   const line = (label, text) => h('p', { class: 'c-resume-line' }, h('strong', {}, `${label} `), text);
   $('resume-h').replaceChildren(h('a', { href: bottomHref(iso) }, c.name));
   $('resume-body').replaceChildren(
-    strip(sc.nodes ? Object.fromEntries(sc.nodes.map((n) => [n.id, n.tier])) : c.tiers, { size: 'md', label: shortOf, plain: (t) => PLAIN_TIER[t] || 'not rated' }),
+    strip(sc.nodes ? Object.fromEntries(sc.nodes.map((n) => [n.id, n.tier])) : c.tiers, { size: 'md', label: shortOf, plain: (t, id) => (t ? plainTierOf(id || '', t) : 'not rated') }),
     h('div', { class: 'c-resume-lists' },
+      line('First decision:', bl.fork ? bl.fork.words.toLowerCase() : 'not scored'),
       line('Stop arguing about:', names([...bl.ruled, ...bl.probNot])),
       line('Look closer:', bl.look.length ? englishList(bl.look.map(itemName)) : 'no area stands out yet'),
       line('Can’t settle yet:', `${bl.nUnclear} of ${bl.nAreas} areas`)),
@@ -61,12 +62,13 @@ async function renderResume() {
 
 // ---------- the distribution of ratings for the chosen area (the map's legend counts), so nobody is surprised by "unclear" ----------
 const GROUPS = [
-  { key: 'look', label: 'worth a closer look', tiers: ['likely_binding', 'candidate'], cls: 't-candidate' },
-  { key: 'not', label: 'probably not or ruled out', tiers: ['probably_not', 'ruled_out'], cls: 't-probably_not' },
-  { key: 'unclear', label: 'unclear', tiers: ['cannot_tell_conflicting', 'cannot_tell_weak', 'cannot_tell_data_gap'], cls: 'c-dist-unclear' },
+  { key: 'look', label: 'worth a closer look', fork: 'lean to finance', tiers: ['likely_binding', 'candidate'], cls: 't-candidate' },
+  { key: 'not', label: 'probably not or ruled out', fork: 'lean to low returns', tiers: ['probably_not', 'ruled_out'], cls: 't-probably_not' },
+  { key: 'unclear', label: 'unclear', fork: 'cannot tell which side', tiers: ['cannot_tell_conflicting', 'cannot_tell_weak', 'cannot_tell_data_gap'], cls: 'c-dist-unclear' },
 ];
 function renderDist(area) {
-  const counts = GROUPS.map((g) => ({ ...g, n: index.countries.filter((c) => c.tiers && g.tiers.includes(c.tiers[area])).length }));
+  // the first decision is a direction, not a rating: its groups are the two sides and 'cannot tell'
+  const counts = GROUPS.map((g) => ({ ...g, label: area === FORK ? g.fork : g.label, n: index.countries.filter((c) => c.tiers && g.tiers.includes(c.tiers[area])).length }));
   const rated = counts.reduce((a, g) => a + g.n, 0);
   const none = index.countries.length - rated;
   const bar = h('div', { class: 'c-dist-bar', role: 'img', 'aria-label': `${shortOf(area)}: ${counts.map((g) => `${g.n} ${g.label}`).join(', ')}; ${none} not rated.` });
@@ -82,7 +84,7 @@ function renderDist(area) {
 function econLine(c) {
   const fs = fcsStatus(fcs, c.iso3);
   return h('a', { class: 'c-econ-line', href: bottomHref(c.iso3), title: `${c.region} · ${c.income_group}` },
-    strip(c.tiers, { label: shortOf, plain: (t) => PLAIN_TIER[t] || 'not rated' }),
+    strip(c.tiers, { label: shortOf, plain: (t, id) => (t ? plainTierOf(id || '', t) : 'not rated') }),
     h('span', { class: 'c-econ-name' }, c.name),
     fs ? h('span', { class: 'c-fcs', title: 'On the World Bank list of fragile and conflict-affected situations: the method fits poorly; read every rating as weak.' },
       fs === 'conflict' ? 'conflict-affected' : 'fragile') : null);

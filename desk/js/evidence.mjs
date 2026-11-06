@@ -2,7 +2,7 @@
 // composition (views in evidence_node.mjs); under a node, its tests C5, C6 and C8 (evidence_tests.mjs); then C1 income-trend
 // scatter, C2 peer comparison and C3 over time for one indicator; the year player (player.mjs) animates C1 and C2.
 import { refreshNav } from './shell.mjs';
-import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, qs, unitHint, shortName, sourceLink, sourceLabel, dataBase, withData, downloadText, tierLabel, tierClass, HASH, readHash, writeHash, currentHash } from './common.mjs';
+import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, qs, unitHint, shortName, sourceLink, sourceLabel, dataBase, withData, downloadText, tierLabelOf, tierClass, HASH, readHash, writeHash, currentHash } from './common.mjs';
 import { INCOME_ID, refSpan, scatterRows, structureFit, linearFit, lowessFit, lineAndBand, peerRank, residualPercentile, backTransform, referenceTable, viableYears, peerSummary, seriesRows, coverage, changeSinceStart, peerBand, slope, endpoints, stripRows, playerFrames, playerDomains, raceFrames } from './evidence_math.mjs';
 import { createControls, bubbleChart, barRace } from './player.mjs';
 import { reducedMotion } from './motion.mjs';
@@ -631,7 +631,7 @@ function renderVerdict(c) {
   if (!items.length) return;
   box.append(h('strong', {}, 'What the verdict layer concluded: '));
   items.forEach((n, i) => {
-    box.append(h('span', { class: `chip ${tierClass(n.tier)}` }, `${nodeCode(n.id)} ${state.registry.nodeById[n.id] ? state.registry.nodeById[n.id].short : ''}: ${tierLabel(n.tier)}`));
+    box.append(h('span', { class: `chip ${tierClass(n.tier)}` }, `${nodeCode(n.id)} ${state.registry.nodeById[n.id] ? state.registry.nodeById[n.id].short : ''}: ${tierLabelOf(n.id, n.tier)}`));
     if (i < items.length - 1) box.append(' · ');
   });
   box.append(h('a', { href: withData(`/growth-test-site/desk/country.html?iso=${state.iso}`) }, 'Open the Bottom line'));

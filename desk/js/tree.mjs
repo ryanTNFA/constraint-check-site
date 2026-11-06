@@ -5,8 +5,8 @@
 // The first decision (N0, finance or returns?) is the question asked at the root's fork, as in HRV (2005) Figure 1,
 // not a third branch: its box sits at the root and the finance and low-returns branches leave its right edge.
 // The registry keeps N0 under ROOT (the engine reads that parent); only the drawing moves it.
-import { nodeCode, tierPaint, tierClass, h, cannotTellCode, leanOf, CANNOT_TELL_PLAIN } from './common.mjs';
-import { plainTier, plainSummary, evidenceYears, yearsText } from './card.mjs';
+import { nodeCode, tierPaint, tierClass, h, cannotTellCode, leanOf, CANNOT_TELL_PLAIN, forkSideOf, forkWords } from './common.mjs';
+import { plainTier, plainTierOf, plainSummary, evidenceYears, yearsText } from './card.mjs';
 
 const NODE_W = 138, NODE_H = 30, DX = 48, DY = 156, FORK_GAP = 60;
 const FORK = 'N0';
@@ -41,10 +41,8 @@ function caption(n) {
 
 /** Which branch the first decision points to, or null when it is unclear (the colour alone cannot say which side). */
 export function forkSide(n) {
-  if (!n) return null;
-  if (n.tier === 'candidate' || n.tier === 'likely_binding') return 'leans to finance';
-  if (n.tier === 'probably_not' || n.tier === 'ruled_out') return 'points to low returns';
-  return null;
+  if (!n || !forkSideOf(n.tier)) return null;
+  return forkWords(n.tier).toLowerCase();
 }
 
 /**
@@ -60,7 +58,7 @@ export function compactTree({ registry, nodes, overrides = {}, href }) {
   const sq = (id) => {
     const n = byId[id]; const ov = overrides[id]; const t = ov ? ov.tier : (n ? n.tier : null);
     const lean = ov ? null : leanOf(n);
-    const words = `${label(id)}: ${plainTier(t)}${lean ? `, ${lean.words}` : ''}${ov ? ' (your override)' : ''}`;
+    const words = `${label(id)}: ${plainTierOf(id, t)}${lean ? `, ${lean.words}` : ''}${ov ? ' (your override)' : ''}`;
     return h('a', { class: `sq ${t ? tierClass(t) : 't-none'}${ov ? ' ov' : ''}`, role: 'listitem', 'data-area': id, href: href(id), title: words, 'aria-label': words },
       lean ? h('span', { class: `lean-mark ${lean.band}`, 'aria-hidden': 'true' }, lean.mark) : null);
   };
@@ -190,7 +188,7 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
     el.append('rect').attr('class', 'override-mark').attr('x', -3).attr('y', -3).attr('width', W(d) + 6).attr('height', Hh(d) + 6).attr('rx', 0);
     const ov = overrides[d.id];
     el.append('rect').attr('class', 'override-chip').attr('x', W(d) - 16).attr('y', 4).attr('width', 12).attr('height', Hh(d) - 8).attr('rx', 0).style('fill', tierPaint(ov.tier).fill);
-    el.append('title').text(`Your override: ${plainTier(ov.tier)}`);
+    el.append('title').text(`Your override: ${plainTierOf(d.id, ov.tier)}`);
   });
 
   // interaction: the hover leads with the plain reading; the rule string follows in small print
@@ -200,14 +198,14 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
     const n = byId[d.id];
     const ov = overrides[d.id];
     tip.innerHTML = '';
-    tip.append(h('div', { class: 'tt-title' }, `${d.data.short}: ${d.data.context_only ? 'context' : plainTier(n ? n.tier : null)}`));
+    tip.append(h('div', { class: 'tt-title' }, `${d.data.short}: ${d.data.context_only ? 'context' : plainTierOf(d.id, n ? n.tier : null)}`));
     if (d.data.context_only) tip.append(h('div', {}, n && plainCtx ? plainSummary(n, plainCtx, { brief: true }) : d.data.question || 'Context, not a removable constraint.'));
     else if (!n) tip.append(h('div', {}, 'Not scored in this snapshot.'));
     else {
       tip.append(h('div', {}, plainCtx ? plainSummary(n, plainCtx, { brief: true }) : n.tier_reason));
       if (!d.data.desk_undiagnosable) tip.append(h('div', { class: 'muted small', style: 'margin-top:4px' }, `${caption(n)}. Click for the evidence and the rule.`));
     }
-    if (ov) tip.append(h('div', { class: 'muted', style: 'margin-top:4px' }, `Your override: ${plainTier(ov.tier)}${ov.note ? ` — ${ov.note}` : ''}`));
+    if (ov) tip.append(h('div', { class: 'muted', style: 'margin-top:4px' }, `Your override: ${plainTierOf(d.id, ov.tier)}${ov.note ? ` — ${ov.note}` : ''}`));
     tip.classList.add('show');
     positionTip(evt, d);
   }
@@ -242,10 +240,9 @@ function ariaLabel(d, byId, overrides) {
   if (d.data.context_only) return `${d.data.short}: context, not a removable constraint. Press Enter to see the measures.`;
   const n = byId[d.id];
   const lean = leanOf(n);
-  const side = d.id === FORK ? forkSide(n) : null;
-  const base = `${d.data.short}: ${plainTier(n ? n.tier : null)}${side ? `, ${side}` : ''}${n && n.E != null ? `, ${caption(n)}` : ''}${lean ? `, ${lean.words}` : ''}`;
+  const base = `${d.data.short}: ${plainTierOf(d.id, n ? n.tier : null)}${n && n.E != null ? `, ${caption(n)}` : ''}${lean ? `, ${lean.words}` : ''}`;
   const ov = overrides[d.id];
-  return `${base}${ov ? `. Your override: ${plainTier(ov.tier)}` : ''}. Press Enter to open the evidence.`;
+  return `${base}${ov ? `. Your override: ${plainTierOf(d.id, ov.tier)}` : ''}. Press Enter to open the evidence.`;
 }
 
 function fallbackList(regNodes, byId, overrides, onOpen) {
@@ -261,7 +258,7 @@ function fallbackList(regNodes, byId, overrides, onOpen) {
       const sc = byId[n.id];
       const li = h('li', {});
       if (STRUCT.has(n.id)) li.append(h('span', { class: 'kicker' }, n.short));
-      else li.append(h('button', { class: 'btn quiet small', type: 'button', onclick: () => onOpen && onOpen(n.id) }, `${nodeCode(n.id)} ${n.short}`), ' ', h('span', { class: `tier-badge ${tierClass(n.context_only ? 'context' : sc && sc.tier)}` }, n.context_only ? 'context' : plainTier(sc && sc.tier)), overrides[n.id] ? h('span', { class: 'small muted' }, ` override: ${plainTier(overrides[n.id].tier)}`) : null);
+      else li.append(h('button', { class: 'btn quiet small', type: 'button', onclick: () => onOpen && onOpen(n.id) }, `${nodeCode(n.id)} ${n.short}`), ' ', h('span', { class: `tier-badge ${tierClass(n.context_only ? 'context' : sc && sc.tier)}` }, n.context_only ? 'context' : plainTierOf(n.id, sc && sc.tier)), overrides[n.id] ? h('span', { class: 'small muted' }, ` override: ${plainTierOf(n.id, overrides[n.id].tier)}`) : null);
       const kids = build(n.id); if (kids.children.length) li.append(kids);
       ul.append(li);
     }

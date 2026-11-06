@@ -5,7 +5,7 @@
 import './shell.mjs';
 import { getJSON, loadRegistry, initTheme, h, dataBase, withData, fmtSigned, CANNOT_TELL_PLAIN, cannotTellCode } from './common.mjs';
 import { renderTree } from './tree.mjs';
-import { plainTier } from './card.mjs';
+import { plainTier, plainTierOf } from './card.mjs';
 import { LESSONS } from './lessons.mjs';
 import { reveal } from './motion.mjs';
 
@@ -117,24 +117,26 @@ async function main() {
       return { label, value: tv && tv.T != null ? Number(tv.T.toFixed(2)) : 0, note: tv && tv.T != null ? `(${n} measure${n === 1 ? '' : 's'})` : '(no evidence)', cls: tv && tv.T != null ? (tv.T > 0 ? 'toward' : tv.T < 0 ? 'away' : '') : 'none' };
     });
     $('fig-tests').append(bars(rows, { signed: true, max: 2 }));
-    $('tests-text').textContent = `On the first decision, the price test leans toward a problem (${fmtSigned(n0.tests.price.T)}: a high real rate, and discouraged borrowers), but the workarounds test leans away (${fmtSigned(n0.tests.circumvention.T)}: firms fund less of their investment themselves, and use banks more, than expected, the opposite of working around scarce credit), and investment moved with the rate no more often than chance. Two tests speak and disagree, and neither is strong enough to settle it, so the card rates finance "${plainTier(n0.tier).toLowerCase()}", for the reason "mixed".`;
+    $('tests-text').textContent = `On the first decision, the price test leans toward a problem (${fmtSigned(n0.tests.price.T)}: a high real rate, and discouraged borrowers), but the workarounds test leans away (${fmtSigned(n0.tests.circumvention.T)}: firms fund less of their investment themselves, and use banks more, than expected, the opposite of working around scarce credit), and investment moved with the rate no more often than chance. Two tests speak and disagree, and neither is strong enough to settle it, so the fork reads "${plainTierOf('N0', n0.tier).toLowerCase()}", for the reason "mixed". A direction, not a rating: both sides of the fork are constraints.`;
   }
 
   // 6 the tree
   renderTree($('tree-wrap'), { registry, nodes: sc.nodes, overrides: {}, onOpen: (id) => { location.href = withData(`/growth-test-site/desk/areas.html?iso=${ISO}&node=${encodeURIComponent(id)}`); }, tooltipEl: $('tooltip'), plainCtx: null });
-  const areas = ['N0', 'N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11', 'N12', 'N13'];
+  const areas = ['N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11', 'N12', 'N13']; // the first decision is read apart, as a direction
   const kinds = {};
   for (const id of areas) { const n = byId[id]; if (!n) continue; const k = n.tier === 'candidate' || n.tier === 'likely_binding' ? 'flagged' : n.tier === 'probably_not' || n.tier === 'ruled_out' ? 'cleared' : (cannotTellCode(n) ? CANNOT_TELL_PLAIN[cannotTellCode(n)].label.toLowerCase() : n.tier === 'elimination' ? 'judged by elimination' : n.tier === 'desk_undiagnosable' ? 'needs a sector study' : 'unclear'); (kinds[k] ||= []).push(short(id)); }
-  $('tree-text').textContent = Object.entries(kinds).map(([k, v]) => `${k[0].toUpperCase()}${k.slice(1)}: ${v.join(', ')}.`).join(' ') + ' Hover an area for its reading; click one to open its evidence.';
+  $('tree-text').textContent = `First decision: ${plainTierOf('N0', n0 ? n0.tier : null).toLowerCase()}. ` + Object.entries(kinds).map(([k, v]) => `${k[0].toUpperCase()}${k.slice(1)}: ${v.join(', ')}.`).join(' ') + ' Hover an area for its reading; click one to open its evidence.';
 
   // 8 the three lists
   // the same three groups the Bottom line draws (the engine's statements), named plainly
   const st = sc.statements || {};
+  const notFork = (ids) => (ids || []).filter((id) => id !== 'N0'); // the first decision is a direction, not an area on a list
   const list = (title, ids, empty) => h('div', { class: 'learn-list' }, h('h3', {}, title), ids.length ? h('ul', {}, ids.map((id) => h('li', {}, h('strong', {}, short(id)), byId[id] ? `: ${plainTier(byId[id].tier).toLowerCase()}` : ''))) : h('p', { class: 'muted' }, empty));
   $('fig-lists').append(
-    list('Stop arguing about', st.stop_arguing || [], 'Nothing yet, like most economies (127 of 217); only one area anywhere is "ruled out".'),
-    list('Look closer', st.look_hard || [], 'Nothing.'),
-    list('Can’t settle', st.cannot_tell || [], 'Nothing.'));
+    h('p', { class: 'small muted' }, `First decision, apart from the lists: ${plainTierOf('N0', n0 ? n0.tier : null).toLowerCase()}.`),
+    list('Stop arguing about', notFork(st.stop_arguing), 'Nothing yet, like most economies (122 of 217); only two areas anywhere are "ruled out".'),
+    list('Look closer', notFork(st.look_hard), 'Nothing.'),
+    list('Can’t settle', notFork(st.cannot_tell), 'Nothing.'));
 
   // the index of lessons
   $('lesson-list').replaceChildren(...LESSONS.map((l) => h('li', {}, h('a', { href: withData(l.page) + `#lesson=${l.n}${l.predict ? '&predict=1' : ''}` }, `${l.n}. ${l.title}`), ' ', h('span', { class: 'small muted' }, l.task.split('. ')[0] + '.'))));

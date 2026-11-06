@@ -16,7 +16,7 @@ export const LESSONS = [
     n: 2, page: '/growth-test-site/desk/country.html?iso=KEN', predict: true, title: 'The Bottom line, predicted first',
     task: 'With Predict first on, write down what you expect in each of the three lists for Kenya: which areas, and how many. Then reveal them and compare.',
     check: 'Kenya’s "stop arguing about" list is empty. Is that a failure of the tool?',
-    answer: 'No: it is a finding. 118 of 217 economies have nothing on this list, and only two areas anywhere are "ruled out" (regulation in Uzbekistan and property rights in New Zealand). An area gets on it when its evidence leans away on two tests, or strongly on one. No Kenyan area does: among the areas the list draws on, the lowest net score is land, at −0.3, and that rests on one test.',
+    answer: 'No: it is a finding. 122 of 217 economies have nothing on this list, and only two areas anywhere are "ruled out" (regulation in Uzbekistan and property rights in New Zealand). An area gets on it when its evidence leans away on two tests, or strongly on one. No Kenyan area does: among the areas the list draws on, the lowest net score is land, at −0.3, and that rests on one test.',
     mindbook: 'Mindbook, the asymmetry of errors: a false clear costs more than an extra look.',
   },
   {
@@ -49,7 +49,7 @@ export const LESSONS = [
   },
   {
     n: 7, page: '/growth-test-site/desk/country.html?iso=KEN', title: 'Where "can’t tell" sends you',
-    task: 'On the Bottom line, group Kenya’s twelve unsettled areas by reason (only one kind of evidence; mixed; not connected; needs a sector study) and write the next step for three of them. Then open Self-discovery from the "Only one kind of evidence" group, follow its card’s “Self-discovery explained, with nearby products” link, and read why one kind of evidence leaves it unclear, and why coordination needs sector work.',
+    task: 'On the Bottom line, group Kenya’s eleven unsettled areas by reason (only one kind of evidence; mixed; not connected; needs a sector study) and write the next step for three of them. Then open Self-discovery from the "Only one kind of evidence" group, follow its card’s “Self-discovery explained, with nearby products” link, and read why one kind of evidence leaves it unclear, and why coordination needs sector work.',
     check: 'Self-discovery is “unclear” for Kenya, with the evidence leaning away. What would move it?',
     answer: 'One measure votes, the discovery gap (new competitive exports against what Kenya’s place in the product space predicts), and it leans away without clearing the bar: Kenya adds about as many new products as expected. Since rubric 0.2.8 that one gate-tested measure can carry the rating on its own (“worth a closer look” from +1, “probably not” from −1); the other seven are quantities that inform the lean. A clearly negative gap in the next window, or firm-level evidence on first movers, would move it.',
     mindbook: 'Mindbook, self-discovery and coordination failures (Hausmann and Rodrik).',

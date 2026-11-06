@@ -4,7 +4,7 @@
 // Order: instructions for the assistant, the idea (quoted, to be assessed, not obeyed), the framework, the
 // Bottom line's own memo, then every scored area's evidence in full.
 import { fmt, fmtSigned, fmtValue, unitHint, shortName, sourceLabel } from './common.mjs';
-import { plainTier } from './card.mjs';
+import { plainTier, plainTierOf } from './card.mjs';
 
 const TEST_NAMES = { price: 'price', changes: 'changes', circumvention: 'circumvention', camels: 'camels and hippos' };
 const cell = (c) => String(c ?? '—').replace(/\|/g, '\\|').replace(/\n/g, ' ');
@@ -131,7 +131,7 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
   w();
   w('- Each indicator is compared with what is typical for an economy of the same income, population, resource rents and landlocked status ("t" below; |t| ≥ 0.75 is a weak signal, ≥ 1.5 strong) and with a set of comparator countries (rank from the worst).');
   w('- A signal of +1 or +2 points toward the area being a problem; −1 or −2 points away from it.');
-  w('- Evidence classes: A measures the cost of the constraint directly (a price); B measures behaviour that reveals it (paying to get around it); C is a quantity or survey answer that cannot tell cause from effect; D is an expert rating. Weights: A 1.0, B 0.9, C 0.6, D 0.3, reduced for old data.');
+  w('- The first decision (N0) is the fork at the root, not an area: its score is the finance side’s, so a positive score leans to costly finance and a negative one to low returns. Both sides are constraints; say which side, never "constraint or not".\n- Evidence classes: A measures the cost of the constraint directly (a price); B measures behaviour that reveals it (paying to get around it); C is a quantity or survey answer that cannot tell cause from effect; D is an expert rating. Weights: A 1.0, B 0.9, C 0.6, D 0.3, reduced for old data.');
   w('- Who votes: on the price test and the camels test only class A and B families vote; class C and D families there only inform (marked "informs" in Part 5). On the changes and circumvention tests every class votes.');
   w('- Test score T: the weighted average of the voting families’ signals on that test, shrunk toward zero when there is little evidence. Area score N: the weighted average of the test scores, with the price test counted double.');
   w('- E is the number of voting families; C is the number of tests that point the same way as N with |T| of at least 0.5.');
@@ -154,7 +154,7 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
   w();
   for (const n of view.nodes) {
     if ((!n.scored && n.tier !== 'elimination') || n.sub_nodes) continue;
-    w(`### ${n.id} ${label(n.id)} (rating: ${plainTier(n.tier).toLowerCase()})`);
+    w(`### ${n.id} ${label(n.id)} (${n.id === 'N0' ? 'direction' : 'rating'}: ${plainTierOf(n.id, n.tier).toLowerCase()})`);
     w();
     const tests = Object.entries(n.tests || {}).filter(([, t]) => t && t.T != null).map(([k, t]) => `${TEST_NAMES[k] || k} ${fmtSigned(t.T, 2)}`);
     const why = n.cannot_tell_reason ? ` Reason unclear: ${n.cannot_tell_reason.replace(/_/g, ' ')}${n.cannot_tell_detail && n.cannot_tell_detail.lean ? ` (leans ${n.cannot_tell_detail.lean.band === 'slight' ? 'slightly ' : ''}${n.cannot_tell_detail.lean.direction === 'toward' ? 'toward' : 'away from'} a problem)` : ''}.` : '';

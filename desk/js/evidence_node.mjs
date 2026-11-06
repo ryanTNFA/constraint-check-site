@@ -1,9 +1,9 @@
 // Evidence page, node views (evidence-viz-prd phase 2): the left rail in Mindbook order, the C9 evidence
 // strip for a node, the C4 growth record, the C7 firm obstacles and (phase 4) the C11 composition. evidence.mjs owns the state and the
 // indicator charts (C1 to C3); it passes what these views need in `ctx`.
-import { nodeCode, h, fmt, fmtSigned, shortName, sourceLabel, tierLabel, tierClass, withData, currentSetting, SETTING_LABEL, currentHash } from './common.mjs';
+import { nodeCode, h, fmt, fmtSigned, shortName, sourceLabel, tierLabelOf, tierClass, withData, currentSetting, SETTING_LABEL, currentHash } from './common.mjs';
 import { stripRows, familyRows, obstacleRows, indexSeries, exportShares, TEST_ORDER } from './evidence_math.mjs';
-import { plainTier, tierBySetLine } from './card.mjs';
+import { plainTierOf, tierBySetLine } from './card.mjs';
 import { reasonTag, robustChip } from './components/marks.mjs';
 import { median, isNum } from '../../engine/src/stats.mjs';
 
@@ -152,9 +152,9 @@ export function renderRail(host, { registry, scorecard, current, hrefFor, onPick
         'aria-current': it.id === current ? 'page' : null,
         onclick: (e) => { if (e.metaKey || e.ctrlKey || e.shiftKey) return; e.preventDefault(); onPick(it.id); },
       },
-      tier ? h('span', { class: `tier-dot ${tierClass(tier)}`, title: tierLabel(tier), 'aria-hidden': 'true' }) : h('span', { class: 'tier-dot none', 'aria-hidden': 'true' }),
+      tier ? h('span', { class: `tier-dot ${tierClass(tier)}`, title: tierLabelOf(it.id, tier), 'aria-hidden': 'true' }) : h('span', { class: 'tier-dot none', 'aria-hidden': 'true' }),
       h('span', {}, it.short),
-      tier ? h('span', { class: 'visually-hidden' }, ` (${tierLabel(tier)})`) : null);
+      tier ? h('span', { class: 'visually-hidden' }, ` (${tierLabelOf(it.id, tier)})`) : null);
       ul.append(h('li', {}, a));
     }
     host.append(g.label ? h('div', { class: 'ev-rail-group' }, h('p', { class: 'ev-rail-label' }, g.label), ul) : h('div', { class: 'ev-rail-group' }, ul));
@@ -226,7 +226,7 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
     : 'leans neither way';
   const bySet = tierBySetLine(sn, set);
   verdictEl.append(...[
-    h('span', {}, 'The tool’s rating: '), h('span', { class: `tier-badge ${tierClass(tier)}` }, h('span', {}, plainTier(tier))),
+    h('span', {}, sn.id === 'N0' ? 'The tool’s reading of the fork: ' : 'The tool’s rating: '), h('span', { class: `tier-badge ${tierClass(tier)}` }, h('span', {}, plainTierOf(sn.id, tier))),
     ' ', reasonTag(tier === sn.tier ? sn : { ...sn, tier, cannot_tell_reason: null, cannot_tell_detail: null }),
     offStandard ? h('span', { class: 'small muted' }, ` (${SETTING_LABEL[setting]} reading, not the one to cite)`) : null,
     ' ', robustChip(sn),

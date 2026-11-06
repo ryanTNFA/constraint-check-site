@@ -1,8 +1,9 @@
 // The hand-off memo, built from what is on screen. Order: bottom line,
 // one evidence box per rated area, caveats, then appendices for analysts. Markdown is the source;
 // components/markdown.mjs turns it into HTML for "Copy for email or Word" and "Print or save as PDF".
-import { nodeCode, fmt, fmtSigned, fmtValue, tierLabel, unitHint, shortName, sourceLabel, isStale, englishList, gNorm, reasonClause } from './common.mjs';
-import { plainTier, plainShort, bottomLine, plainSummary, topFacts, whatWouldMove, fieldQuestions, fcsNote, refSpan, tierBySetLine } from './card.mjs';
+import { nodeCode, fmt, fmtSigned, fmtValue, tierLabelOf, unitHint, shortName, sourceLabel, isStale, englishList, gNorm, reasonClause } from './common.mjs';
+import { plainTierOf, plainShort, bottomLine, plainSummary, topFacts, whatWouldMove, fieldQuestions, fcsNote, refSpan, tierBySetLine } from './card.mjs';
+import { forkSentence } from './country_text.mjs';
 export { reasonClause };
 
 function row(cells) { return `| ${cells.map((c) => String(c ?? '—').replace(/\|/g, '\\|').replace(/\n/g, ' ')).join(' | ')} |`; }
@@ -41,6 +42,8 @@ export function buildMemo(ctx) {
   out.push('');
   const qm = String(g.statement || '').match(/The relevant question is therefore:\s*([^.?]*)[.?]/);
   if (qm) { out.push(`**The question for ${c.name}:** ${qm[1].trim()}?`); out.push(''); }
+  // the first decision, apart from the lists: a direction at the root's fork, never a rating (both sides are constraints)
+  if (bl.fork) { out.push(`**First decision.** ${forkSentence(bl, c.name, (sc.top_split || {}).row)}`); out.push(''); }
   const counter = (x) => `${x.away ? `${cap(x.away.text)}.` : 'Most measures point away from a problem.'}${x.counter ? ` But ${x.counter.text}.` : ' No scored measure points the other way.'}${x.years ? ` Evidence ${x.years}.` : ''}`;
   if (bl.ruled.length) {
     out.push(`- **Ruled out.** You can stop arguing about ${englishList(bl.ruled.map((x) => x.short))}.`);
@@ -85,7 +88,7 @@ export function buildMemo(ctx) {
   for (const n of rated) {
     const ev = n.sub_nodes && n.rollup_from ? nodeOf(n.rollup_from) || n : n;
     const title = ev !== n ? `${cap(plainShort(registry, ev.id))} (part of ${plainShort(registry, n.id)})` : cap(plainShort(registry, n.id));
-    out.push(`### ${title}: ${plainTier(n.tier).toLowerCase()}${overrides[n.id] ? ` (your override: ${plainTier(overrides[n.id].tier).toLowerCase()})` : ''}`);
+    out.push(`### ${title}: ${plainTierOf(n.id, n.tier).toLowerCase()}${overrides[n.id] ? ` (your override: ${plainTierOf(n.id, overrides[n.id].tier).toLowerCase()})` : ''}`);
     out.push('');
     out.push(plainSummary(n, pctx));
     out.push('');
@@ -109,12 +112,12 @@ export function buildMemo(ctx) {
   out.push('- Public data only, no field work. Every rating is about what holds back private investment, not household needs.');
   if (fcsLine) out.push(`- ${fcsLine}`);
   const sensitive = view.nodes.filter((n) => !/^N11\./.test(n.id) && n.tier_by_set && new Set(Object.entries(n.tier_by_set).filter(([k]) => k !== 'custom').map(([, t]) => t)).size > 1);
-  if (sensitive.length) out.push(`- Ratings that depend on the comparison countries: ${sensitive.map((n) => `${plainShort(registry, n.id)} (${Object.entries(n.tier_by_set).filter(([k]) => k !== 'custom').map(([k, t]) => `${k}: ${plainTier(t).toLowerCase()}`).join('; ')})`).join('; ')}.`);
+  if (sensitive.length) out.push(`- Ratings that depend on the comparison countries: ${sensitive.map((n) => `${plainShort(registry, n.id)} (${Object.entries(n.tier_by_set).filter(([k]) => k !== 'custom').map(([k, t]) => `${k}: ${plainTierOf(n.id, t).toLowerCase()}`).join('; ')})`).join('; ')}.`);
   const ovs = Object.entries(overrides || {});
   if (ovs.length) {
     out.push('- Overrides below are the user\'s judgment, shown next to the tool\'s rating.');
     out.push('');
-    out.push(table(['Area', 'Tool rating', 'Your rating', 'Note'], ovs.map(([id, v]) => { const n = nodeOf(id); return [`${nodeCode(id)} ${short(id)}`, plainTier(n && n.tier), plainTier(v.tier), v.note || '']; })));
+    out.push(table(['Area', 'Tool rating', 'Your rating', 'Note'], ovs.map(([id, v]) => { const n = nodeOf(id); return [`${nodeCode(id)} ${short(id)}`, plainTierOf(id, n && n.tier), plainTierOf(id, v.tier), v.note || '']; })));
   }
   out.push('');
 
@@ -137,13 +140,13 @@ export function buildMemo(ctx) {
   out.push('');
   const ts = sc.top_split || {};
   const n0 = nodeOf('N0');
-  out.push(`First-decision pattern (a pattern, not a verdict): the “${ts.label || (ts.row || '—').replace(/_/g, ' ')}” row of the finance-or-returns table. The finance-or-returns area itself is rated ${n0 ? plainTier(n0.tier).toLowerCase() : '—'}${n0 && n0.N != null ? ` (N = ${fmtSigned(n0.N)})` : ''}.`);
+  out.push(`First-decision pattern (a pattern, not a verdict): the “${ts.label || (ts.row || '—').replace(/_/g, ' ')}” row of the finance-or-returns table. The four finance tests read the fork as ‘${n0 ? plainTierOf('N0', n0.tier).toLowerCase() : '—'}’${n0 && n0.N != null ? ` (N = ${fmtSigned(n0.N)}, the finance side’s score)` : ''}: a direction, not a rating, since both sides of the fork are constraints.`);
   out.push('');
 
   out.push('## Appendix B. Rule detail for analysts');
   out.push('');
   const listed = view.nodes.filter((n) => n.tier !== 'context_only' && n.tier_reason);
-  for (const n of listed) out.push(`- ${nodeCode(n.id)} ${short(n.id)} (${tierLabel(n.tier)}): ${n.tier_reason}`);
+  for (const n of listed) out.push(`- ${nodeCode(n.id)} ${short(n.id)} (${tierLabelOf(n.id, n.tier)}): ${n.tier_reason}`);
   out.push('');
 
   out.push('## Appendix C. Provenance summary');

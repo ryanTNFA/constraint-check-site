@@ -3,8 +3,8 @@
 // test scores as columns; then the verdict layer's tier and the analyst's own conclusion. Conclusions are stored in
 // the URL with the same `o=` encoding the Bottom line and Areas use for overrides, so the two pages and the memo share them.
 import { refreshNav } from './shell.mjs';
-import { nodeCode, getJSON, loadRegistry, initTheme, h, fmtSigned, qs, withData, dataBase, downloadText, tierLabel, tierClass, parseHash, writeState, readHash, writeHash, currentHash, missingTestReason, USER_TIERS } from './common.mjs';
-import { plainTier, tierBySetLine } from './card.mjs';
+import { nodeCode, getJSON, loadRegistry, initTheme, h, fmtSigned, qs, withData, dataBase, downloadText, tierLabelOf, tierClass, parseHash, writeState, readHash, writeHash, currentHash, missingTestReason, USER_TIERS } from './common.mjs';
+import { plainTierOf, tierBySetLine } from './card.mjs';
 import { reasonTag, robustChip } from './components/marks.mjs';
 import { currentSetting, SETTING_LABEL } from './common.mjs';
 import { heatRow, TEST_ORDER } from './evidence_math.mjs';
@@ -98,7 +98,7 @@ function valueCell(v, empty, title) {
 function conclusionCells(r) {
   if (!r.id) return [];
   const ov = state.overrides[r.id];
-  const sel = h('select', { 'aria-label': `Your conclusion for ${r.short}` }, h('option', { value: '' }, '— same as the verdict layer —'), ...USER_TIERS.map((t) => h('option', { value: t }, tierLabel(t))));
+  const sel = h('select', { 'aria-label': `Your conclusion for ${r.short}` }, h('option', { value: '' }, '— same as the verdict layer —'), ...USER_TIERS.map((t) => h('option', { value: t }, tierLabelOf(r.id, t))));
   sel.value = ov ? ov.tier : '';
   const note = h('input', { type: 'text', placeholder: ov ? 'Why (optional)' : 'Pick a conclusion first', 'aria-label': `Note on ${r.short}`, value: ov ? ov.note || '' : '' });
   note.disabled = !ov;
@@ -125,7 +125,7 @@ function render() {
       h('th', { scope: 'row', class: 'sm-node' }, h('a', { href }, h('span', { class: 'sm-id' }, r.sub ? '' : nodeCode(r.id)), ' ', r.short)),
       valueCell(r.bench == null ? null : Math.max(-3, Math.min(3, r.bench)), r.benchEmpty, bt),
       ...TEST_ORDER.map((t) => valueCell(r.tests[t], r.empty[t], r.why[t] || `${TEST_HEAD[t]}: the verdict layer's test score, from −2 (evidence against) to +2 (for).`)),
-      h('td', { class: 'sm-tier' }, r.tier ? [h('span', { class: `tier-badge ${tierClass(r.tier)}`, title: r.bySet || null }, h('span', {}, plainTier(r.tier))), r.tagNode ? reasonTag(r.tagNode) : null, r.tagNode ? robustChip(r.tagNode) : null] : '—'),
+      h('td', { class: 'sm-tier' }, r.tier ? [h('span', { class: `tier-badge ${tierClass(r.tier)}`, title: r.bySet || null }, h('span', {}, plainTierOf(r.id, r.tier))), r.tagNode ? reasonTag(r.tagNode) : null, r.tagNode ? robustChip(r.tagNode) : null] : '—'),
       ...conclusionCells(r)));
   }
   $('heat-wrap').replaceChildren(h('table', { class: 'sm-table', id: 'heat' }, h('caption', { class: 'visually-hidden' }, `Diagnostic heat map for ${nameOf(state.iso)}`), h('thead', {}, head), body));
@@ -152,7 +152,7 @@ function renderText() {
     ovs.length ? `You have set your own conclusion on ${ovs.length} node${ovs.length > 1 ? 's' : ''}.` : '',
   ].filter(Boolean).join(' ');
   const active = activeSet();
-  $('foot').textContent = `Benchmarking: the median, across the node's indicators with a value, of each one's distance from what income and structure predict, in standard deviations, turned so positive is the binding side (the C9 evidence strip's dots). Tests 1 to 4: the verdict layer's test scores (T), from −2 (evidence against the constraint binding) to +2 (for). Colour saturates at ±${LIM}. Comparators: benchmarking measures against every economy with data, not a comparator set; the test scores are computed with the verdict layer's ${active} comparators${state.set !== active ? `` : ''}. The rating column follows the comparators chosen above (the verdict layer computes a rating under each set; hover a rating to see where the sets disagree). "Not computed": the prototype has no specification or data connector for that test; "no data": it has one, but this economy has no usable value; "no indicator": nothing in the registry measures it. Hover a cell for details. Snapshot ${sc.meta ? sc.meta.snapshot_id : ''}, rubric ${sc.meta ? sc.meta.rubric_version : ''}. Your conclusions are yours, not the tool's; they live in this page's link, which the Bottom line and its memo read too.`;
+  $('foot').textContent = `Benchmarking: the median, across the node's indicators with a value, of each one's distance from what income and structure predict, in standard deviations, turned so positive is the binding side (the C9 evidence strip's dots). Tests 1 to 4: the verdict layer's test scores (T), from −2 (evidence against the constraint binding) to +2 (for). Colour saturates at ±${LIM}. Comparators: benchmarking measures against every economy with data, not a comparator set; the test scores are computed with the verdict layer's ${active} comparators${state.set !== active ? `` : ''}. The rating column follows the comparators chosen above (the verdict layer computes a rating under each set; hover a rating to see where the sets disagree). "No test defined": the registry has no specification, vector or indicator for that test on the area, a gap in the tool, the same for every economy; "no data": it has one, but this economy has no usable value in the window; "stale": only old data; "no indicator": nothing in the registry benchmarks the area. The first decision’s rating is a direction (leans to finance, leans to low returns, cannot tell which side), never a constraint rating: both sides of the fork are constraints. Hover a cell for details. Snapshot ${sc.meta ? sc.meta.snapshot_id : ''}, rubric ${sc.meta ? sc.meta.rubric_version : ''}. Your conclusions are yours, not the tool's; they live in this page's link, which the Bottom line and its memo read too.`;
   const hash = currentHash();
   $('to-snapshot').href = withData(`/growth-test-site/desk/country.html?iso=${state.iso}${hash}`);
   refreshNav();
@@ -182,7 +182,7 @@ function exportMD() {
   for (const r of state.model) {
     if (r.group) { out.push(row([`**${r.group}**`, '', '', '', '', '', '', '', ''])); continue; }
     const ov = state.overrides[r.id];
-    out.push(row([`${r.sub ? '— ' : ''}${nodeCode(r.id)} ${r.short}`, cellText(r.bench, r.benchEmpty), ...TEST_ORDER.map((t) => cellText(r.tests[t], r.empty[t])), tierLabel(r.tier), ov ? tierLabel(ov.tier) : '', ov ? ov.note : '']));
+    out.push(row([`${r.sub ? '— ' : ''}${nodeCode(r.id)} ${r.short}`, cellText(r.bench, r.benchEmpty), ...TEST_ORDER.map((t) => cellText(r.tests[t], r.empty[t])), tierLabelOf(r.id, r.tier), ov ? tierLabelOf(r.id, ov.tier) : '', ov ? ov.note : '']));
   }
   downloadText(`${fileBase()}.md`, out.join('\n'));
 }
@@ -220,8 +220,8 @@ function heatSVG() {
       else p.push(`<text x="${cx + 48}" y="${y + 17}" text-anchor="middle" fill="${muted}" font-style="italic" font-size="11">${e(em || '—')}</text>`);
       cx += 96;
     }
-    p.push(`<text x="${cx + 6}" y="${y + 17}" fill="${text}">${e(plainTier(r.tier))}</text>`);
-    if (anyOv && state.overrides[r.id]) p.push(`<text x="${cx + 176}" y="${y + 17}" fill="${text}" font-weight="600">${e(plainTier(state.overrides[r.id].tier))}</text>`);
+    p.push(`<text x="${cx + 6}" y="${y + 17}" fill="${text}">${e(plainTierOf(r.id, r.tier))}</text>`);
+    if (anyOv && state.overrides[r.id]) p.push(`<text x="${cx + 176}" y="${y + 17}" fill="${text}" font-weight="600">${e(plainTierOf(r.id, state.overrides[r.id].tier))}</text>`);
   });
   p.push(`<text x="8" y="${H - 12}" fill="${muted}" font-size="11">${e(`The Growth Test (TNFA), prototype. Tests use the verdict layer's ${activeSet()} comparators. Analyst conclusions are the analyst's, not the tool's.`)}</text>`, '</svg>');
   return { text: p.join(''), w: W, h: H };

@@ -10,7 +10,7 @@ export const STRIP_AREAS = ['N0', 'N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8'
 
 /**
  * @param {Record<string, string | null> | null | undefined} tiers tier by area id
- * @param {{size?: 'sm' | 'md' | 'lg', label?: (id: string) => string, plain?: (tier: string | null) => string,
+ * @param {{size?: 'sm' | 'md' | 'lg', label?: (id: string) => string, plain?: (tier: string | null, id?: string) => string,
  *   href?: ((id: string) => string) | null, leans?: Record<string, {band: string, mark: string, words: string}> | null,
  *   highlight?: string | null, overrides?: Record<string, {tier: string}> | null}} [opts]
  *   size 'sm' | 'md' | 'lg'; label(id) and plain(tier) for the words; href(id) makes each square a link; leans {id: leanOf()}
@@ -24,7 +24,7 @@ export function strip(tiers, { size = 'sm', label = (id) => id, plain = (t) => t
     const t = (tiers || {})[id] || null;
     const ov = overrides && overrides[id];
     const lean = leans && leans[id];
-    const words = `${label(id)}: ${plain(t).toLowerCase()}${lean ? `, ${lean.words}` : ''}${ov ? ' (your override)' : ''}`;
+    const words = `${label(id)}: ${plain(t, id).toLowerCase()}${lean ? `, ${lean.words}` : ''}${ov ? ' (your override)' : ''}`;
     row.append(h(href ? 'a' : 'span', {
       class: `sq ${t ? tierClass(t) : 't-none'}${id === highlight ? ' hi' : ''}${ov ? ' ov' : ''}`,
       role: 'listitem', 'data-area': id, href: href ? href(id) : null, title: words, 'aria-label': words,

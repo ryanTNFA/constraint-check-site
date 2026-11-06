@@ -1,6 +1,6 @@
 // Comparator strip and editor.
 import { h, tierClass, fmt } from './common.mjs';
-import { plainTier } from './card.mjs';
+import { plainTierOf } from './card.mjs';
 
 const SET_TITLE = { structural: 'Structural peers', regional: 'Regional peers', aspirational: 'Aspirational peers' };
 /** One plain sentence per comparator set; the engine's exact rule stays one click away. */
@@ -85,7 +85,7 @@ export function renderComparators(container, ctx) {
   if (!diffs.length) dwrap.append(h('p', { class: 'small muted' }, activeSet === 'structural' && !peers ? 'Nothing: this is the default set.' : 'No rating changed. The ratings do not depend on this choice of comparison countries.'));
   else {
     const ul = h('ul', { class: 'diff-list' });
-    for (const d of diffs) ul.append(h('li', {}, h('strong', {}, `${d.id} ${ctx.nodeShort(d.id)}`), h('span', { class: `tier-badge ${tierClass(d.from)}` }, h('span', {}, plainTier(d.from))), h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(d.to)}` }, h('span', {}, plainTier(d.to)))));
+    for (const d of diffs) ul.append(h('li', {}, h('strong', {}, `${d.id} ${ctx.nodeShort(d.id)}`), h('span', { class: `tier-badge ${tierClass(d.from)}` }, h('span', {}, plainTierOf(d.id, d.from))), h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(d.to)}` }, h('span', {}, plainTierOf(d.id, d.to)))));
     dwrap.append(ul);
   }
   container.append(dwrap);

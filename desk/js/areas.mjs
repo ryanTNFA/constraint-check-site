@@ -4,13 +4,13 @@
 import { tabHref, refreshNav } from './shell.mjs';
 import { nodeCode, getJSON, loadRegistry, initTheme, h, fmt, fmtSigned, fmtInt, fmtValue, tierClass, TIER_ORDER, parseHash, writeState, qs, unitHint, shortName, sourceLink, sourceLabel, isStale, englishList, downloadText, dataBase, withData, gNorm, reasonClause, DATA_GAP_KINDS, isRegistryGap, SETTING_LABEL } from './common.mjs';
 import { renderTree, compactTree } from './tree.mjs';
-import { createCard, plainTier, PLAIN_TIER, bottomLine, fcsNote, refSpan } from './card.mjs';
+import { createCard, plainTier, plainTierOf, PLAIN_TIER, bottomLine, fcsNote, refSpan } from './card.mjs';
 import { robustChip } from './components/marks.mjs';
 import { renderComparators, SET_PLAIN } from './comparators.mjs';
 import { buildMemo } from './memo.mjs';
 import { memoHTML } from './components/markdown.mjs';
 import { buildBriefing } from './briefing.mjs';
-import { answerSentence } from './country_text.mjs';
+import { answerSentence, forkSentence } from './country_text.mjs';
 
 initTheme();
 const iso = (qs('iso') || '').toUpperCase();
@@ -118,7 +118,7 @@ function applySetting(view) {
   const nodes = view.nodes.map((n) => {
     const t = n.tier_by_setting && n.tier_by_setting[state.setting];
     if (!t || t === n.tier) return n;
-    return { ...n, tier: t, cannot_tell_reason: null, cannot_tell_detail: null, tier_reason: `${plainTier(t)} under the ${label} reading (Standard: ${plainTier(n.tier).toLowerCase()}). The rule text that follows is the Standard computation. ${n.tier_reason}` };
+    return { ...n, tier: t, cannot_tell_reason: null, cannot_tell_detail: null, tier_reason: `${plainTierOf(n.id, t)} under the ${label} reading (Standard: ${plainTierOf(n.id, n.tier).toLowerCase()}). The rule text that follows is the Standard computation. ${n.tier_reason}` };
   });
   return { ...view, nodes, setting: state.setting };
 }
@@ -151,7 +151,7 @@ async function applyComparatorsRaw() {
   writeState(state);
 }
 function fallbackView(base) {
-  const nodes = base.nodes.map((n) => (n.tier_by_set && n.tier_by_set[state.activeSet] ? { ...n, ...(n.tier_by_set[state.activeSet] === n.tier ? {} : { cannot_tell_reason: null, cannot_tell_detail: null }), tier: n.tier_by_set[state.activeSet], tier_reason: n.tier_by_set[state.activeSet] === n.tier ? n.tier_reason : `${plainTier(n.tier_by_set[state.activeSet])} under the ${state.activeSet} set (precomputed by the engine; the rule text below describes the structural-set computation). ${n.tier_reason}` } : n));
+  const nodes = base.nodes.map((n) => (n.tier_by_set && n.tier_by_set[state.activeSet] ? { ...n, ...(n.tier_by_set[state.activeSet] === n.tier ? {} : { cannot_tell_reason: null, cannot_tell_detail: null }), tier: n.tier_by_set[state.activeSet], tier_reason: n.tier_by_set[state.activeSet] === n.tier ? n.tier_reason : `${plainTierOf(n.id, n.tier_by_set[state.activeSet])} under the ${state.activeSet} set (precomputed by the engine; the rule text below describes the structural-set computation). ${n.tier_reason}` } : n));
   return { nodes, ranking: base.ranking, statements: base.statements, indicators: base.indicators, setKey: state.activeSet, fallback: true, note: 'Ranking and statements are shown for the default set; the engine module is not available for a browser recompute.' };
 }
 
@@ -315,10 +315,10 @@ function renderTopSplit() {
   const invTxt = cls.investment === 'low' ? 'investment is low for its income' : 'investment is not low for its income';
   body.append(h('p', { class: 'prose' }, `Three quick statistics ${TOPSPLIT_PATTERN[ts.row] || TOPSPLIT_PATTERN.indeterminate}: ${rateTxt}, ${creditTxt}, and ${invTxt}.`));
   if (n0) {
-    const n0Tier = plainTier(n0.tier).toLowerCase();
+    const n0Tier = plainTierOf('N0', n0.tier).toLowerCase();
     body.append(h('p', { class: 'prose' }, isCannotTellTier(n0.tier)
-      ? `The fuller finance evidence, which adds rationing, co-movement and working-around measures, is mixed, so the tool rates this fork ‘${n0Tier}’. Treat the pattern as a hypothesis to check, not a finding.`
-      : `The fuller finance evidence, which adds rationing, co-movement and working-around measures, rates the finance side ‘${n0Tier}’. Open the first area in the tree for the evidence.`));
+      ? `The four finance tests, which add rationing, co-movement and working-around measures, ${n0Tier.replace(/^cannot tell which side/, 'cannot tell which side either')}. Treat the pattern as a hypothesis to check, not a finding.`
+      : `The four finance tests, which add rationing, co-movement and working-around measures, read the fork as ‘${n0Tier}’. Open the first decision in the tree for the evidence. A direction, not a rating: both sides of the fork are constraints.`));
   }
   if (ts.rate_source && ts.rate_source !== 'FR.INR.RINR') body.append(h('p', { class: 'note' }, `Real rate from ${ts.rate_source}: the CPI-deflated lending rate stands in because the WDI real rate (FR.INR.RINR) is missing in the window.`));
   if (Array.isArray(ts.missing) && ts.missing.length) body.append(h('p', { class: 'note' }, `Missing statistics: ${ts.missing.map((k) => k.replace(/_/g, ' ')).join(', ')}.`));
@@ -329,7 +329,7 @@ function renderTopSplit() {
     h('div', { class: 'stat' }, h('span', { class: 'lab' }, 'Investment (GFCF), ICR t'), h('span', { class: 'val num' }, fmtSigned(s.investment_t)), h('span', { class: 'sub' }, `${cls.investment ? `read as ${String(cls.investment).replace(/_/g, ' ')} · ` : ''}low if ≤ ${th.investment_low_t}`))));
   // the pattern against the verdicts that fold in more evidence
   const label = ts.label || (ts.row || 'indeterminate').replace(/_/g, ' ');
-  const verdicts = [n0, n3].filter(Boolean).map((n) => `${nodeCode(n.id)} ${short(n.id).replace(/\?$/, '').toLowerCase()} is ${plainTier(n.tier).toLowerCase()}${n.N != null ? ` (N ${fmtSigned(n.N)})` : ''}`);
+  const verdicts = [n0, n3].filter(Boolean).map((n) => (n.id === 'N0' ? `the first decision ${plainTierOf(n.id, n.tier).toLowerCase()}` : `${nodeCode(n.id)} ${short(n.id).replace(/\?$/, '').toLowerCase()} is ${plainTier(n.tier).toLowerCase()}`) + (n.N != null ? ` (N ${fmtSigned(n.N)})` : ''));
   const tail = cls.rate === 'low' ? ' A finance area cannot be rated likely while the real rate reads low here (the engine caps it at worth a closer look).' : '';
   body.append(h('p', { class: 'small muted', style: 'margin-top:10px' }, `Pattern: the “${label}” row of the first-decision table (rate ${cls.rate || '—'}, credit growth ${cls.credit || '—'}, investment ${String(cls.investment || '—').replace(/_/g, ' ')}). This is a pattern, not a verdict: ${englishList(verdicts) || 'the finance areas are not scored'}.${tail}`));
   const tbl = h('table', { class: 'data topsplit-table' }, h('thead', {}, h('tr', {}, h('th', { class: 'col-row' }, 'Row'), h('th', {}, 'Rate'), h('th', {}, 'Credit growth'), h('th', {}, 'Investment'), h('th', { class: 'col-reading' }, 'Reading'))));
@@ -378,13 +378,15 @@ function renderStatements() {
   const c = state.scorecard.country.name;
   const body = $('statements-body'); body.replaceChildren();
   const why = (id) => areaLink(id, 'Why?', 'bl-why');
-  const ovMark = (id) => (state.overrides[id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTier(state.overrides[id].tier).toLowerCase()}`) : null);
+  // the first decision, above the lists: a direction at the root's fork, never a rating (FORK_WORDS in common.mjs)
+  if (on('areas-fork')) $('areas-fork').replaceChildren(h('strong', {}, 'First decision. '), forkSentence(bl, c, (state.scorecard.top_split || {}).row), ' ', why('N0'));
+  const ovMark = (id) => (state.overrides[id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTierOf(id, state.overrides[id].tier).toLowerCase()}`) : null);
   const line = (id, name, text, grade, node) => h('li', {},
     h('span', { class: 'bl-area' }, areaLink(id, cap(name))),
     grade ? h('span', { class: 'bl-grade' }, grade) : null,
     robustChip(node),
     h('span', {}, text), ' ', why(id), ovMark(id));
-  const names = (items) => joinEls(items.map((x) => [areaLink(x.id, x.short), state.overrides[x.id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTier(state.overrides[x.id].tier).toLowerCase()}`) : ''].filter(Boolean)));
+  const names = (items) => joinEls(items.map((x) => [areaLink(x.id, x.short), state.overrides[x.id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTierOf(x.id, state.overrides[x.id].tier).toLowerCase()}`) : ''].filter(Boolean)));
   const list = (cls, title, sub) => h('section', { class: `bl-list ${cls}` }, h('h2', {}, title), sub ? h('p', { class: 'bl-sub' }, sub) : null);
 
   // 1. what you can stop arguing about
@@ -475,7 +477,7 @@ function renderAssistanceBox(bl) {
 }
 function shareText() {
   const ix = state.index; if (!ix || !Array.isArray(ix.countries) || !ix.countries.length) return '';
-  const none = ix.countries.filter((c) => !Object.entries(c.tiers || {}).some(([id, t]) => !/^N11\./.test(id) && (t === 'ruled_out' || t === 'probably_not'))).length;
+  const none = ix.countries.filter((c) => !Object.entries(c.tiers || {}).some(([id, t]) => !/^N11\./.test(id) && id !== 'N0' && (t === 'ruled_out' || t === 'probably_not'))).length;
   const k = Math.round((none / ix.countries.length) * 10);
   return k >= 3 ? `This is common: about ${k} in 10 countries have nothing on this list. ` : '';
 }
@@ -485,7 +487,7 @@ function renderOverridesBox() {
   const ovs = Object.entries(state.overrides);
   if (!ovs.length) { if (PAGE === 'areas') box.append(h('p', { class: 'small muted' }, 'None yet. Open an area and use “Your override” at the end of its card.')); return; }
   const ul = h('ul', { class: 'diff-list' });
-  for (const [id, v] of ovs) { const n = nodeOf(id); ul.append(h('li', {}, h('strong', {}, `${nodeCode(id)} ${short(id)}`), h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, `tool: ${plainTier(n && n.tier)}`)), h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(v.tier)}` }, h('span', {}, `you: ${plainTier(v.tier)}`)), h('span', { class: 'muted' }, v.note), card ? h('button', { class: 'btn quiet small', type: 'button', onclick: () => card.open(id) }, 'Edit') : areaLink(id, 'Edit', 'btn quiet small'), h('button', { class: 'btn quiet small', type: 'button', onclick: () => { delete state.overrides[id]; writeState(state); renderTreePanel(); renderStatements(); renderOverridesBox(); refreshNav(); } }, 'Remove'))); }
+  for (const [id, v] of ovs) { const n = nodeOf(id); ul.append(h('li', {}, h('strong', {}, `${nodeCode(id)} ${short(id)}`), h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, `tool: ${plainTierOf(id, n && n.tier)}`)), h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(v.tier)}` }, h('span', {}, `you: ${plainTierOf(id, v.tier)}`)), h('span', { class: 'muted' }, v.note), card ? h('button', { class: 'btn quiet small', type: 'button', onclick: () => card.open(id) }, 'Edit') : areaLink(id, 'Edit', 'btn quiet small'), h('button', { class: 'btn quiet small', type: 'button', onclick: () => { delete state.overrides[id]; writeState(state); renderTreePanel(); renderStatements(); renderOverridesBox(); refreshNav(); } }, 'Remove'))); }
   box.append(h('div', { class: 'note alert', style: 'margin-top:16px' }, h('strong', {}, 'Your overrides'), ' (your judgment, shown next to the tool\'s; encoded in this page\'s URL so the link reproduces them)', ul));
 }
 
@@ -510,7 +512,7 @@ function renderRanking() {
       tb.append(h('tr', {},
         h('td', { class: 'num' }, String(i + 1)),
         h('td', { class: 'node-cell' }, h('button', { class: 'btn quiet small', type: 'button', onclick: () => card.open(id) }, `${nodeCode(id)} ${short(id)}`), n && n.sub_nodes ? h('span', { class: 'sub' }, `roll-up of ${n.sub_nodes.length} sub-areas${n.rollup_from ? `, rated through ${short(n.rollup_from).toLowerCase()}` : ''}`) : null, h('span', { class: 'sub' }, `N ${fmtSigned(n && n.N)}`)),
-        h('td', {}, h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, plainTier(n && n.tier)))),
+        h('td', {}, h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, plainTierOf(id, n && n.tier)))),
         h('td', { class: 'num col-score' }, fmt((rk.scores || {})[id], 2)),
         h('td', { title: nr ? 'not resampled: at most 3 voting families, so family subsets are not drawn; comparator sets and thresholds still vary' : `P(top ${p.top_k}) = ${fmt(pv, 2)}` }, `${pTxt}${mr != null ? ` (most often ${ordinalWord(mr)})` : ''}${nr ? '*' : ''}`)));
     });

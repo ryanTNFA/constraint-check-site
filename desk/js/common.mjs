@@ -18,6 +18,33 @@ export const TIER_LABEL = {
 export const TIER_ORD = { ruled_out: -2, probably_not: -1, cannot_tell_data_gap: 0, cannot_tell_conflicting: 0, cannot_tell_weak: 0, desk_undiagnosable: 0,
   context_only: 0, elimination: 0, candidate: 1, likely_binding: 2 };
 
+/**
+ * The first decision (N0) is the fork at the root of the tree, not an area: its four tests are the finance tests, so its
+ * score is the finance side's. A positive score says credit is dear or rationed (the finance branch); a negative one says
+ * finance is cheap and available, which is the low-returns branch. Its tier is therefore a direction, never a constraint
+ * rating (both sides are constraints), and every page words it with FORK_WORDS (Ryan, 6 November 2026).
+ */
+export const FORK = 'N0';
+export const FORK_WORDS = {
+  likely_binding: 'Points to costly finance',
+  candidate: 'Leans to finance',
+  cannot_tell_conflicting: 'Cannot tell which side: conflicting',
+  cannot_tell_weak: 'Cannot tell which side',
+  cannot_tell_data_gap: 'Cannot tell which side: data gap',
+  probably_not: 'Leans to low returns',
+  ruled_out: 'Points to low returns',
+};
+/** The branch the first decision points to: 'finance', 'returns', or null when it cannot tell. @param {string | null | undefined} tier */
+export function forkSideOf(tier) {
+  if (tier === 'candidate' || tier === 'likely_binding') return 'finance';
+  if (tier === 'probably_not' || tier === 'ruled_out') return 'returns';
+  return null;
+}
+/** The first decision's tier in words. @param {string | null | undefined} tier */
+export function forkWords(tier) { return (tier && FORK_WORDS[tier]) || tierLabel(tier); }
+/** The engine's label for a node's tier, with the fork worded as a direction. @param {string} id @param {string | null | undefined} tier */
+export function tierLabelOf(id, tier) { return id === FORK ? forkWords(tier) : tierLabel(tier); }
+
 /** Where the Desk data lives. Override with ?data=/out/desk-data to view another output folder. */
 export function dataBase() {
   const p = new URLSearchParams(location.search).get('data');

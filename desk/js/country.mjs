@@ -8,13 +8,13 @@ import { tabHref, refreshNav } from './shell.mjs';
 import { getJSON, loadRegistry, initTheme, h, parseHash, writeState, qs, dataBase, withData, englishList, downloadText, SETTING_LABEL, fmt, shortName,
   tierClass, nodeCode } from './common.mjs';
 import { compactTree } from './tree.mjs';
-import { plainTier, bottomLine, fcsNote, refSpan, plainSummary, whatWouldMove, fieldQuestions, whyNotLines, evidenceNode } from './card.mjs';
+import { plainTier, plainTierOf, bottomLine, fcsNote, refSpan, plainSummary, whatWouldMove, fieldQuestions, whyNotLines, evidenceNode } from './card.mjs';
 import { robustChip, reasonTag } from './components/marks.mjs';
 import { STRIP_AREAS } from './components/strip.mjs';
 import { buildMemo } from './memo.mjs';
 import { memoHTML } from './components/markdown.mjs';
 import { buildBriefing } from './briefing.mjs';
-import { answerSentence, itemName } from './country_text.mjs';
+import { answerSentence, forkSentence, itemName } from './country_text.mjs';
 
 initTheme();
 const iso = (qs('iso') || document.body.dataset.iso || '').toUpperCase();
@@ -52,8 +52,8 @@ function applySetting(view) {
   const nodes = view.nodes.map((n) => {
     const t = n.tier_by_setting && n.tier_by_setting[state.setting];
     if (!t || t === n.tier) return n;
-    return { ...n, tier: t, cannot_tell_reason: null, cannot_tell_detail: null, tier_reason: `${plainTier(t)} under the ${label} reading (Standard: ` +
-      `${plainTier(n.tier).toLowerCase()}). The rule text that follows is the Standard computation. ${n.tier_reason}` };
+    return { ...n, tier: t, cannot_tell_reason: null, cannot_tell_detail: null, tier_reason: `${plainTierOf(n.id, t)} under the ${label} reading (Standard: ` +
+      `${plainTierOf(n.id, n.tier).toLowerCase()}). The rule text that follows is the Standard computation. ${n.tier_reason}` };
   });
   return { ...view, nodes, setting: state.setting };
 }
@@ -170,7 +170,9 @@ function renderLists() {
   const bl = bottomLine(plainCtx());
   const c = state.scorecard.country.name;
   const body = $('statements-body'); body.replaceChildren();
-  const ovMark = (id) => (state.overrides[id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTier(state.overrides[id].tier).toLowerCase()}`) : null);
+  // the first decision, above the lists: a direction at the root's fork, never a rating (FORK_WORDS in common.mjs)
+  $('k-fork').replaceChildren(h('strong', {}, 'First decision. '), forkSentence(bl, c, (state.scorecard.top_split || {}).row), ' ', areaLink('N0', 'Why? →', 'bl-why'));
+  const ovMark = (id) => (state.overrides[id] ? h('span', { class: 'bl-ov' }, `your override: ${plainTierOf(id, state.overrides[id].tier).toLowerCase()}`) : null);
   const line = (x, text, grade) => h('li', {},
     h('span', { class: 'bl-area' }, areaLink(x.id, cap(itemName(x)))), grade ? h('span', { class: 'bl-grade' }, grade) : null, robustChip(x.node),
     h('span', {}, text), ovMark(x.id));
@@ -233,7 +235,7 @@ function renderLists() {
 }
 function shareText() {
   const ix = state.index; if (!ix || !Array.isArray(ix.countries) || !ix.countries.length) return '';
-  const none = ix.countries.filter((c) => !Object.entries(c.tiers || {}).some(([id, t]) => !/^N11\./.test(id) && (t === 'ruled_out' || t === 'probably_not'))).length;
+  const none = ix.countries.filter((c) => !Object.entries(c.tiers || {}).some(([id, t]) => !/^N11\./.test(id) && id !== 'N0' && (t === 'ruled_out' || t === 'probably_not'))).length;
   const k = Math.round((none / ix.countries.length) * 10);
   return k >= 3 ? `This is common: about ${k} in 10 countries have nothing on this list. ` : '';
 }
@@ -244,8 +246,8 @@ function renderOverrides() {
   const ul = h('ul', { class: 'diff-list' });
   for (const [id, v] of ovs) {
     const n = nodeOf(id);
-    ul.append(h('li', {}, h('strong', {}, `${nodeCode(id)} ${short(id)}`), h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, `tool: ${plainTier(n && n.tier)}`)),
-      h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(v.tier)}` }, h('span', {}, `you: ${plainTier(v.tier)}`)), h('span', { class: 'muted' }, v.note),
+    ul.append(h('li', {}, h('strong', {}, `${nodeCode(id)} ${short(id)}`), h('span', { class: `tier-badge ${tierClass(n && n.tier)}` }, h('span', {}, `tool: ${plainTierOf(id, n && n.tier)}`)),
+      h('span', { class: 'arrow' }, '→'), h('span', { class: `tier-badge ${tierClass(v.tier)}` }, h('span', {}, `you: ${plainTierOf(id, v.tier)}`)), h('span', { class: 'muted' }, v.note),
       areaLink(id, 'Edit', 'btn quiet small'),
       h('button', { class: 'btn quiet small', type: 'button', onclick: () => { delete state.overrides[id]; writeState(state); renderAll(); refreshNav(); } }, 'Remove')));
   }
@@ -266,8 +268,8 @@ function renderCards() {
     const card = h('article', { class: 'gt-card k-card elev-1', 'data-node': id }, // not data-area: the card's folds may move, its badge may not
       h('div', { class: 'k-card-head' },
         h('h3', {}, areaLink(id, short(id).replace(/\?$/, ''))),
-        h('span', { class: `tier-badge ${tierClass(n.tier)}` }, h('span', {}, plainTier(n.tier))), reasonTag(ev), robustChip(n),
-        ov ? h('span', { class: 'small' }, '→ you: ', h('span', { class: `tier-badge ${tierClass(ov.tier)}` }, h('span', {}, plainTier(ov.tier)))) : null),
+        h('span', { class: `tier-badge ${tierClass(n.tier)}` }, h('span', {}, plainTierOf(id, n.tier))), reasonTag(ev), robustChip(n),
+        ov ? h('span', { class: 'small' }, '→ you: ', h('span', { class: `tier-badge ${tierClass(ov.tier)}` }, h('span', {}, plainTierOf(id, ov.tier)))) : null),
       h('p', { class: 'k-card-plain' }, plainSummary(n, ctx, { brief: true })));
     const sub = (title, el) => (el ? [h('h4', { class: 'k-card-h' }, title), el] : []);
     const parts = [...sub('Why not higher, why not lower', why),
