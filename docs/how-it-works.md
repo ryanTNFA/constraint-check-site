@@ -1,14 +1,14 @@
-# How Constraint Check works
+# How The Growth Test works
 
-*A plain-language guide for program officers, Hill staff and managers. Companion to the Constraint Check Methodology Note, v0.1 (rubric 0.1.7, engine 0.1.5, data snapshot 2026-10-24). The New Foreign Assistance (TNFA), 29 October 2026; updated 31 October.*
+*A plain-language guide for program officers, Hill staff and managers. Companion to the Growth Test Methodology Note, v0.1 (rubric 0.1.7, engine 0.1.5, data snapshot 2026-10-24). The New Foreign Assistance (TNFA), 29 October 2026; updated 31 October.*
 
-**Constraint Check is a prototype.** Its ratings are uncalibrated and may be wrong; most areas read “unclear” because public data cannot settle them. Use it to sharpen questions, not to settle them.
+**The Growth Test is a prototype.** Its ratings are uncalibrated and may be wrong; most areas read “unclear” because public data cannot settle them. Use it to sharpen questions, not to settle them.
 
 ## 1. What question it answers
 
 Private investment and growth can be held back by many things: expensive credit, unreliable power, poor roads, corruption, unstable prices, a shortage of skills. Economists call the one that matters most at a given time the *binding constraint*. Fixing a constraint that does not bind changes little; that is how well-meant programs fail.
 
-Constraint Check looks at one country at a time and asks, for each possible constraint: does the public evidence already argue against it, does it point toward it, or can we not tell? It uses the growth-diagnostics decision tree of Hausmann, Rodrik and Velasco, the one behind published constraints analyses, and it uses only public data (World Bank, IMF, firm surveys, trade data) for 217 economies.
+The Growth Test looks at one country at a time and asks, for each possible constraint: does the public evidence already argue against it, does it point toward it, or can we not tell? It uses the growth-diagnostics decision tree of Hausmann, Rodrik and Velasco, the one behind published constraints analyses, and it uses only public data (World Bank, IMF, firm surveys, trade data) for 217 economies.
 
 It is a triage tool. It tells you where to look first and which arguments the evidence has already weakened. It does not tell you what to fund. *(Methodology Note §1)*
 
@@ -83,7 +83,7 @@ The overall score is close to zero, so the rating is "unclear". A program premis
 
 Name the rating exactly, the area, the country, and the versions:
 
-> Constraint Check (TNFA, prototype; rubric 0.1.6, engine 0.1.4, data snapshot 2026-10-24): for Kenya, corruption is rated "worth a closer look"; 33 percent of firms reported a bribe request (Enterprise Survey 2025).
+> The Growth Test (TNFA, prototype; rubric 0.1.6, engine 0.1.4, data snapshot 2026-10-24): for Kenya, corruption is rated "worth a closer look"; 33 percent of firms reported a bribe request (Enterprise Survey 2025).
 
 Write "the evidence leans toward" or "worth a closer look", not "is the binding constraint". Write "probably not the main constraint", not "ruled out", unless the page says "ruled out". Say that the tool is a prototype and not yet validated. Formal releases with a permanent identifier (DOI) are planned but do not exist yet. *(Methodology Note §8)*
 
@@ -91,7 +91,7 @@ Write "the evidence leans toward" or "worth a closer look", not "is the binding 
 
 Five questions. Someone who has read this guide should answer at least four correctly.
 
-**1. Constraint Check rates corruption in Kenya "worth a closer look". Should a donor fund an anti-corruption program in Kenya on that basis?**
+**1. The Growth Test rates corruption in Kenya "worth a closer look". Should a donor fund an anti-corruption program in Kenya on that basis?**
 No. The tool never recommends funding. The rating says firm-reported bribery is unusually high and deserves field study. It does not show that corruption is what holds investment back, or that a program would help.
 
 **2. An area is rated "probably not the main constraint". Can you tell your manager it has been ruled out?**
@@ -103,5 +103,5 @@ No. It means the evidence points in different directions (interest rates are hig
 **4. A program targets electricity in one province of a country. Can the tool tell you whether power is the binding constraint in that province?**
 No. Every number is a national average. The tool cannot see differences within a country, between sectors, or between kinds of firms.
 
-**5. What must a citation of a Constraint Check rating include?**
+**5. What must a citation of a Growth Test rating include?**
 The country, the area, the rating's exact name, the version numbers or data snapshot date, and the fact that the tool is an unvalidated prototype. Ideally also the key number behind the rating and its year.

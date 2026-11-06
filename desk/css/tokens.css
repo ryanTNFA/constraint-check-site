@@ -1,4 +1,4 @@
-/* Constraint Check Desk: design tokens, the first of the five layered stylesheets (Growth Test PRD, Part 6C, C5).
+/* The Growth Test: design tokens, the first of the five layered stylesheets (Growth Test PRD, Part 6C, C5).
    Load order and layer order are the same: tokens, base, components, motion, pages; a page stylesheet
    (css/pages/<page>.css) comes last. Every file wraps its rules in its own @layer, so a later layer wins over an
    earlier one whatever the specificity, and the order below is the only cascade rule to remember.
@@ -72,6 +72,14 @@
   --elev-1: 0 1px 2px rgba(28, 46, 74, 0.08), 0 2px 8px rgba(28, 46, 74, 0.06);
   --elev-2: 0 10px 30px rgba(28, 46, 74, 0.16);
   --band: #1c2e4a;
+  /* the band's own type and rules (the Growth Test prototypes, D9): fixed in both themes, as on TNFA's site */
+  --band-text: #ffffff;
+  --band-soft: #be9a7a;
+  --band-dim: #8a9bb5;
+  --band-link: #6b9ae3;
+  --band-rule: #3a4d6a;
+  /* the one sentence (D1): larger than the standfirst, smaller than the headline */
+  --fs-answer: clamp(1.375rem, 1.1rem + 1.2vw, 1.875rem);
   /* three small sizes, kept apart: eyebrow (Libertinus, tracked), label (mono, uppercase), caption (Inter) */
   --fs-eyebrow: 0.9375rem;
   --fs-caption: 0.8125rem;

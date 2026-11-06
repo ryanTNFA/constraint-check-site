@@ -9,7 +9,7 @@
  * @param {{title?: string}} [opts]
  * @returns {{body: string, page: string}} the rendered body, and a whole printable page
  */
-export function memoHTML(md, { title = 'Constraint Check memo' } = {}) {
+export function memoHTML(md, { title = 'The Growth Test memo' } = {}) {
   const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
   const inline = (s) => esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2">$1</a>');
   const TD = 'border:1px solid #c9c2b8;padding:3px 6px;text-align:left;vertical-align:top';

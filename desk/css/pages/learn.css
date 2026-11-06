@@ -1,4 +1,4 @@
-/* Constraint Check Desk: lesson one (learn.html): the steps, the figures, the ladders and the lesson index (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+/* The Growth Test: lesson one (learn.html): the steps, the figures, the ladders and the lesson index (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
 @layer pages {
 /* ---------- Lesson one, "How a country gets read" (V6 / teaching plan section 4) ---------- */
 .learn-head { padding-block: 28px 8px; max-width: 70ch; }

@@ -18,8 +18,8 @@ function showError(msg) { const e = $('page-error'); e.hidden = false; e.textCon
 async function main() {
   if (!iso) { showError('No economy selected. Open this page from a country’s Areas tab.'); return; }
   const back = $('back-areas');
-  back.href = tabHref('/constraint-check-site/desk/areas.html', iso, '&node=N12');
-  back.addEventListener('click', () => { back.href = tabHref('/constraint-check-site/desk/areas.html', iso, '&node=N12'); });
+  back.href = tabHref('/growth-test-site/desk/areas.html', iso, '&node=N12');
+  back.addEventListener('click', () => { back.href = tabHref('/growth-test-site/desk/areas.html', iso, '&node=N12'); });
   try {
     const [registry, sc, nearby, meta, hippo] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/nearby/${iso}.json`, { optional: true }), getJSON(`${DATA}/nearby/meta.json`, { optional: true }), getJSON(`${DATA}/hippo/${iso}.json`, { optional: true })]);
     state = { registry, sc, nearby, meta, hippo };
@@ -32,7 +32,7 @@ async function main() {
 function render() {
   const { registry, sc, nearby, meta, hippo } = state;
   const c = sc.country.name;
-  document.title = `${c} · Self-discovery · Constraint Check`;
+  document.title = `${c} · Self-discovery · The Growth Test`;
   $('sd-title').textContent = `Self-discovery in ${c}`;
   $('sd-question').textContent = `Are firms in ${c} held back from trying new products?`;
   const m = sc.meta;
@@ -57,7 +57,7 @@ function render() {
   const others = OTHERS.map((id) => sc.nodes.find((n) => n.id === id)).filter(Boolean);
   const head = h('thead', {}, h('tr', {}, h('th', {}, 'Other cause of low returns'), h('th', {}, `Rating (${SETTING_LABEL[setting]} reading)`), h('th', {}, 'Set aside?')));
   const body = h('tbody', {}, others.map((n) => h('tr', {},
-    h('td', {}, h('a', { href: tabHref('/constraint-check-site/desk/areas.html', iso, `&node=${encodeURIComponent(n.id)}`) }, short(n.id)), n.sub_nodes && n.rollup_from ? h('span', { class: 'small muted' }, ` (rated through ${short(n.rollup_from).toLowerCase()})`) : null),
+    h('td', {}, h('a', { href: tabHref('/growth-test-site/desk/areas.html', iso, `&node=${encodeURIComponent(n.id)}`) }, short(n.id)), n.sub_nodes && n.rollup_from ? h('span', { class: 'small muted' }, ` (rated through ${short(n.rollup_from).toLowerCase()})`) : null),
     h('td', {}, plainTier(tierOf(n))),
     h('td', {}, cleared(tierOf(n)) ? 'Yes' : 'Not yet'))));
   $('sd-elim').replaceChildren(head, body);

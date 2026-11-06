@@ -26,7 +26,7 @@ export function buildMemo(ctx) {
   const bl = bottomLine({ ...pctx, view });
   const out = [];
 
-  out.push(`# Constraint Check memo: ${c.name}`);
+  out.push(`# The Growth Test memo: ${c.name}`);
   out.push('');
   if (setting !== 'standard') { out.push(`> **${setting === 'exploratory' ? 'Exploratory' : 'Cautious'} reading, not the one to cite.** The ratings below use the ${setting} reading of the evidence. Standard is the only reading to cite; the figures are the same under every reading.`); out.push(''); }
   out.push(`Reading: ${setting === 'standard' ? 'Standard (the reading to cite)' : `${setting[0].toUpperCase()}${setting.slice(1)}, not the one to cite`}. Public data as of ${m.snapshot_id}. Compared with ${members.length} countries (${activeSet} set${Array.isArray(peers) ? ', edited by the user' : ''}): ${englishList(members.map(nameOf)) || 'none'}.`);
@@ -157,7 +157,7 @@ export function buildMemo(ctx) {
   out.push('');
   out.push('---');
   const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
-  out.push(local ? `Interactive version: country.html?iso=${c.iso3} on the Constraint Check Desk (this memo was generated from a local copy, so no public link exists).` : `Interactive version, with the same comparison countries and overrides: ${location.href}`);
+  out.push(local ? `Interactive version: country.html?iso=${c.iso3} on The Growth Test (this memo was generated from a local copy, so no public link exists).` : `Interactive version, with the same comparison countries and overrides: ${location.href}`);
   out.push('');
   out.push('This tool never recommends funding; it states what the public evidence can and cannot support.');
   return out.join('\n');

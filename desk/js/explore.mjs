@@ -39,7 +39,7 @@ const el = (tag, attrs = {}) => { const e = document.createElementNS(SVG, tag); 
 const fillOf = (tier) => (tier && tier.startsWith('cannot_tell') ? 'var(--tier-cannot-tint)' : tierPaint(tier).fill);
 
 export async function mountExplorer(host, { index, registry }) {
-  const geo = await getJSON('/constraint-check-site/desk/geo/world-110m.json', { optional: true });
+  const geo = await getJSON('/growth-test-site/desk/geo/world-110m.json', { optional: true });
   // W4: the robustness marks that are not "holds" (engine 0.1.6); absent file or entry means holds
   const rob = await getJSON(`${dataBase()}/robustness.json`, { optional: true });
   const markOf = (iso, area) => (rob && rob.marks && rob.marks[iso] && rob.marks[iso][area]) || 'h';
@@ -58,7 +58,7 @@ export async function mountExplorer(host, { index, registry }) {
   if (geo) for (const f of geo.features) {
     if (f.geometry.type === 'Point') { dots.push(f); continue; }
     if (!byIso[f.id]) { svg.append(el('path', { d: pathOf(f.geometry), class: 'ex-none' })); continue; }
-    const a = el('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${f.id}`) });
+    const a = el('a', { href: withData(`/growth-test-site/desk/country.html?iso=${f.id}`) });
     const p = el('path', { d: pathOf(f.geometry), class: 'ex-shape' });
     const t = el('title'); a.append(p, t); svg.append(a);
     shapes[f.id] = { p, t, a };
@@ -68,7 +68,7 @@ export async function mountExplorer(host, { index, registry }) {
     if (shapes[f.id] || !byIso[f.id]) continue;
     const c = byIso[f.id];
     const [x, y] = equalEarth(f.geometry.coordinates[0], f.geometry.coordinates[1]);
-    const a = el('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${c.iso3}`) });
+    const a = el('a', { href: withData(`/growth-test-site/desk/country.html?iso=${c.iso3}`) });
     const p = el('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: 3.2, class: 'ex-shape ex-dot' });
     const t = el('title'); a.append(p, t); svg.append(a);
     shapes[c.iso3] = { p, t, a };
@@ -101,7 +101,7 @@ export async function mountExplorer(host, { index, registry }) {
   };
   // verdict groups split by how firm the rating is; the "can't tell" groups list names only
   function namesByMark(members, area, split) {
-    const link = (c) => h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${c.iso3}`) }, c.name);
+    const link = (c) => h('a', { href: withData(`/growth-test-site/desk/country.html?iso=${c.iso3}`) }, c.name);
     // names are separated by a middle dot, since several carry commas of their own ("Korea, Rep.")
     const para = (list, label) => h('p', { class: 'ex-names' }, label ? h('span', { class: 'ex-mark' }, label) : null, ...list.flatMap((c, i) => [i ? ' · ' : '', link(c)]));
     if (!members.length) return [h('p', { class: 'ex-names muted' }, 'None.')];

@@ -121,7 +121,7 @@ async function main() {
   }
 
   // 6 the tree
-  renderTree($('tree-wrap'), { registry, nodes: sc.nodes, overrides: {}, onOpen: (id) => { location.href = withData(`/constraint-check-site/desk/areas.html?iso=${ISO}&node=${encodeURIComponent(id)}`); }, tooltipEl: $('tooltip'), plainCtx: null });
+  renderTree($('tree-wrap'), { registry, nodes: sc.nodes, overrides: {}, onOpen: (id) => { location.href = withData(`/growth-test-site/desk/areas.html?iso=${ISO}&node=${encodeURIComponent(id)}`); }, tooltipEl: $('tooltip'), plainCtx: null });
   const areas = ['N0', 'N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N10', 'N11', 'N12', 'N13'];
   const kinds = {};
   for (const id of areas) { const n = byId[id]; if (!n) continue; const k = n.tier === 'candidate' || n.tier === 'likely_binding' ? 'flagged' : n.tier === 'probably_not' || n.tier === 'ruled_out' ? 'cleared' : (cannotTellCode(n) ? CANNOT_TELL_PLAIN[cannotTellCode(n)].label.toLowerCase() : n.tier === 'elimination' ? 'judged by elimination' : n.tier === 'desk_undiagnosable' ? 'needs a sector study' : 'unclear'); (kinds[k] ||= []).push(short(id)); }

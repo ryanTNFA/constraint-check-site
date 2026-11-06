@@ -1,4 +1,4 @@
-# Constraint Check: datasheet and model card
+# The Growth Test: datasheet and model card
 
 *Release: rubric 0.1.6, engine 0.1.4, data snapshot 2026-10-24. The New Foreign Assistance (TNFA). Draft of 29 October 2026 (PRD section 17, D4). Part 1 follows "Datasheets for Datasets" (Gebru et al. 2021) for the data snapshot. Part 2 follows "Model Cards for Model Reporting" (Mitchell et al. 2019) for the rubric and engine. Section references (§) are to the Methodology Note, `docs/methodology-note.md`.*
 
@@ -42,7 +42,7 @@
 
 ### Uses
 
-- **Intended:** as the evidence base for Constraint Check's scorecards, and for anyone who wants to check or rerun them.
+- **Intended:** as the evidence base for The Growth Test's scorecards, and for anyone who wants to check or rerun them.
 - **Other reasonable uses:** cross-country descriptive work, if the user takes each series' own definition and licence from the codebook.
 - **Uses to avoid:**
   - Treating the snapshot as vintage-locked history. It is current vintage: a publisher's revision changes the next refresh (§7.1, item 2).
@@ -50,7 +50,7 @@
 
 ### Distribution
 
-- In the Constraint Check repository: the snapshot, the extra connectors' observations and the silver trade table.
+- In the Growth Test repository: the snapshot, the extra connectors' observations and the silver trade table.
 - The raw cache (698 MB) is to be archived with each release, except the openICPSR package.
 - Licences differ by source and are listed per source in `REPLICATION.md`, checked 3 November 2026 (one pending: ITU's permission for derived values). TNFA's own licence: Apache 2.0 for code, CC BY 4.0 for documents and derived data (`LICENSE`, `docs/LICENSE.md`).
 

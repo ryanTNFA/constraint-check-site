@@ -46,21 +46,21 @@ function plainCtx() {
 async function main() {
   if (!iso) { showError('No economy selected. Open this page as country.html?iso=XXX or pick an economy from the list.'); return; }
   try {
-    const [registry, scorecard, countries, fcs, index] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/countries.json`, { optional: true }), getJSON('/constraint-check-site/registry/static_fcs.json', { optional: true }), getJSON(`${DATA}/index.json`, { optional: true })]);
+    const [registry, scorecard, countries, fcs, index] = await Promise.all([loadRegistry(), getJSON(`${DATA}/${iso}.json`), getJSON(`${DATA}/countries.json`, { optional: true }), getJSON('/growth-test-site/registry/static_fcs.json', { optional: true }), getJSON(`${DATA}/index.json`, { optional: true })]);
     state.registry = registry; state.scorecard = scorecard; state.countries = countries || []; state.fcs = fcs; state.index = index;
   } catch (e) { showError(`Could not load the snapshot for ${iso}: ${e.message}. The engine CLI (or desk/dev/mock.mjs) must write ${DATA}/${iso}.json first.`); return; }
-  state.narrative = await getJSON(`/constraint-check-site/synth/narratives/${iso}.json`, { optional: true });
+  state.narrative = await getJSON(`/growth-test-site/synth/narratives/${iso}.json`, { optional: true });
   try {
-    const mod = await import('/constraint-check-site/engine/src/scorecard.mjs');
+    const mod = await import('/growth-test-site/engine/src/scorecard.mjs');
     if (typeof mod.recomputeWithPeers === 'function') { state.engine = mod; state.engineStatus = { ok: true, message: '' }; }
-    else state.engineStatus = { ok: false, message: '/constraint-check-site/engine/src/scorecard.mjs loaded but does not export recomputeWithPeers().' };
+    else state.engineStatus = { ok: false, message: '/growth-test-site/engine/src/scorecard.mjs loaded but does not export recomputeWithPeers().' };
   } catch (e) { state.engineStatus = { ok: false, message: `the engine module (engine/src/scorecard.mjs) could not be imported (${e.message}).` }; }
 
   const hs = parseHash();
   state.activeSet = hs.set && state.scorecard.comparators[hs.set] ? hs.set : (state.scorecard.meta.active_comparator_set || 'structural');
   state.peers = hs.peers; state.overrides = hs.overrides || {}; state.setting = hs.setting;
   state.view = baseView();
-  document.title = `${state.scorecard.country.name} · ${PAGE === 'areas' ? 'Areas' : 'Bottom line'} · Constraint Check`;
+  document.title = `${state.scorecard.country.name} · ${PAGE === 'areas' ? 'Areas' : 'Bottom line'} · The Growth Test`;
 
   if (on('drawer')) {
     card = createCard({
@@ -193,7 +193,7 @@ function renderCompactTree() {
   if (!on('ctree-host')) return;
   const iso = state.scorecard.country.iso3;
   $('ctree-host').replaceChildren(
-    compactTree({ registry: state.registry, nodes: state.view.nodes, overrides: state.overrides, href: (id) => tabHref('/constraint-check-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`) }),
+    compactTree({ registry: state.registry, nodes: state.view.nodes, overrides: state.overrides, href: (id) => tabHref('/growth-test-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`) }),
     h('p', { class: 'ctree-key' }, 'One square per area, coloured by its rating; an arrow on a grey square is its lean, toward (↑) or away from (↓) a problem. Hover for the name; click for the evidence. No total.'));
 }
 function renderHeaderMeta() {
@@ -356,8 +356,8 @@ function joinEls(parts) {
 }
 /** A link to an area's card at the Areas level, carrying the comparison set, peers and overrides. */
 function areaLink(id, label, cls = '') {
-  const a = h('a', { href: tabHref('/constraint-check-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`), class: cls || null }, label);
-  a.addEventListener('click', () => { a.href = tabHref('/constraint-check-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`); });
+  const a = h('a', { href: tabHref('/growth-test-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`), class: cls || null }, label);
+  a.addEventListener('click', () => { a.href = tabHref('/growth-test-site/desk/areas.html', iso, `&node=${encodeURIComponent(id)}`); });
   return a;
 }
 /**
@@ -434,8 +434,8 @@ function renderStatements() {
   if (state.view.note) body.append(h('p', { class: 'note' }, state.view.note));
 }
 function sdLink() {
-  const a = h('a', { href: tabHref('/constraint-check-site/desk/selfdiscovery.html', iso) }, 'Read more →');
-  a.addEventListener('click', () => { a.href = tabHref('/constraint-check-site/desk/selfdiscovery.html', iso); });
+  const a = h('a', { href: tabHref('/growth-test-site/desk/selfdiscovery.html', iso) }, 'Read more →');
+  a.addEventListener('click', () => { a.href = tabHref('/growth-test-site/desk/selfdiscovery.html', iso); });
   return a;
 }
 /**
@@ -465,7 +465,7 @@ function renderAssistanceBox(bl) {
         : `No area stands out, so the first step is to ${firstGap}.`),
       h('li', {}, h('strong', {}, 'Measure what can’t be settled. '), 'The cheapest next step is often to collect the missing evidence. Each “can’t settle” line above says what that is.'),
       h('li', {}, h('strong', {}, 'Fix what binds, or little changes. '), `Programs that ignore what actually holds growth back in ${c} are unlikely to reduce poverty for long. A reform that leaves the binding constraint in place does little for growth, however sound it is on its own (Hausmann, Rodrik and Velasco, 2005).`)),
-    h('p', { class: 'small' }, h('a', { href: withData('/constraint-check-site/desk/methods.html#mcc') }, 'Why this way of choosing →'), ' ', h('a', { href: 'https://thenewforeignassistance.org', target: '_blank', rel: 'noopener' }, 'About The New Foreign Assistance →')));
+    h('p', { class: 'small' }, h('a', { href: withData('/growth-test-site/desk/methods.html#mcc') }, 'Why this way of choosing →'), ' ', h('a', { href: 'https://thenewforeignassistance.org', target: '_blank', rel: 'noopener' }, 'About The New Foreign Assistance →')));
 }
 function shareText() {
   const ix = state.index; if (!ix || !Array.isArray(ix.countries) || !ix.countries.length) return '';
@@ -632,7 +632,7 @@ function renderExport() {
 function memoText() { return buildMemo({ scorecard: state.scorecard, view: state.view, registry: state.registry, overrides: state.overrides, activeSet: state.activeSet, peers: state.peers, narrative: state.narrative, fcs: state.fcs, countries: state.countries, plain: plainCtx(), setting: state.setting }); }
 function downloadMemo() { downloadText(`${iso}-memo.md`, memoText()); }
 async function copyMemoRich() {
-  const md = memoText(); const html = memoHTML(md, { title: `Constraint Check memo: ${state.scorecard.country.name}` });
+  const md = memoText(); const html = memoHTML(md, { title: `The Growth Test memo: ${state.scorecard.country.name}` });
   try {
     if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
       await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html.body], { type: 'text/html' }), 'text/plain': new Blob([md], { type: 'text/plain' }) })]);
@@ -642,7 +642,7 @@ async function copyMemoRich() {
   } catch { return 'The browser blocked the clipboard; use Print or save as PDF instead.'; }
 }
 function printMemo() {
-  const md = memoText(); const html = memoHTML(md, { title: `Constraint Check memo: ${state.scorecard.country.name}` });
+  const md = memoText(); const html = memoHTML(md, { title: `The Growth Test memo: ${state.scorecard.country.name}` });
   const w = window.open('', '_blank');
   if (!w) return 'The browser blocked the print window; allow pop-ups for this page, or download the .md file.';
   w.document.open(); w.document.write(html.page); w.document.close();

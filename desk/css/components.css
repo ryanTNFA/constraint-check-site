@@ -1,4 +1,4 @@
-/* Constraint Check Desk: components layer (C5). Everything shared by more than one page or drawn by a shared module
+/* The Growth Test: components layer (C5). Everything shared by more than one page or drawn by a shared module
    (shell.mjs, card.mjs, tree.mjs, common.mjs, lesson.mjs, longview.mjs). Cap: 1,200 lines (tests/test_desk_css.py).
    One page's own rules go in pages/<page>.css; durations and easings go in motion.css; tokens in tokens.css. */
 @layer components {
@@ -530,4 +530,31 @@ button.robust[aria-expanded="true"]::after { content: ' ▴'; }
 
 /* the compact tree's square size (the tree itself is pages/country.css) */
 .strip-md .sq { width: 24px; height: 24px; font-size: 13px; }
+
+/* ---------- The Growth Test prototypes (PRD D9, version-9 extension layer): new classes only, so no existing page's computed styles change ----------
+   The dark ink band as a surface inside the light page (--band tokens; the Long View's own colours, as in the home band),
+   two elevation steps, and the inline line-icon sprite (desk/img/icons.svg): used only where an icon does a job, never beside a rating. */
+.gt-band { background: var(--band); color: var(--band-text); --why-soft: var(--band-soft); --why-dim: var(--band-dim); --why-link: var(--band-link);
+  --why-grid: var(--band-rule); }
+.gt-band a { color: var(--band-link); }
+.gt-band .kicker { color: var(--band-soft); }
+.gt-band .btn.quiet { border-color: var(--band-link); color: var(--band-text); background: transparent; }
+.gt-band .btn.quiet:hover { background: rgba(255, 255, 255, 0.08); }
+.gt-band .btn:focus-visible, .gt-band a:focus-visible, .gt-band input:focus-visible { outline-color: var(--band-text); }
+.gt-band .muted { color: var(--band-dim); }
+.icon { width: 1.25em; height: 1.25em; vertical-align: -0.3em; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round;
+  stroke-linejoin: round; flex: none; }
+.icon.lg { width: 2rem; height: 2rem; }
+.elev-1 { box-shadow: var(--elev-1); }
+.elev-2 { box-shadow: var(--elev-2); }
+/* the fold (D2, D8): a quiet summary with a chevron that turns; the open state keeps its heading */
+.gt-fold-sum { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: 0.9375rem;
+  color: var(--accent); }
+.gt-fold-sum::-webkit-details-marker { display: none; }
+.gt-fold-sum::after { content: ''; width: 0.45em; height: 0.45em; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg); margin-left: 2px; }
+details[open] > .gt-fold-sum::after { transform: rotate(-135deg); }
+.gt-fold-body { padding: 6px 0 2px; }
+/* the flagged bar has six items: on phones it wraps instead of overflowing (the existing bar's three items stay on one line) */
+@media (max-width: 760px) { body[data-flag="growth-test"] .nav-global .topnav { flex-wrap: wrap; row-gap: 2px; } }
 }

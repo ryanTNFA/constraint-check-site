@@ -1,4 +1,4 @@
-/* Constraint Check Desk: the home page: the picker cards, the one-area map, TNFA's band and the "How to read" disclosure (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+/* The Growth Test: the home page: the picker cards, the one-area map, TNFA's band and the "How to read" disclosure (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
 @layer pages {
 .econ-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 18px; }
 .econ-card { display: block; text-decoration: none; color: inherit; border: 1px solid var(--rule); background: var(--surface); padding: 14px 16px; }

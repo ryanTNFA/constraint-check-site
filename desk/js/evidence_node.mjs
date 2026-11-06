@@ -231,7 +231,7 @@ export function renderNodeHead({ titleEl, qEl, verdictEl }, { view, registry, sc
     offStandard ? h('span', { class: 'small muted' }, ` (${SETTING_LABEL[setting]} reading, not the one to cite)`) : null,
     ' ', robustChip(sn),
     lean ? h('span', { class: 'small muted' }, ` ${lean}.`) : null,
-    ' ', h('a', { href: withData(`/constraint-check-site/desk/areas.html?iso=${iso}&node=${encodeURIComponent(view)}`) + currentHash() }, 'Open the rating card for the reasoning'),
+    ' ', h('a', { href: withData(`/growth-test-site/desk/areas.html?iso=${iso}&node=${encodeURIComponent(view)}`) + currentHash() }, 'Open the rating card for the reasoning'),
     bySet ? h('span', { class: 'small muted' }, ` ${bySet}`) : null,
   ].filter(Boolean));
   const np = sn.tier === 'elimination' ? null : noPriceNote(scorecard, view, countryName);

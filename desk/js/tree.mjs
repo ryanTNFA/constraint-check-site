@@ -83,7 +83,7 @@ export function renderTree(container, { registry, nodes, overrides = {}, onOpen,
   container.replaceChildren();
   const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
   const regNodes = registry.nodes.nodes;
-  const d3 = window.d3;
+  const d3 = /** @type {any} */ (window).d3;
   if (!d3 || !d3.stratify) { container.append(fallbackList(regNodes, byId, overrides, onOpen)); return; }
 
   const forkReg = regNodes.find((n) => n.id === FORK);

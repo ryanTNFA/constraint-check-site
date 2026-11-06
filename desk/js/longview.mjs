@@ -24,7 +24,11 @@ const SERIES = [
 const el = (tag, attrs = {}, text) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v); if (text != null) e.textContent = text; return e; };
 const fmtK = (v) => (v >= 1000 ? `$${Math.round(v / 1000)}k` : `$${v}`);
 
-export async function mountLongView(host) {
+/**
+ * Draw the Long View into host. The story page (Growth Test PRD, Part 10, beat 1) passes autoplay: true so the chart
+ * draws itself once per session; the home page leaves it off, and reduced motion always shows the whole chart at once.
+ */
+export async function mountLongView(host, { autoplay = false } = {}) {
   if (!host) return;
   const data = await getJSON(`${dataBase()}/longview.json`, { optional: true });
   if (!data) { host.hidden = true; return; }
@@ -97,8 +101,8 @@ export async function mountLongView(host) {
   let raf = null; // an interval, not requestAnimationFrame: it keeps time in a background tab too
   const sweep = (t) => { // t in [0, 1]: each panel's clip runs from its left edge to the year reached; at 1 it uncovers the labels too
     const yr = Y0 + t * (Y1 - Y0);
-    for (const [k, left] of [['a', L1], ['b', L2]]) {
-      clipRect[k].setAttribute('x', left - 2);
+    for (const [k, left] of /** @type {[string, number][]} */ ([['a', L1], ['b', L2]])) {
+      clipRect[k].setAttribute('x', String(left - 2));
       clipRect[k].setAttribute('width', t >= 1 ? W : t * PANEL + 2);
     }
     yearText.textContent = t >= 1 ? '' : String(Math.round(yr));
@@ -113,6 +117,7 @@ export async function mountLongView(host) {
   };
   btn.addEventListener('click', () => (raf ? stop() : play()));
   sweep(1);
+  if (autoplay && !reducedMotion()) play();
 
   const fig = h('figure', { class: 'longview' }, svg,
     h('figcaption', { class: 'small' },

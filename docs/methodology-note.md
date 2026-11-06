@@ -1,4 +1,4 @@
-# Constraint Check Methodology Note, v0.1
+# The Growth Test Methodology Note, v0.1
 
 *Rubric 0.1.6, engine 0.1.4, data snapshot 2026-10-24. The New Foreign Assistance (TNFA). Draft of 29 October 2026, written for economists who audit, reimplement or challenge the method. Plain-language companion: `docs/how-it-works.md`.*
 
@@ -12,7 +12,7 @@
 
 ### 1.1 The question
 
-Constraint Check applies the growth diagnostic of Hausmann, Rodrik and Velasco (HRV) to public cross-country data. For one economy it asks which of the candidate constraints in the HRV decision tree the available evidence already argues against, which deserve closer study, and which cannot be judged from desk data. It is a triage tool. It does not estimate growth effects, rank projects or recommend funding.
+The Growth Test applies the growth diagnostic of Hausmann, Rodrik and Velasco (HRV) to public cross-country data. For one economy it asks which of the candidate constraints in the HRV decision tree the available evidence already argues against, which deserve closer study, and which cannot be judged from desk data. It is a triage tool. It does not estimate growth effects, rank projects or recommend funding.
 
 ### 1.2 The tree
 
@@ -618,9 +618,9 @@ This note is v0.1. It will stay v0.x until the validation in section 6.2 is run,
 
 **Suggested citation until a release exists:**
 
-> The New Foreign Assistance (2026). *Constraint Check Methodology Note, v0.1* (rubric 0.1.6, engine 0.1.4, data snapshot 2026-10-24). Prototype; not validated. Draft of 29 October 2026.
+> The New Foreign Assistance (2026). *The Growth Test Methodology Note, v0.1* (rubric 0.1.6, engine 0.1.4, data snapshot 2026-10-24). Prototype; not validated. Draft of 29 October 2026.
 
-When citing a number, give the economy, node, tier, the indicator and its reference years, and the three versions, for example: "Constraint Check (rubric 0.1.6, engine 0.1.4, snapshot 2026-10-24), Kenya, N11.corruption: candidate; bribery incidence 33 percent of firms (Enterprise Survey 2025), ICR t = 3.6."
+When citing a number, give the economy, node, tier, the indicator and its reference years, and the three versions, for example: "The Growth Test (rubric 0.1.6, engine 0.1.4, snapshot 2026-10-24), Kenya, N11.corruption: candidate; bribery incidence 33 percent of firms (Enterprise Survey 2025), ICR t = 3.6."
 
 **Reproducing a number.** `python ingest/fetch_snapshot.py --offline` rebuilds the snapshot from the raw cache; `node engine/cli.mjs --snapshot data/snapshot --registry registry --out out --desk desk/data` rebuilds every Scorecard; `node --test engine/test` and `python -I -m unittest discover -s tests` run the tests. The replication package with a raw-file manifest and expected hashes (PRD §17.1, D6) is not yet built.
 

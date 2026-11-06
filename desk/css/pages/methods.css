@@ -1,4 +1,4 @@
-/* Constraint Check Desk: the Methods page: the prose, the document list and the rendered documents (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+/* The Growth Test: the Methods page: the prose, the document list and the rendered documents (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
 @layer pages {
 /* ---------- Methods page ---------- */
 .methods-prose { max-width: 46rem; }

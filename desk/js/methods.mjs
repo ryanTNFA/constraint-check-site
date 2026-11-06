@@ -6,7 +6,7 @@ import { initTheme, h, qs, readHash, writeHash } from './common.mjs';
 initTheme();
 
 export const DOCS = [
-  { id: 'how-it-works', title: 'How Constraint Check works', who: 'Plain-language guide for program officers, Hill staff and managers' },
+  { id: 'how-it-works', title: 'How The Growth Test works', who: 'Plain-language guide for program officers, Hill staff and managers' },
   { id: 'methodology-note', title: 'Methodology Note', who: 'For economists: every formula, threshold and rule, with the code that implements it' },
   { id: 'datasheet-and-model-card', title: 'Datasheet and model card', who: 'What the data are, intended uses and misuses, known limits' },
   { id: 'codebook', title: 'Indicator codebook', who: 'Every indicator: source, evidence class, test and direction' },
@@ -21,7 +21,7 @@ async function show(id, scroll) {
   for (const a of list.querySelectorAll('a')) a.setAttribute('aria-current', a.dataset.doc === id ? 'true' : 'false');
   body.replaceChildren(h('p', { class: 'small muted' }, `Loading ${doc.title}…`));
   try {
-    const r = await fetch(`/constraint-check-site/docs/${id}.md`);
+    const r = await fetch(`/growth-test-site/docs/${id}.md`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const md = await r.text();
     // our own documents, rendered as written; marked is vendored (desk/vendor/marked-12.0.2.min.js, loaded by methods.html)

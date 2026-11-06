@@ -1,4 +1,4 @@
-/* Constraint Check Desk: motion layer (C5). The only file besides tokens.css that may hold a literal duration or
+/* The Growth Test: motion layer (C5). The only file besides tokens.css that may hold a literal duration or
    easing (tests/test_desk_css.py). Everything here has a static equivalent under prefers-reduced-motion, and nothing
    animates on a rating surface (tenet 6). The D9 tokens (--ease, --dur-1/2/3) live in tokens.css. */
 @layer motion {
@@ -22,5 +22,16 @@
     .reveal.reveal-scroll { opacity: 1; transform: none; transition: none; animation: reveal-in linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
     @keyframes reveal-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   }
+}
+
+/* The Growth Test prototypes (D9), on the flagged pages only: hovers and the fold's summary move with the one family and
+   the duration scale; the band's entry link lifts by one elevation step. Nothing here touches a rating surface. */
+@media (prefers-reduced-motion: no-preference) {
+  body[data-flag="growth-test"] .gt-card, body[data-flag="growth-test"] .gt-entry, body[data-flag="growth-test"] .gt-test {
+    transition: box-shadow var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+  }
+  body[data-flag="growth-test"] .gt-entry:hover { transform: translateY(-1px); }
+  body[data-flag="growth-test"] gt-fold > details > summary::after { transition: transform var(--dur-1) var(--ease); }
+  body[data-flag="growth-test"] .topnav a, body[data-flag="growth-test"] .tabs a.tab { transition: border-color var(--dur-1) var(--ease); }
 }
 }

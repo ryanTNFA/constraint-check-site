@@ -1,4 +1,4 @@
-/* Constraint Check Desk: the Self-discovery page: the prose, the signature cards, the product-space views and the section palette (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+/* The Growth Test: the Self-discovery page: the prose, the signature cards, the product-space views and the section palette (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
 @layer pages {
 /* self-discovery page */
 .sd-prose { max-width: 46rem; display: grid; gap: 10px; }

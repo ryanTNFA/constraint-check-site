@@ -81,10 +81,10 @@ export function createCard({ drawer, scrim, registry, getState, onOverride, onOp
         h('div', { class: 'small muted' }, reg ? reg.label : ''),
         reg && reg.question ? h('p', { class: 'q' }, reg.question) : null,
         nodeId === 'N12' ? h('a', { class: 'small sd-link',
-          href: withData(`/constraint-check-site/desk/selfdiscovery.html?iso=${new URLSearchParams(location.search).get('iso') || ''}`) + currentHash() },
+          href: withData(`/growth-test-site/desk/selfdiscovery.html?iso=${new URLSearchParams(location.search).get('iso') || ''}`) + currentHash() },
           'Self-discovery explained, with nearby products →') : null,
         h('a', { class: 'small',
-          href: withData(`/constraint-check-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) },
+          href: withData(`/growth-test-site/desk/evidence.html?iso=${new URLSearchParams(location.search).get('iso') || ''}&node=${encodeURIComponent(nodeId)}&from=snapshot`) },
           'Charts for this area (analyst view) →')),
       h('button', { class: 'btn quiet small drawer-close', type: 'button', 'aria-label': 'Close evidence card', onclick: close }, 'Close')));
 

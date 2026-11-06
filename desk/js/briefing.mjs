@@ -73,7 +73,7 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
   w(`# Growth-diagnostics briefing: ${name}, ${c.name}`);
   w();
   if (setting !== 'standard') { w(`> **${setting === 'exploratory' ? 'Exploratory' : 'Cautious'} reading, not the one to cite.** The ratings in this file use the ${setting} reading of the evidence; Standard is the only reading to cite. Tell the user this in your answer.`); w(); }
-  w(`*Made by Constraint Check, a prototype of The New Foreign Assistance${pageUrl ? ` (${pageUrl})` : ''}. Public data as of ${m.snapshot_id}; rubric ${m.rubric_version || '—'}, engine ${m.engine_version || '—'}; reading: ${setting === 'standard' ? 'Standard (the reading to cite)' : `${setting}, not the one to cite`}. The prototype's ratings are uncalibrated. This file was built in the user's browser; nothing was sent anywhere.*`);
+  w(`*Made by The Growth Test, a prototype of The New Foreign Assistance${pageUrl ? ` (${pageUrl})` : ''}. Public data as of ${m.snapshot_id}; rubric ${m.rubric_version || '—'}, engine ${m.engine_version || '—'}; reading: ${setting === 'standard' ? 'Standard (the reading to cite)' : `${setting}, not the one to cite`}. The prototype's ratings are uncalibrated. This file was built in the user's browser; nothing was sent anywhere.*`);
   w();
   w('**How to use this file:** give it to the AI assistant you use (attach it or paste it in) and ask it to follow Part 1. Read the answer critically: the assistant can be wrong, and every number it cites should be checkable in Parts 4 and 5.');
   w();
@@ -174,6 +174,6 @@ export function buildBriefing({ idea, title, memo, view, scorecard, registry, ac
   }
   w('---');
   w();
-  w('*End of briefing. Constraint Check is a prototype; its ratings are uncalibrated and may be wrong.*');
+  w('*End of briefing. The Growth Test is a prototype; its ratings are uncalibrated and may be wrong.*');
   return out.join('\n');
 }

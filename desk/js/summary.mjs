@@ -119,7 +119,7 @@ function render() {
   const body = h('tbody', {});
   for (const r of state.model) {
     if (r.group) { body.append(h('tr', { class: 'sm-group' }, h('th', { colspan: '9', scope: 'colgroup' }, r.group))); continue; }
-    const href = withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(r.id)}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
+    const href = withData(`/growth-test-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(r.id)}${state.set !== 'structural' ? `#set=${state.set}` : ''}`);
     const bt = r.bench != null ? `${r.nBench} indicators with data: ${r.toward} at least 0.75 sd toward binding, ${r.away} at least 0.75 sd away. Median of their binding-side distances from what income and structure predict.` : 'No indicator of this node has a value in the window.';
     body.append(h('tr', { class: `${r.sub ? 'sm-sub' : ''}${r.context ? ' sm-context' : ''}${state.overrides[r.id] ? ' sm-overridden' : ''}` },
       h('th', { scope: 'row', class: 'sm-node' }, h('a', { href }, h('span', { class: 'sm-id' }, r.sub ? '' : nodeCode(r.id)), ' ', r.short)),
@@ -154,7 +154,7 @@ function renderText() {
   const active = activeSet();
   $('foot').textContent = `Benchmarking: the median, across the node's indicators with a value, of each one's distance from what income and structure predict, in standard deviations, turned so positive is the binding side (the C9 evidence strip's dots). Tests 1 to 4: the verdict layer's test scores (T), from −2 (evidence against the constraint binding) to +2 (for). Colour saturates at ±${LIM}. Comparators: benchmarking measures against every economy with data, not a comparator set; the test scores are computed with the verdict layer's ${active} comparators${state.set !== active ? `` : ''}. The rating column follows the comparators chosen above (the verdict layer computes a rating under each set; hover a rating to see where the sets disagree). "Not computed": the prototype has no specification or data connector for that test; "no data": it has one, but this economy has no usable value; "no indicator": nothing in the registry measures it. Hover a cell for details. Snapshot ${sc.meta ? sc.meta.snapshot_id : ''}, rubric ${sc.meta ? sc.meta.rubric_version : ''}. Your conclusions are yours, not the tool's; they live in this page's link, which the Bottom line and its memo read too.`;
   const hash = currentHash();
-  $('to-snapshot').href = withData(`/constraint-check-site/desk/country.html?iso=${state.iso}${hash}`);
+  $('to-snapshot').href = withData(`/growth-test-site/desk/country.html?iso=${state.iso}${hash}`);
   refreshNav();
 }
 
@@ -223,7 +223,7 @@ function heatSVG() {
     p.push(`<text x="${cx + 6}" y="${y + 17}" fill="${text}">${e(plainTier(r.tier))}</text>`);
     if (anyOv && state.overrides[r.id]) p.push(`<text x="${cx + 176}" y="${y + 17}" fill="${text}" font-weight="600">${e(plainTier(state.overrides[r.id].tier))}</text>`);
   });
-  p.push(`<text x="8" y="${H - 12}" fill="${muted}" font-size="11">${e(`Constraint Check (TNFA), prototype. Tests use the verdict layer's ${activeSet()} comparators. Analyst conclusions are the analyst's, not the tool's.`)}</text>`, '</svg>');
+  p.push(`<text x="8" y="${H - 12}" fill="${muted}" font-size="11">${e(`The Growth Test (TNFA), prototype. Tests use the verdict layer's ${activeSet()} comparators. Analyst conclusions are the analyst's, not the tool's.`)}</text>`, '</svg>');
   return { text: p.join(''), w: W, h: H };
 }
 function exportSVG() { downloadText(`${fileBase()}.svg`, heatSVG().text, 'image/svg+xml'); }
@@ -243,7 +243,7 @@ async function loadCountry() {
   state.scorecard = await getJSON(`${DATA}/${state.iso}.json`);
   const name = nameOf(state.iso);
   $('page-title').textContent = `${name}: diagnostic summary`;
-  document.title = `${name} · Heat map · Constraint Check`;
+  document.title = `${name} · Heat map · The Growth Test`;
   $('page-sub').textContent = 'Each row is a node of the tree. The colour shows which way the evidence leans; the verdict layer\'s tier and your own conclusion sit beside it. Click a node to see its evidence.';
 }
 

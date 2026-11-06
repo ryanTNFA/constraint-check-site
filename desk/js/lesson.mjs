@@ -36,8 +36,8 @@ function bar(l) {
         h('span', { class: 'kicker' }, `Learning the method · lesson ${l.n} of ${LESSONS.length}`),
         h('nav', { class: 'lesson-nav', 'aria-label': 'Lessons' },
           prev ? h('a', { href: lessonHref(prev) }, `← ${prev.n}`) : null,
-          h('a', { href: withData('/constraint-check-site/desk/learn.html') }, 'All lessons'),
-          next ? h('a', { class: 'lesson-next', href: lessonHref(next) }, `Next: lesson ${next.n}, ${next.title} →`) : h('a', { class: 'lesson-next', href: withData('/constraint-check-site/desk/learn.html#exit') }, 'Done: the exit test →'))),
+          h('a', { href: withData('/growth-test-site/desk/learn.html') }, 'All lessons'),
+          next ? h('a', { class: 'lesson-next', href: lessonHref(next) }, `Next: lesson ${next.n}, ${next.title} →`) : h('a', { class: 'lesson-next', href: withData('/growth-test-site/desk/learn.html#exit') }, 'Done: the exit test →'))),
       h('h2', { class: 'lesson-title' }, l.title),
       h('p', { class: 'lesson-task' }, l.task),
       h('div', { class: 'lesson-tools' }, predictBtn, predictOn() ? revealAll : null, details)));

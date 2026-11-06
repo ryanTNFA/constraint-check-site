@@ -575,13 +575,13 @@ function renderText(c) {
   const ind = c.ind;
   const country = nameOf(state.iso);
   $('page-title').textContent = `${country}: the evidence, node by node`;
-  document.querySelectorAll('a[data-keep-iso]').forEach((a) => { a.href = withData(`/constraint-check-site/desk/country.html?iso=${encodeURIComponent(state.iso)}`); });
+  document.querySelectorAll('a[data-keep-iso]').forEach((a) => { a.href = withData(`/growth-test-site/desk/country.html?iso=${encodeURIComponent(state.iso)}`); });
   $('ev-title').textContent = `${shortName(ind)}: is it high or low for an economy at ${country}'s income level?`;
   const cls = ind.class || 'X', wt = (state.registry.params.class_weights || {})[cls];
   $('ev-sub').replaceChildren(`${ind.name}. Class ${cls}: ${CLASS_LONG[cls] || 'other'}${wt ? `, weight ${wt.toFixed(1)} in the verdict` : ''} (`, h('a', { href: '#class-key' }, 'what the classes mean'), `). Nodes ${(ind.nodes || []).join(', ') || 'context'}. Each point is an economy; the line is what income predicts.`);
   syncBack(c);
   $('tb-summary').textContent = `${country} · ${shortName(ind)} · ${state.set === 'custom' ? `${c.added.length} chosen comparators` : `${SET_LABEL[state.set]} comparators${c.added.length ? ` + ${c.added.length} added` : ''}`}${c.asOf !== snapYear() ? ` · as of ${c.asOf}` : ''}`;
-  document.title = `${country} · Charts · ${shortName(ind)} · Constraint Check`;
+  document.title = `${country} · Charts · ${shortName(ind)} · The Growth Test`;
   const unit = unitHint(ind);
   const parts = [];
   if (!c.target) {
@@ -634,7 +634,7 @@ function renderVerdict(c) {
     box.append(h('span', { class: `chip ${tierClass(n.tier)}` }, `${nodeCode(n.id)} ${state.registry.nodeById[n.id] ? state.registry.nodeById[n.id].short : ''}: ${tierLabel(n.tier)}`));
     if (i < items.length - 1) box.append(' · ');
   });
-  box.append(h('a', { href: withData(`/constraint-check-site/desk/country.html?iso=${state.iso}`) }, 'Open the Bottom line'));
+  box.append(h('a', { href: withData(`/growth-test-site/desk/country.html?iso=${state.iso}`) }, 'Open the Bottom line'));
 }
 
 function renderTable(c) {
@@ -682,7 +682,7 @@ async function render() {
 }
 
 // ---------- node view (rail, C9, C4, C7) ----------
-const hrefFor = (view) => withData(`/constraint-check-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(view)}${currentHash()}`);
+const hrefFor = (view) => withData(`/growth-test-site/desk/evidence.html?iso=${state.iso}&node=${encodeURIComponent(view)}${currentHash()}`);
 
 function nodeControls() {
   const box = $('node-controls');
@@ -1130,7 +1130,7 @@ async function recordPlayback() {
       g.fillStyle = ink; g.font = '600 18px Inter, system-ui, sans-serif';
       g.fillText(`${nameOf(state.iso)} · ${shortName(c.ind)}`, 12, 26);
       g.fillStyle = muted; g.font = '13px Inter, system-ui, sans-serif';
-      g.fillText(`Data as of ${y} · comparators: ${setName(c)} (today's set) · Constraint Check`, 12, 46);
+      g.fillText(`Data as of ${y} · comparators: ${setName(c)} (today's set) · The Growth Test`, 12, 46);
       let top = head;
       for (const im of imgs) { g.drawImage(im.img, 0, top, im.w, im.h); top += im.h + gap; }
       g.fillText(`Source: ${sourceLabel(c.ind)}; population, World Bank WDI. Hollow points are older than the staleness limit.`, 12, H - 10);
@@ -1308,7 +1308,7 @@ function exportPins() {
   if (!state.pins.length) return;
   const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const parts = state.pins.map((p) => `<section><p class="k">${esc(p.kicker)}</p><h2>${esc(p.title || p.key)}</h2>${p.q ? `<p class="q">${esc(p.q)}</p>` : ''}<p class="m">${esc(p.settings)} · <a href="${esc(p.url)}">open this view</a></p>${p.svg}<p class="r">${p.readout}</p><p class="f">${esc(p.foot)} ${esc(p.vintage)}</p></section>`);
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Constraint Check · my chart pack</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>${PACK_CSS}</style></head><body><p class="k">Constraint Check · my chart pack</p><h1>${state.pins.length} chart${state.pins.length === 1 ? '' : 's'}</h1><p class="m">Made ${new Date().toISOString().slice(0, 10)}. Each chart is shown as it was drawn when added, with the economy, comparators and data year that drew it and a link back to that view. No chart states a causal conclusion; each readout describes the data, not a verdict.</p>${parts.join('')}</body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>The Growth Test · my chart pack</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>${PACK_CSS}</style></head><body><p class="k">The Growth Test · my chart pack</p><h1>${state.pins.length} chart${state.pins.length === 1 ? '' : 's'}</h1><p class="m">Made ${new Date().toISOString().slice(0, 10)}. Each chart is shown as it was drawn when added, with the economy, comparators and data year that drew it and a link back to that view. No chart states a causal conclusion; each readout describes the data, not a verdict.</p>${parts.join('')}</body></html>`;
   downloadText(`chart-pack-${new Date().toISOString().slice(0, 10)}.html`, html, 'text/html');
 }
 
@@ -1327,7 +1327,7 @@ function exportPack() {
     parts.push(`<section><p class="k">${esc(kicker ? kicker.textContent : '')}</p><h2>${esc(h2 ? h2.textContent.trim() : key)}</h2>${q ? `<p class="q">${esc(q)}</p>` : ''}${s.text}<p class="r">${$(ro) ? $(ro).innerHTML : ''}</p><p class="f">${esc($(ft) ? $(ft).textContent : '')}</p></section>`);
   }
   const title = `${nameOf(state.iso)} · ${$('h-node') && $('h-node').textContent ? $('h-node').textContent : 'Evidence'}`;
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)} · chart pack</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:15px/1.5 Inter,system-ui,sans-serif;color:#1c2e4a;background:#fff;max-width:1000px;margin:24px auto;padding:0 16px}h1{font:600 26px Newsreader,Georgia,serif;margin:0}h2{font:600 19px Newsreader,Georgia,serif;margin:4px 0 10px}.k{font:600 11px/1 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#9a5620;margin:0}.m{color:#4a5d7e;font-size:13px}section{border-top:1px solid #d5dbe5;padding:22px 0;break-inside:avoid}svg{max-width:100%;height:auto}.q{font-style:italic;color:#4a5d7e;margin:-6px 0 10px}.r{margin:10px 0 4px}.f{color:#4a5d7e;font-size:12.5px;margin:0}@media print{body{margin:0}section{page-break-inside:avoid}}</style></head><body><p class="k">Constraint Check · chart pack</p><h1>${esc(title)}</h1><p class="m">Comparators: ${esc(setName(c))} (${esc(c.peers.join(' '))}). Data as of ${c.asOf}. Fit for chart 1: ${esc(state.fit)}. Made ${new Date().toISOString().slice(0, 10)} from <a href="${esc(location.href)}">this view</a>. No chart states a causal conclusion; each readout is a description of the data, not a verdict.</p>${parts.join('')}</body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)} · chart pack</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:15px/1.5 Inter,system-ui,sans-serif;color:#1c2e4a;background:#fff;max-width:1000px;margin:24px auto;padding:0 16px}h1{font:600 26px Newsreader,Georgia,serif;margin:0}h2{font:600 19px Newsreader,Georgia,serif;margin:4px 0 10px}.k{font:600 11px/1 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#9a5620;margin:0}.m{color:#4a5d7e;font-size:13px}section{border-top:1px solid #d5dbe5;padding:22px 0;break-inside:avoid}svg{max-width:100%;height:auto}.q{font-style:italic;color:#4a5d7e;margin:-6px 0 10px}.r{margin:10px 0 4px}.f{color:#4a5d7e;font-size:12.5px;margin:0}@media print{body{margin:0}section{page-break-inside:avoid}}</style></head><body><p class="k">The Growth Test · chart pack</p><h1>${esc(title)}</h1><p class="m">Comparators: ${esc(setName(c))} (${esc(c.peers.join(' '))}). Data as of ${c.asOf}. Fit for chart 1: ${esc(state.fit)}. Made ${new Date().toISOString().slice(0, 10)} from <a href="${esc(location.href)}">this view</a>. No chart states a causal conclusion; each readout is a description of the data, not a verdict.</p>${parts.join('')}</body></html>`;
   downloadText(`${state.iso}-${String(state.node).replace(/[^A-Za-z0-9._-]/g, '_')}-chart-pack-${c.asOf}.html`, html, 'text/html');
 }
 function chartSVG(key, { framed = false } = {}) {
@@ -1377,7 +1377,7 @@ function frameSVG(key, clone, { w, h: ch }) {
   const ro = $(row[2]) ? $(row[2]).textContent.trim() : '', ft = $(row[3]) ? $(row[3]).textContent.trim() : '';
   if (ro) { put(wrap(ro, 13), 13, ink, 400); y += 4; }
   if (ft) put(wrap(ft, 11), 11, muted, 400);
-  put([`Constraint Check · The New Foreign Assistance${ft.includes('Snapshot ') ? '' : ` · ${vintage()}`}`], 11, muted, 400);
+  put([`The Growth Test · The New Foreign Assistance${ft.includes('Snapshot ') ? '' : ` · ${vintage()}`}`], 11, muted, 400);
   const H = Math.ceil(y + 6);
   clone.setAttribute('x', '0'); clone.setAttribute('y', String(top));
   const inner = new XMLSerializer().serializeToString(clone);
@@ -1416,7 +1416,7 @@ function slideSVG(key) {
   const node = state.registry.nodeById[state.node];
   const title = indChart ? ($('ev-title').textContent || `${shortName(ind)}: ${t.q || t.title}`) : `${node ? `${nodeCode(state.node)} ${node.short}` : t.title}: ${t.q || t.title}`;
   const sub = [nameOf(state.iso), t.title, indChart ? ind.name : null, `comparators: ${setName(c)}`, `data as of ${c.asOf}`].filter(Boolean).join(' · ');
-  const source = `${indChart ? `Source: ${sourceLabel(ind)}. ` : ''}Constraint Check, The New Foreign Assistance. ${vintage()}`;
+  const source = `${indChart ? `Source: ${sourceLabel(ind)}. ` : ''}The Growth Test, The New Foreign Assistance. ${vintage()}`;
   const ink = css('--text', '#1c2e4a'), muted = css('--muted', '#4a5d7e'), accent = css('--chart-focus-ink', '#9a5620'), bgc = css('--bg', '#ffffff');
   const fit = (str, px, size) => { const max = Math.floor(px / (size * 0.52)); return str.length > max ? `${str.slice(0, max - 1)}…` : str; };
   const ts = Math.max(26, Math.min(38, Math.floor((W - 112) / (title.length * 0.5))));
@@ -1424,7 +1424,7 @@ function slideSVG(key) {
   const k = Math.min(box.w / s.w, box.h / s.h), cw = s.w * k, chh = s.h * k;
   const inner = s.text.replace(/^<svg\b([^>]*)>/, (m, attrs) => `<svg${attrs.replace(/\s(x|y|width|height)="[^"]*"/g, '')} x="${box.x + (box.w - cw) / 2}" y="${box.y}" width="${cw}" height="${chh}"${/viewBox=/.test(attrs) ? '' : ` viewBox="0 0 ${s.w} ${s.h}"`}>`);
   const text = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="${esc(bgc)}"/>`
-    + `<text x="56" y="58" font-size="15" font-weight="600" letter-spacing="1.5" fill="${esc(accent)}" font-family="${esc("'IBM Plex Mono', ui-monospace, monospace")}">${esc((t.kicker || 'Constraint Check').toUpperCase())}</text>`
+    + `<text x="56" y="58" font-size="15" font-weight="600" letter-spacing="1.5" fill="${esc(accent)}" font-family="${esc("'IBM Plex Mono', ui-monospace, monospace")}">${esc((t.kicker || 'The Growth Test').toUpperCase())}</text>`
     + `<text x="56" y="106" font-size="${ts}" font-weight="600" fill="${esc(ink)}" font-family="${esc('Newsreader, Georgia, serif')}">${esc(fit(title, W - 112, ts))}</text>`
     + `<text x="56" y="142" font-size="19" fill="${esc(muted)}" font-family="${esc('Inter, system-ui, sans-serif')}">${esc(fit(sub, W - 112, 19))}</text>`
     + inner

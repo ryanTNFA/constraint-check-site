@@ -1,4 +1,4 @@
-/* Constraint Check Desk: the Analyst View (evidence.html): the control bar, the rail, the charts, the tests and the year player (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
+/* The Growth Test: the Analyst View (evidence.html): the control bar, the rail, the charts, the tests and the year player (C5, pages layer; cap 300 lines). Shared rules belong in components.css. */
 @layer pages {
 .ev { padding-bottom: 64px; }
 .ev-head { padding-top: 28px; }

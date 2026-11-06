@@ -1,12 +1,12 @@
-/* Constraint Check Desk: base layer (C5). Fonts, the page, type, links, focus, the skip link, high contrast, the wrap.
+/* The Growth Test: base layer (C5). Fonts, the page, type, links, focus, the skip link, high contrast, the wrap.
    No component rules here: those are components.css; motion is motion.css; one page's own rules are pages/<page>.css. */
 @layer base {
-@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-normal-400600.woff2") format("woff2"); font-weight: 400 600; font-style: normal; font-display: swap; }
-@font-face { font-family: "Newsreader"; src: url("/constraint-check-site/desk/fonts/newsreader-italic-400600.woff2") format("woff2"); font-weight: 400 600; font-style: italic; font-display: swap; }
-@font-face { font-family: "Libertinus Serif Display"; src: url("/constraint-check-site/desk/fonts/libertinus-serif-display-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "Inter"; src: url("/constraint-check-site/desk/fonts/inter-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "IBM Plex Mono"; src: url("/constraint-check-site/desk/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("/growth-test-site/desk/fonts/newsreader-normal-400600.woff2") format("woff2"); font-weight: 400 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("/growth-test-site/desk/fonts/newsreader-italic-400600.woff2") format("woff2"); font-weight: 400 600; font-style: italic; font-display: swap; }
+@font-face { font-family: "Libertinus Serif Display"; src: url("/growth-test-site/desk/fonts/libertinus-serif-display-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("/growth-test-site/desk/fonts/inter-normal-300700.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/growth-test-site/desk/fonts/ibm-plex-mono-normal-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/growth-test-site/desk/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
 
 /* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }

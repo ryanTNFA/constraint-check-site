@@ -70,7 +70,7 @@ export async function renderSpace(state) {
   const iso = sc.country.iso3, c = sc.country.name;
   if (!cache) {
     cache = await Promise.all([
-      getJSON('/constraint-check-site/desk/geo/productspace.json', { optional: true }),
+      getJSON('/growth-test-site/desk/geo/productspace.json', { optional: true }),
       getJSON(`${DATA}/productspace/${iso}.json`, { optional: true }),
       getJSON(`${DATA}/productspace/summary.json`, { optional: true }),
       getJSON(`${DATA}/productspace/meta.json`, { optional: true }),
